@@ -3,6 +3,7 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
 import 'vuetify/dist/vuetify.css';
+import 'font-awesome/css/font-awesome.css';
 
 import App from './App';
 import router from './router';

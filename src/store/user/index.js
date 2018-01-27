@@ -3,28 +3,59 @@ import axios from 'axios';
 export default {
   state: {
     user: null,
+    token: null,
   },
-  mutations: {},
+  mutations: {
+    setUser(state, payload) {
+        const s = state;
+        s.user = payload;
+    },
+    setToken(state, payload) {
+        const s = state;
+        s.token = payload;
+    },
+  },
   actions: {
-    // signUserUp({ commit }, payload) {
-    //   console.log(payload);
-    //   commit('setLoading', true);
-    //   commit('clearError');
-    // },
+    signUserUp({ commit }, payload) {
+      console.log(payload);
+      commit('clearError');
+      commit('setLoading', true);
+      axios.post('/auth/register',{
+        email: payload.email,
+        password: payload.password
+      })
+        .then((res)=>{
+            console.log(res.data);
+            commit('setUser', res.data.user);
+            commit('setToken', res.data.token);
+        })
+        .catch((error)=>{
+            console.log(error.response);
+            commit('setError', error.response.data.message);
+        })
+        .finally(()=>{
+            commit('setLoading', false);
+            console.log('finally block...');
+        });
+    },
     signUserIn({ commit }, payload) {
       commit('setLoading', true);
       commit('clearError');
       axios.post('/auth/login', {
         email: payload.email,
         password: payload.password,
-      }).then((response) => {
+      }).then((res) => {
         // eslint-disable-next-line
-        console.log(response);
+        console.log(res);
+        commit('setUser', res.data.user);
+        commit('setToken', res.data.token);
       })
         .catch((error) => {
           // eslint-disable-next-line
-          commit('setLoading', false);
           commit('setError', error.response.data.message);
+        })
+        .finally(()=>{
+            commit('setLoading', false);
         });
     },
     // autoSignIn({ commit }, payload) {
@@ -38,13 +69,17 @@ export default {
     //   console.log(getters);
     //   commit('setLoading', true);
     // },
-    // logout({ commit }) {
-    //   commit('setUser', null);
-    // },
+    logout({ commit }) {
+      commit('setUser', null);
+      commit('setToken', null);
+    },
   },
   getters: {
     user(state) {
       return state.user;
+    },
+    token(state) {
+      return state.token;
     },
   },
 };

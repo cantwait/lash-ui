@@ -3,6 +3,8 @@ import Router from 'vue-router';
 import Dashboard from '@/components/Dashboard';
 import Signin from '@/components/user/Signin';
 import Signup from '@/components/user/Signup';
+import Users from '@/components/user/Users';
+import AuthGuard from './auth.guard';
 
 Vue.use(Router);
 
@@ -23,7 +25,12 @@ export default new Router({
       name: 'Signup',
       component: Signup,
     },
-    { path: '*', redirect: 'Dashboard' },
+    {
+      path: '/users',
+      name: 'Users',
+      component: Users,
+      beforeEnter: AuthGuard,
+    },
   ],
   mode: 'history',
 });

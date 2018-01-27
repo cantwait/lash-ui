@@ -7,24 +7,59 @@
       app
     >
       <v-list dense>
-        <v-list-tile v-for="m in menus" :key="m.title" :to="m.link">
-          <v-list-tile-action>
-            <v-icon medium>{{ m.icon }}</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <v-list-tile-title>{{ m.title }}</v-list-tile-title>
-          </v-list-tile-content>
-        </v-list-tile>
+        <template v-for="(item, i) in items">
+          <v-list-group v-if="item.children" v-bind:key="i" :value="item.active" no-action>
+            <v-list-tile slot="item">
+              <v-list-tile-action>
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  {{ item.text }}
+                </v-list-tile-title>
+              </v-list-tile-content>
+              <v-list-tile-action>
+                <v-icon>keyboard_arrow_down</v-icon>
+              </v-list-tile-action>
+            </v-list-tile>
+            <v-list-tile :to="child.link"
+              v-for="(child,j) in item.children"
+              :key="j">
+              <v-list-tile-action v-if="child.icon">
+                <v-icon>{{ child.icon }}</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  {{ child.text }}
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list-group>
+          <v-list-tile v-else :to="item.link" :key="i">
+            <v-list-tile-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                {{ item.text }}
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+        </template>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar fixed app >
+    <v-toolbar>
       <v-toolbar-side-icon @click.stop="drawer = !drawer" class="hidden-md-and-up"></v-toolbar-side-icon>
       <v-toolbar-title>Lalalash icon here</v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-toolbar-items class="hidden-xs-only">
-        <v-btn flat v-for="m in menus" :key="m.title" :to="m.link">
+      <v-toolbar-items class="hidden-sm-and-down">
+        <v-btn flat v-for="m in items" :key="m.text" :to="m.link">
           <v-icon left>{{ m.icon }}</v-icon>
-            {{ m.title }}
+            {{ m.text }}
+        </v-btn>
+        <v-btn v-if="isUserLoggedIn" @click="onLogout">
+          <v-icon left>fa-sign-out</v-icon>
+            Salir
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
@@ -32,8 +67,7 @@
       <v-container fluid fill-height>
         <v-layout
           justify-center
-          align-center
-        >
+          align-center>
           <router-view></router-view>
         </v-layout>
       </v-container>
@@ -49,12 +83,42 @@
     data() {
       return {
         drawer: false,
-        menus: [
-          { title: 'home', link: '/', icon: 'fa-home' },
-          { title: 'Entrar', link: '/signin', icon: 'fa-sign-in' },
-          { title: 'Registrarse', link: '/signup', icon: 'fa-user-plus' },
-        ],
       };
+    },
+    computed: {
+      items() {
+        let menus = [
+          { text: 'Home', link: '/', icon: 'fa-home' },
+          { text: 'Entrar', link: '/signin', icon: 'fa-sign-in' },
+          { text: 'Registrarse', link: '/signup', icon: 'fa-user-plus' },
+        ];
+        if (this.isUserLoggedIn) {
+          menus = [
+            { text: 'Home', link: '/', icon: 'fa-home' },
+            {
+              text: 'Admin',
+              icon: 'fa-lock',
+              active: false,
+              children: [
+                { text: 'Usuarios', link: '/users', icon: 'fa-users' },
+                { text: 'Productos', link: '/products', icon: 'fa-th-list' },
+              ],
+            },
+          ];
+        }
+        return menus;
+      },
+      isUserLoggedIn() {
+        const isUser = this.$store.getters.user !== null && this.$store.getters.token !== undefined;
+        const isToken = this.$store.getters.token !== null && this.$store.getters.token !== undefined;
+        return isUser && isToken;
+      },
+    },
+    methods: {
+      onLogout() {
+        this.$store.dispatch('logout');
+        this.drawer = !this.drawer;
+      },
     },
   };
 </script>

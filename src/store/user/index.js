@@ -58,6 +58,24 @@ export default {
             commit('setLoading', false);
         });
     },
+    loadMore({ commit }) {
+        commit('setLoading', true);
+        setTimeout(()=>{
+            commit('setLoading', false);
+        }, 3000)
+    },
+    deleteUser({ commmit }, id) {
+        axios.delete(`/users/${id}`)
+            .then((res)=>{
+                console.log('usuario eliminardo exito: %s', res);
+            })
+            .catch((err)=>{
+                console.log('usuario eliminado error: %s', err);
+            })
+            .finally(()=>{
+                console.log('eliminar usuario completado!')
+            });
+    },
     // autoSignIn({ commit }, payload) {
     //   commit('setUser', {
     //     id: payload.uid,

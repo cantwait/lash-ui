@@ -8,7 +8,6 @@ export default {
   },
   mutations: {
     setUser(state, payload) {
-        debugger;
         const s = state;
         s.user = payload;
     },
@@ -52,7 +51,7 @@ export default {
         password: payload.password,
       }).then((res) => {
         // eslint-disable-next-line
-        console.log(res);
+        console.log('response: %s',res);
         commit('setUser', res.data.user);
         commit('setToken', res.data.token);
       })
@@ -106,7 +105,7 @@ export default {
     token(state) {
       return state.token;
     },
-    user(state) {
+    newUserDialog(state) {
       return state.newUserDialog;
     },
   },

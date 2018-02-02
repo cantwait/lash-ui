@@ -62,7 +62,6 @@
     },
     computed: {
       user() {
-        debugger;
         return this.$store.getters.user;
       },
       error() {

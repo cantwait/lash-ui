@@ -62,6 +62,7 @@
     },
     computed: {
       user() {
+        debugger;
         return this.$store.getters.user;
       },
       error() {
@@ -73,7 +74,9 @@
     },
     watch: {
       user(value) {
+        debugger;
         if (value !== null && value !== undefined) {
+          debugger;
           this.$router.push('/');
         }
       },

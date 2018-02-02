@@ -4,15 +4,21 @@ export default {
   state: {
     user: null,
     token: null,
+    newUserDialog: false,
   },
   mutations: {
     setUser(state, payload) {
+        debugger;
         const s = state;
         s.user = payload;
     },
     setToken(state, payload) {
         const s = state;
         s.token = payload;
+    },
+    setNewUserDialog(state, payload) {
+        const s = state;
+        s.newUserDialog = payload;
     },
   },
   actions: {
@@ -94,10 +100,14 @@ export default {
   },
   getters: {
     user(state) {
+      debugger;
       return state.user;
     },
     token(state) {
       return state.token;
+    },
+    user(state) {
+      return state.newUserDialog;
     },
   },
 };

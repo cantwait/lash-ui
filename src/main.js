@@ -10,10 +10,12 @@ import store from './store/index';
 import AlertCmp from './components/Shared/Alert.vue';
 
 import App from './App';
+import CreateUser from './components/user/CreateUser';
 import router from './router';
 
 Vue.use(Vuetify);
 Vue.component('app-alert', AlertCmp);
+Vue.component('app-user-add-update-dialog', CreateUser);
 Vue.config.productionTip = false;
 
 axios.defaults.baseURL = 'http://localhost:3000/api/v1';
@@ -31,6 +33,9 @@ axios.interceptors.response.use((res) => {
 // axios.defaults.headers.common.Authorization = ;
 // axios.defaults.headers.post['Content-Type'] = 'application/json';
 /* eslint-disable no-new */
+
+
+
 new Vue({
   el: '#app',
   router,

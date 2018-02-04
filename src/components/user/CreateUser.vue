@@ -3,41 +3,40 @@
       <form @submit.prevent="onSaveUser">
         <v-card>
           <v-card-title>
-            <span class="headline">User Profile</span>
+            <span class="headline">Usuario</span>
           </v-card-title>
           <v-card-text>
-            <v-container grid-list-md>
-              <v-layout wrap>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field label="nombre" required></v-text-field>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-text-field label="Email" required></v-text-field>
-                </v-flex>
-                <!-- <v-flex xs12>
-                  <v-text-field label="Password" type="password" required></v-text-field>
-                </v-flex> -->
-                <v-flex xs12 sm6 md4>
-                  <v-select
-                    label="Rol"
-                    required
-                    :items="['Admin', 'Cajero', 'Colaborador']"
-                  ></v-select>
-                </v-flex>
-                <v-flex xs12 sm6 md4>
-                  <v-btn raised class="primary" @click="onPickFile">Upload Image</v-btn>
-                  <input
-                    type="file"
-                    style="display: none"
-                    ref="fileInput"
-                    accept="image/*"
-                    @change="onFilePicked">
-                </v-flex>
-                <v-flex xs12 sm6 md4 offset-sm3>
-                  <img :src="imageURL">
-                </v-flex>
-              </v-layout>
-            </v-container>
+            <v-flex x12>
+              <v-text-field label="nombre" v-model="name" required></v-text-field>
+            </v-flex>
+            <v-flex x12>
+              <v-text-field label="Email" v-model="email" required></v-text-field>
+            </v-flex>
+            <!-- <v-flex xs12>
+              <v-text-field label="Password" type="password" required></v-text-field>
+            </v-flex> -->
+            <v-flex x12>
+              <v-select
+                v-model="role"
+                label="Seleccione el rol"
+                required
+                :items="roles"
+
+              >
+              </v-select>
+            </v-flex>
+            <v-flex xs12>
+              <v-btn raised class="primary" @click="onPickFile">Subir Imagen</v-btn>
+              <input
+                type="file"
+                style="display: none"
+                ref="fileInput"
+                accept="image/*"
+                @change="onFilePicked">
+            </v-flex>
+            <v-flex x12>
+              <img :src="imageURL">
+            </v-flex>
             <small>*Campo Obligatorio</small>
           </v-card-text>
           <v-card-actions>
@@ -56,7 +55,20 @@ export default {
       name: '',
       email: '',
       role: '',
-      picture: null,
+      roles: [
+        {
+          value: 'admin',
+          text: 'Administrador',
+        },
+        {
+          value: 'cashier',
+          text: 'Cajero',
+        },
+        {
+          value: 'user',
+          text: 'Colaborador',
+        },
+      ],
     };
   },
   computed: {
@@ -75,22 +87,22 @@ export default {
     formIsValid() {
       return this.name !== '' &&
       this.email !== '' &&
-      this.picture !== '' &&
       this.role !== '';
     },
   },
   methods: {
     onSaveUser() {
+      debugger;
       if (!this.formIsValid) {
         return;
       }
-      if (!this.picture) {
+      if (!this.imageURL) {
         return;
       }
       const newUserData = {
         email: this.email,
         role: this.role,
-        picture: this.picture,
+        picture: this.imageURL,
         name: this.name,
       };
       this.$store.dispatch('saveUser', newUserData);

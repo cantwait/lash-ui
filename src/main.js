@@ -23,6 +23,11 @@ axios.defaults.headers.get.Accepts = 'application/json';
 
 axios.interceptors.request.use((config) => {
   console.log('Request Interceptor', config);
+  const token = store.getters.token;
+  debugger;
+  if(token) {
+    config.headers.authorization = 'Bearer ' + token.accessToken;
+  }
   return config;
 });
 axios.interceptors.response.use((res) => {

@@ -73,9 +73,7 @@
     },
     watch: {
       user(value) {
-        debugger;
         if (value !== null && value !== undefined) {
-          debugger;
           this.$router.push('/');
         }
       },

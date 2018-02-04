@@ -5,6 +5,7 @@ export default {
     user: null,
     token: null,
     newUserDialog: false,
+    users: [],
   },
   mutations: {
     setUser(state, payload) {
@@ -18,6 +19,10 @@ export default {
     setNewUserDialog(state, payload) {
         const s = state;
         s.newUserDialog = payload;
+    },
+    setUsers(state, payload) {
+      const s = state;
+      s.users = payload;
     },
   },
   actions: {
@@ -81,6 +86,36 @@ export default {
                 console.log('eliminar usuario completado!')
             });
     },
+    getUsers({ commit }) {
+      commit('setLoading', true);
+      axios.get('/users')
+        .then((res)=>{
+          console.log(res);
+          commit('setUsers', res.data);
+        })
+        .catch((err)=>{
+          console.log(err);
+        })
+        .finally(()=>{
+          commit('setLoading', false);
+          console.log('fetch users finished!');
+        });
+    },
+    saveUser({ commit }, payload) {
+      commit('setLoading', true);
+      axios.post('users', payload)
+        .then((res)=> {
+          console.log(res);
+          this.getUsers();
+          this.$store.commit('setNewUserDialog', false);
+        })
+        .catch((err)=> {
+          console.log(err);
+        })
+        .finally(()=> {
+          commit('setLoading', false);
+        });
+    },
     // autoSignIn({ commit }, payload) {
     //   commit('setUser', {
     //     id: payload.uid,
@@ -99,7 +134,6 @@ export default {
   },
   getters: {
     user(state) {
-      debugger;
       return state.user;
     },
     token(state) {
@@ -108,5 +142,8 @@ export default {
     newUserDialog(state) {
       return state.newUserDialog;
     },
+    users(state) {
+      return state.users;
+    }
   },
 };

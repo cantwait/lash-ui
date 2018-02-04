@@ -4,13 +4,13 @@
       <v-card>
         <v-list two-line subheader>
           <v-subheader inset>Usuarios</v-subheader>
-          <v-list-tile avatar v-for="item in items" v-bind:key="item.title" >
+          <v-list-tile avatar v-for="item in users" v-bind:key="item.id" >
             <v-list-tile-avatar>
-              <v-icon v-bind:class="[item.iconClass]">{{ item.icon }}</v-icon>
+              <v-icon v-bind:class="[iconClass]">{{ icon }}</v-icon>
             </v-list-tile-avatar>
             <v-list-tile-content>
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{ item.subtitle }}</v-list-tile-sub-title>
+              <v-list-tile-title>{{ item.name }}</v-list-tile-title>
+              <v-list-tile-sub-title>{{ item.email }}</v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
               <v-btn icon ripple>
@@ -66,6 +66,8 @@
         dialogDelete: false,
         cuDialog: false,
         user: null,
+        iconClass: 'grey lighten-1 white--text',
+        icon: 'person',
         items: [
           { icon: 'person', iconClass: 'grey lighten-1 white--text', id: 1, title: 'Rafael Cadenas', subtitle: 'Jan 9, 2014' },
           { icon: 'person', iconClass: 'grey lighten-1 white--text', id: 2, title: 'Estefany Alvarado', subtitle: 'Jan 17, 2014' },
@@ -77,6 +79,13 @@
       loading() {
         return this.$store.getters.loading;
       },
+      users() {
+        debugger;
+        return this.$store.getters.users;
+      },
+    },
+    created() {
+      this.$store.dispatch('getUsers');
     },
     methods: {
       onDeletePerson() {
@@ -90,7 +99,6 @@
 
       },
       onLoadMore() {
-        console.log('cargando objetos...');
         this.$store.dispatch('loadMore');
       },
       onDeleteWithModal(selectedUser) {

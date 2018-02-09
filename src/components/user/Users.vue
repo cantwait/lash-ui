@@ -4,25 +4,28 @@
       <v-card>
         <v-list two-line subheader>
           <v-subheader inset>Usuarios</v-subheader>
-          <v-list-tile avatar v-for="item in users" v-bind:key="item.id" >
-            <v-list-tile-avatar>
-              <v-icon v-bind:class="[iconClass]">{{ item.picture ? item.picture : icon }}</v-icon>
-            </v-list-tile-avatar>
-            <v-list-tile-content>
-              <v-list-tile-title>{{ item.name }}</v-list-tile-title>
-              <v-list-tile-sub-title>{{ item.email }}</v-list-tile-sub-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
-              <v-btn icon ripple>
-                <v-icon color="blue lighten-1" @click.stop="onEditUser(item)">edit</v-icon>
-              </v-btn>
-            </v-list-tile-action>
-            <v-list-tile-action>
-              <v-btn icon ripple @click.stop="onDeleteWithModal(item)">
-                <v-icon color="red lighten-1">delete</v-icon>
-              </v-btn>
-            </v-list-tile-action>
-          </v-list-tile>
+          <template v-for="(item,index) in users">
+            <v-list-tile avatar  v-bind:key="item.id" >
+              <v-list-tile-avatar>
+                <v-icon v-bind:class="[iconClass]">{{ item.picture ? item.picture : icon }}</v-icon>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title>{{ item.name }}</v-list-tile-title>
+                <v-list-tile-sub-title>{{ item.email }}</v-list-tile-sub-title>
+              </v-list-tile-content>
+              <v-list-tile-action>
+                <v-btn icon ripple @click.stop="onOpenEditDialog(item)">
+                  <v-icon color="blue lighten-1">edit</v-icon>
+                </v-btn>
+              </v-list-tile-action>
+              <v-list-tile-action>
+                <v-btn icon ripple @click.stop="onOpenDeleteDialog(item)">
+                  <v-icon color="red lighten-1">delete</v-icon>
+                </v-btn>
+              </v-list-tile-action>
+            </v-list-tile>
+            <v-divider v-if="index + 1 < users.length" v-bind:key="index"></v-divider>
+          </template>
         </v-list>
       </v-card>
       <v-container>
@@ -44,7 +47,6 @@
       </v-btn>
       </v-card-text>
     </v-flex>
-    
     <!-- delete diaglo -->
     <v-dialog v-model="dialogDelete" persistent max-width="290">
       <v-card>
@@ -58,7 +60,10 @@
       </v-card>
     </v-dialog>
     <!-- new/edit user  -->
-    <app-user-add-update-dialog :user="user"/>
+    <app-user-add-form-dialog/>
+    <template v-if="user">
+      <app-user-edit-form-dialog :user="user"/>
+    </template>
   </v-layout>
 </template>
 <script>
@@ -67,15 +72,13 @@
       return {
         userToDelete: null,
         dialogDelete: false,
-        cuDialog: false,
         user: null,
         iconClass: 'grey lighten-1 white--text',
         icon: 'person',
-        items: [
-          { icon: 'person', iconClass: 'grey lighten-1 white--text', id: 1, title: 'Rafael Cadenas', subtitle: 'Jan 9, 2014' },
-          { icon: 'person', iconClass: 'grey lighten-1 white--text', id: 2, title: 'Estefany Alvarado', subtitle: 'Jan 17, 2014' },
-          { icon: 'person', iconClass: 'grey lighten-1 white--text', id: 3, title: 'Eduardo Peña', subtitle: 'Jan 28, 2014' },
-        ],
+        query: {
+          page: 1,
+          perPage: 5,
+        },
       };
     },
     computed: {
@@ -87,7 +90,7 @@
       },
     },
     created() {
-      this.$store.dispatch('getUsers');
+      this.$store.dispatch('getUsers', this.query);
     },
     methods: {
       onDeletePerson() {
@@ -96,19 +99,20 @@
           this.dialogDelete = !this.dialogDelete;
         }
       },
-      onEditPerson(editUser) {
+      onOpenEditDialog(editUser) {
         this.user = editUser;
-        this.$store.commit('setUserDialog', true);
+        this.$store.commit('setEditUserDialog', true);
       },
       onLoadMore() {
-        this.$store.dispatch('loadMore');
+        this.query.page += 1;
+        this.$store.dispatch('getUsers', this.query);
       },
-      onDeleteWithModal(selectedUser) {
+      onOpenDeleteDialog(selectedUser) {
         this.dialogDelete = !this.dialogDelete;
         this.userToDelete = selectedUser.id;
       },
       onNewUser() {
-        this.$store.commit('setUserDialog', true);
+        this.$store.commit('setNewUserDialog', true);
       },
     },
   };

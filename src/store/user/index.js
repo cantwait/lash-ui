@@ -6,6 +6,7 @@ export default {
     user: null,
     token: null,
     newUserDialog: false,
+    editUserDialog: false,
     users: [],
   },
   mutations: {
@@ -17,13 +18,19 @@ export default {
         const s = state;
         s.token = payload;
     },
-    setUserDialog(state, payload) {
+    setNewUserDialog(state, payload) {
         const s = state;
         s.newUserDialog = payload;
     },
+    setEditUserDialog(state, payload) {
+      const s = state;
+      s.editUserDialog = payload;
+    },
     setUsers(state, payload) {
       const s = state;
-      s.users = payload;
+      if(payload.length > 0) {
+        s.users = _.union(s.users, payload);
+      }
     },
     removeFromUsers(state, payload) {
       const s = state;
@@ -37,6 +44,13 @@ export default {
       const s = state;
       if(payload) {
         s.users.push(payload);
+      }
+    },
+    updateUsers(state, payload) {
+      const s = state;
+      if(payload){
+        const index = _.findIndex(s.users, {id: payload.id});
+        s.users.splice(index, 1, payload);
       }
     },
   },
@@ -83,12 +97,6 @@ export default {
             commit('setLoading', false);
         });
     },
-    loadMore({ commit }) {
-        commit('setLoading', true);
-        setTimeout(()=>{
-            commit('setLoading', false);
-        }, 3000)
-    },
     deleteUser({ commit }, id) {
         axios.delete(`/users/${id}`)
             .then((res)=>{
@@ -102,9 +110,14 @@ export default {
                 console.log('eliminar usuario completado!')
             });
     },
-    getUsers({ commit }) {
+    getUsers({ commit }, payload) {
       commit('setLoading', true);
-      axios.get('/users')
+      axios.get('/users', {
+        params: {
+          page: payload.page,
+          perPage: payload.perPage,
+        }
+      })
         .then((res)=>{
           console.log(res);
           commit('setUsers', res.data);
@@ -132,6 +145,24 @@ export default {
           commit('setLoading', false);
         });
     },
+    updateUser({ commit }, payload) {
+      axios.patch(`/users/${payload.id}`, {
+        name: payload.name,
+        email: payload.email,
+        role: payload.role,
+      })
+      .then((res) => {
+        if(res.data) {
+          commit('updateUsers', res.data);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      })
+      .finally(() => {
+        commit('setEditUserDialog', false);
+      })
+    },
     // autoSignIn({ commit }, payload) {
     //   commit('setUser', {
     //     id: payload.uid,
@@ -157,6 +188,9 @@ export default {
     },
     newUserDialog(state) {
       return state.newUserDialog;
+    },
+    editUserDialog(state) {
+      return state.editUserDialog;
     },
     users(state) {
       return state.users;

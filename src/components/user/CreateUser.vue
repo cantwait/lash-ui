@@ -92,7 +92,6 @@ export default {
   },
   methods: {
     onSaveUser() {
-      debugger;
       if (!this.formIsValid) {
         return;
       }
@@ -105,9 +104,11 @@ export default {
       this.$store.dispatch('saveUser', newUserData);
       this.$store.commit('setImageUrl', '');
       this.$store.commit('setImageResized', '');
+      this.resetForm();
     },
     onDismissDialog() {
       this.$store.commit('setNewUserDialog', false);
+      this.resetForm();
     },
     onPickFile() {
       this.$refs.fileInput.click();
@@ -123,6 +124,11 @@ export default {
         name: filename,
       };
       this.$store.dispatch('getImageUrl', payload);
+    },
+    resetForm() {
+      this.name = '';
+      this.email = '';
+      this.role = '';
     },
   },
 };

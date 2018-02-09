@@ -12,18 +12,19 @@ import AlertCmp from './components/Shared/Alert.vue';
 
 import App from './App';
 import CreateUser from './components/user/CreateUser';
+import EditUser from './components/user/EditUser';
 import router from './router';
 
 Vue.use(Vuetify);
 Vue.component('app-alert', AlertCmp);
-Vue.component('app-user-add-update-dialog', CreateUser);
+Vue.component('app-user-add-form-dialog', CreateUser);
+Vue.component('app-user-edit-form-dialog', EditUser);
 Vue.config.productionTip = false;
 
 axios.defaults.baseURL = 'http://localhost:3000/api/v1';
 axios.defaults.headers.get.Accepts = 'application/json';
 
 axios.interceptors.request.use((config) => {
-  debugger;
   console.log('Request Interceptor', config);
   const token = store.getters.token;
   if(token) {
@@ -36,7 +37,7 @@ axios.interceptors.request.use((config) => {
       });
       const currUser = store.getters.user;
       const body = {
-        email: currUser.email1,
+        email: currUser.email,
         refreshToken: token.refreshToken,
       }
       axiosRefresh.post('/auth/refresh-token', body)
@@ -52,16 +53,14 @@ axios.interceptors.request.use((config) => {
         })
         .finally(() => {
 
-        });      
+        });
     } else {
       config.headers.authorization = 'Bearer ' + token.accessToken;
       return config;
     }
-    
   }else{
     return config;
   }
-  
 });
 
 axios.interceptors.response.use((res) => {

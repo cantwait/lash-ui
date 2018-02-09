@@ -6,7 +6,7 @@
           <v-subheader inset>Usuarios</v-subheader>
           <v-list-tile avatar v-for="item in users" v-bind:key="item.id" >
             <v-list-tile-avatar>
-              <v-icon v-bind:class="[iconClass]">{{ icon }}</v-icon>
+              <v-icon v-bind:class="[iconClass]">{{ item.picture ? item.picture : icon }}</v-icon>
             </v-list-tile-avatar>
             <v-list-tile-content>
               <v-list-tile-title>{{ item.name }}</v-list-tile-title>
@@ -14,7 +14,7 @@
             </v-list-tile-content>
             <v-list-tile-action>
               <v-btn icon ripple>
-                <v-icon color="blue lighten-1" @click.stop="onEditUser">edit</v-icon>
+                <v-icon color="blue lighten-1" @click.stop="onEditUser(item)">edit</v-icon>
               </v-btn>
             </v-list-tile-action>
             <v-list-tile-action>
@@ -30,18 +30,21 @@
           <v-btn @click.stop="onLoadMore" flat :loading="loading">Cargar más</v-btn>
         </v-layout>
       </v-container>
+      <v-card-text style="height: 100px; position: relative">
+      <v-btn
+        absolute
+        dark
+        fab
+        top
+        right
+        color="pink"
+        @click.stop="onNewUser"
+        >
+        <v-icon>add</v-icon>
+      </v-btn>
+      </v-card-text>
     </v-flex>
-    <v-btn
-      fab
-      bottom
-      right
-      color="pink"
-      dark
-      fixed
-      @click.stop="onNewUser"
-    >
-      <v-icon>add</v-icon>
-    </v-btn>
+    
     <!-- delete diaglo -->
     <v-dialog v-model="dialogDelete" persistent max-width="290">
       <v-card>
@@ -80,7 +83,6 @@
         return this.$store.getters.loading;
       },
       users() {
-        debugger;
         return this.$store.getters.users;
       },
     },
@@ -89,26 +91,24 @@
     },
     methods: {
       onDeletePerson() {
-        console.log('persona eliminada');
         if (this.userToDelete) {
           this.$store.dispatch('deleteUser', this.userToDelete);
           this.dialogDelete = !this.dialogDelete;
         }
       },
-      onEditPerson() {
-
+      onEditPerson(editUser) {
+        this.user = editUser;
+        this.$store.commit('setUserDialog', true);
       },
       onLoadMore() {
         this.$store.dispatch('loadMore');
       },
       onDeleteWithModal(selectedUser) {
-        console.log('deleting user with id: %s', selectedUser.id);
         this.dialogDelete = !this.dialogDelete;
         this.userToDelete = selectedUser.id;
       },
       onNewUser() {
-        console.log('creando usuario');
-        this.$store.commit('setNewUserDialog', true);
+        this.$store.commit('setUserDialog', true);
       },
     },
   };

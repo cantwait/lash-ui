@@ -1,4 +1,5 @@
 import axios from 'axios';
+import _ from 'lodash';
 /* eslint-disable */
 export default {
   state: {
@@ -16,13 +17,27 @@ export default {
         const s = state;
         s.token = payload;
     },
-    setNewUserDialog(state, payload) {
+    setUserDialog(state, payload) {
         const s = state;
         s.newUserDialog = payload;
     },
     setUsers(state, payload) {
       const s = state;
       s.users = payload;
+    },
+    removeFromUsers(state, payload) {
+      const s = state;
+      if(payload) {
+        s.users = _.remove(s.users, (user) => {
+          return user.id != payload;
+        });
+      }
+    },
+    addUser(state, payload) {
+      const s = state;
+      if(payload) {
+        s.users.push(payload);
+      }
     },
   },
   actions: {
@@ -74,9 +89,10 @@ export default {
             commit('setLoading', false);
         }, 3000)
     },
-    deleteUser({ commmit }, id) {
+    deleteUser({ commit }, id) {
         axios.delete(`/users/${id}`)
             .then((res)=>{
+                commit('removeFromUsers', id);
                 console.log('usuario eliminardo exito: %s', res);
             })
             .catch((err)=>{
@@ -106,8 +122,8 @@ export default {
       axios.post('users', payload)
         .then((res)=> {
           console.log(res);
-          this.getUsers();
-          this.$store.commit('setNewUserDialog', false);
+          commit('addUser',res.data);
+          commit('setNewUserDialog', false);
         })
         .catch((err)=> {
           console.log(err);

@@ -96,9 +96,6 @@ export default {
       if (!this.formIsValid) {
         return;
       }
-      if (!this.imageURL) {
-        return;
-      }
       const newUserData = {
         email: this.email,
         role: this.role,
@@ -106,6 +103,8 @@ export default {
         name: this.name,
       };
       this.$store.dispatch('saveUser', newUserData);
+      this.$store.commit('setImageUrl', '');
+      this.$store.commit('setImageResized', '');
     },
     onDismissDialog() {
       this.$store.commit('setNewUserDialog', false);
@@ -114,7 +113,6 @@ export default {
       this.$refs.fileInput.click();
     },
     onFilePicked(event) {
-      debugger;
       const files = event.target.files;
       const filename = files[0].name;
       if (filename.lastIndexOf('.') <= 0) {

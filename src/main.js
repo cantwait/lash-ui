@@ -3,6 +3,7 @@
 /* eslint-disable */
 import Vue from 'vue';
 import Vuetify from 'vuetify';
+import * as moment from 'moment';
 import 'vuetify/dist/vuetify.css';
 import 'font-awesome/css/font-awesome.css';
 import axios from 'axios';
@@ -22,14 +23,47 @@ axios.defaults.baseURL = 'http://localhost:3000/api/v1';
 axios.defaults.headers.get.Accepts = 'application/json';
 
 axios.interceptors.request.use((config) => {
+  debugger;
   console.log('Request Interceptor', config);
   const token = store.getters.token;
-  debugger;
   if(token) {
-    config.headers.authorization = 'Bearer ' + token.accessToken;
+    const now = moment();
+    const tokenExpires = moment(token.expiresIn);
+    if(now.isAfter(tokenExpires)){
+      // need to refresh
+      const axiosRefresh = axios.create({
+        baseURL: 'http://localhost:3000/api/v1',
+      });
+      const currUser = store.getters.user;
+      const body = {
+        email: currUser.email1,
+        refreshToken: token.refreshToken,
+      }
+      axiosRefresh.post('/auth/refresh-token', body)
+        .then((res) => {
+          if(res.data){
+            store.commit('setToken',res.data);
+            config.headers.authorization = 'Bearer ' + store.getters.token.accessToken;
+            return config;
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .finally(() => {
+
+        });      
+    } else {
+      config.headers.authorization = 'Bearer ' + token.accessToken;
+      return config;
+    }
+    
+  }else{
+    return config;
   }
-  return config;
+  
 });
+
 axios.interceptors.response.use((res) => {
   console.log('Response Interceptor', res);
   return res;

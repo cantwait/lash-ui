@@ -4,6 +4,7 @@ import Dashboard from '@/components/Dashboard';
 import Signin from '@/components/user/Signin';
 import Signup from '@/components/user/Signup';
 import Users from '@/components/user/Users';
+import Categories from '@/components/product/Categories';
 import AuthGuard from './auth.guard';
 
 Vue.use(Router);
@@ -29,6 +30,12 @@ export default new Router({
       path: '/users',
       name: 'Users',
       component: Users,
+      beforeEnter: AuthGuard,
+    },
+    {
+      path: '/categories',
+      name: 'Categories',
+      component: Categories,
       beforeEnter: AuthGuard,
     },
   ],

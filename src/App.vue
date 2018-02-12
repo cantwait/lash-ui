@@ -35,13 +35,23 @@
               </v-list-tile-content>
             </v-list-tile>
           </v-list-group>
-          <v-list-tile v-else :to="item.link" :key="i">
+          <v-list-tile v-if="!item.children" :to="item.link" :key="i">
             <v-list-tile-action>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title>
                 {{ item.text }}
+              </v-list-tile-title>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile v-else :key="i+30" @click.stop="onLogout">
+            <v-list-tile-action>
+              <v-icon>fa-sign-out</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <v-list-tile-title>
+                Salir
               </v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
@@ -101,7 +111,8 @@
               active: false,
               children: [
                 { text: 'Usuarios', link: '/users', icon: 'fa-users' },
-                { text: 'Productos', link: '/products', icon: 'fa-th-list' },
+                { text: 'Productos', link: '/products', icon: 'fa fa-dropbox' },
+                { text: 'Categorias', link: '/categories', icon: 'fa fa-tags' },
               ],
             },
           ];
@@ -118,6 +129,7 @@
       onLogout() {
         this.$store.dispatch('logout');
         this.drawer = !this.drawer;
+        this.$router.push('/');
       },
     },
   };

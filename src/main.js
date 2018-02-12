@@ -13,12 +13,17 @@ import AlertCmp from './components/Shared/Alert.vue';
 import App from './App';
 import CreateUser from './components/user/CreateUser';
 import EditUser from './components/user/EditUser';
+import DeleteDialog from './components/shared/DeleteDialog';
+import CreateCategory from './components/product/CreateCategory';
 import router from './router';
 
 Vue.use(Vuetify);
 Vue.component('app-alert', AlertCmp);
 Vue.component('app-user-add-form-dialog', CreateUser);
 Vue.component('app-user-edit-form-dialog', EditUser);
+Vue.component('lash-delete-dialog', DeleteDialog);
+Vue.component('lash-create-category', CreateCategory);
+Vue.component('lash-edit-category', EditCategory);
 Vue.config.productionTip = false;
 
 axios.defaults.baseURL = 'http://localhost:3000/api/v1';

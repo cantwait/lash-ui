@@ -29,7 +29,7 @@ export default {
     setUsers(state, payload) {
       const s = state;
       if(payload.length > 0) {
-        s.users = _.union(s.users, payload);
+        s.users = _.uniqBy(_.union(s.users, payload),'id');
       }
     },
     removeFromUsers(state, payload) {
@@ -111,6 +111,9 @@ export default {
             });
     },
     getUsers({ commit }, payload) {
+      if (payload.page === 1) {
+        commit('setUsers', []);
+      }
       commit('setLoading', true);
       axios.get('/users', {
         params: {
@@ -119,7 +122,6 @@ export default {
         }
       })
         .then((res)=>{
-          console.log(res);
           commit('setUsers', res.data);
         })
         .catch((err)=>{

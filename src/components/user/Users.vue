@@ -7,7 +7,7 @@
           <template v-for="(item,index) in users">
             <v-list-tile avatar  v-bind:key="item.id" >
               <v-list-tile-avatar>
-                <v-icon v-bind:class="[iconClass]">{{ item.picture ? item.picture : icon }}</v-icon>
+                <v-icon v-bind:class="[iconClass]">{{ icon }}</v-icon>
               </v-list-tile-avatar>
               <v-list-tile-content>
                 <v-list-tile-title>{{ item.name }}</v-list-tile-title>
@@ -90,6 +90,9 @@
       },
     },
     created() {
+      if (this.query.page !== 1) {
+        this.query.page = 1;
+      }
       this.$store.dispatch('getUsers', this.query);
     },
     methods: {

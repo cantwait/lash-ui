@@ -15,6 +15,7 @@ import CreateUser from './components/user/CreateUser';
 import EditUser from './components/user/EditUser';
 import DeleteDialog from './components/shared/DeleteDialog';
 import CreateCategory from './components/product/CreateCategory';
+import EditCategory from './components/product/EditCategory';
 import router from './router';
 
 Vue.use(Vuetify);

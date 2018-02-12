@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="isOpenDialog" persistent max-width="500px">
+  <v-dialog v-model="editDialogOpened" persistent max-width="500px">
       <form @submit.prevent="onSaveCategory">
         <v-card>
           <v-card-title>
@@ -7,7 +7,7 @@
           </v-card-title>
           <v-card-text>
             <v-flex x12>
-              <v-text-field label="nombre" v-model="data.name" required></v-text-field>
+              <v-text-field label="nombre" v-model="editName" required></v-text-field>
             </v-flex>
             <small>*Campo Obligatorio</small>
           </v-card-text>
@@ -22,7 +22,7 @@
 </template>
 <script>
 export default {
-  props: ['category','editDialogOpened'],
+  props: ['category', 'editDialogOpened'],
   data() {
     return {
       editName: this.category.name,
@@ -54,6 +54,9 @@ export default {
     onDismissDialog() {
       this.$emit('on-edit-category', false);
       this.resetForm();
+    },
+    resetForm() {
+      this.name = '';
     },
   },
 };

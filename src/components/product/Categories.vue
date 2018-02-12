@@ -55,7 +55,7 @@
       <lash-create-category :createDialogOpened="isDialogCreateOpened" @on-create-category="takeCreateAction"/>
     </template>
     <template v-if="category && isEditDialog">
-      <app-category-edit-form-dialog @on-edit-category="takeEditAction" :editDialogOpened="isEditDialog" :category="category"/>
+      <lash-edit-category @on-edit-category="takeEditAction" :editDialogOpened="isEditDialog" :category="category"/>
     </template>
   </v-layout>
 </template>
@@ -95,6 +95,7 @@ export default {
     },
     onOpenEditDialog(item) {
       console.log('onOpenEditDialog: %s', item);
+      this.category = item;
       this.isEditDialog = !this.isEditDialog;
     },
     onLoadMore() {

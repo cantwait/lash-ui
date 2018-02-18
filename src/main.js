@@ -27,7 +27,9 @@ Vue.component('lash-create-category', CreateCategory);
 Vue.component('lash-edit-category', EditCategory);
 Vue.config.productionTip = false;
 
-axios.defaults.baseURL = 'http://localhost:3000/api/v1';
+const baseURL = process.env.NODE_ENV === 'production' ? 'https://lash-api.ddns.net/api/v1' : 'http://localhost:3000/api/v1';
+
+axios.defaults.baseURL = baseURL;
 axios.defaults.headers.get.Accepts = 'application/json';
 
 axios.interceptors.request.use((config) => {
@@ -39,7 +41,7 @@ axios.interceptors.request.use((config) => {
     if(now.isAfter(tokenExpires)){
       // need to refresh
       const axiosRefresh = axios.create({
-        baseURL: 'http://localhost:3000/api/v1',
+        baseURL,
       });
       const currUser = store.getters.user;
       const body = {

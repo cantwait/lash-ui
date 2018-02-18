@@ -8,7 +8,7 @@ import 'vuetify/dist/vuetify.css';
 import 'font-awesome/css/font-awesome.css';
 import axios from 'axios';
 import store from './store/index';
-import AlertCmp from './components/Shared/Alert';
+import AlertCmp from './components/shared/Alert';
 
 import App from './App';
 import CreateUser from './components/user/CreateUser';

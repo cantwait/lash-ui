@@ -4,7 +4,7 @@ export default {
   state: {
     loading: false,
     error: null,
-    imageURL: null,
+    image: null,
   },
   mutations: {
     setLoading(state, payload) {
@@ -23,9 +23,9 @@ export default {
       const s = state;
       s.imageResized = payload;
     },
-    setImageUrl(state, payload) {
+    setImage(state, payload) {
       const s = state;
-      s.imageURL = payload;
+      s.image = payload;
     },
   },
   actions: {
@@ -34,17 +34,7 @@ export default {
     },
     getImageUrl({ commit }, payload) {
       utils.resizeImage(payload.el)
-        .then(res => utils.dataURLtoFile(res, payload.name))
-        .then((res) => {
-          const formData = new FormData();
-          formData.append('file', res);
-          formData.append('upload_preset', 'z6cfaxkc');
-          formData.append('tags', 'gs-lash,gs-lash-uploaded');
-          return utils.uploadToCloudify(formData);
-        })
-        .then((res) => {
-          commit('setImageUrl', res.data.secure_url);
-        })
+        .then(res => commit('setImage', res))
         .catch((err) => {
           console.log(err);
         });
@@ -57,7 +47,7 @@ export default {
     error(state) {
       return state.error;
     },
-    imageURL(state) {
+    image(state) {
       return state.imageURL;
     },
   },

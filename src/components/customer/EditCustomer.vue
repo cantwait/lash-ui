@@ -1,13 +1,19 @@
 <template>
   <v-dialog v-model="editDialogOpened" persistent max-width="500px">
-      <form @submit.prevent="onSaveCategory">
+      <form @submit.prevent="onSaveCustomer">
         <v-card>
           <v-card-title>
             <span class="headline">Categoria</span>
           </v-card-title>
           <v-card-text>
             <v-flex x12>
-              <v-text-field label="nombre" v-model="editName" required></v-text-field>
+              <v-text-field label="Nombre" v-model="editName" required></v-text-field>
+            </v-flex>
+            <v-flex x12>
+              <v-text-field label="Correo" v-model="editEmail" required></v-text-field>
+            </v-flex>
+            <v-flex x12>
+              <v-text-field label="Telefono" v-model="editPhone" type='tel' required></v-text-field>
             </v-flex>
             <small>*Campo Obligatorio</small>
           </v-card-text>
@@ -22,10 +28,12 @@
 </template>
 <script>
 export default {
-  props: ['category', 'editDialogOpened'],
+  props: ['customer', 'editDialogOpened'],
   data() {
     return {
-      editName: this.category.name,
+      editName: this.customer.name,
+      editEmail: this.customer.email,
+      editPhone: this.customer.phone,
     };
   },
   computed: {
@@ -36,27 +44,31 @@ export default {
       return this.$store.getters.loading;
     },
     formIsValid() {
-      return this.name !== '';
+      return this.editName !== '' && this.editEmail !== '' && this.editPhone !== '';
     },
   },
   methods: {
-    onSaveCategory() {
+    onSaveCustomer() {
       if (!this.formIsValid) {
         return;
       }
       const editData = {
-        id: this.category.id,
+        id: this.customer.id,
         name: this.editName,
+        email: this.editEmail,
+        phone: this.editPhone,
       };
-      this.$store.dispatch('updateCategory', editData);
+      this.$store.dispatch('updateCustomer', editData);
       this.onDismissDialog();
     },
     onDismissDialog() {
-      this.$emit('on-edit-category', false);
+      this.$emit('on-edit-customer', false);
       this.resetForm();
     },
     resetForm() {
-      this.name = '';
+      this.editName = '';
+      this.editPhone = '';
+      this.editEmail = '';
     },
   },
 };

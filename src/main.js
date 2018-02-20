@@ -17,6 +17,7 @@ import DeleteDialog from './components/shared/DeleteDialog';
 import CreateCategory from './components/product/CreateCategory';
 import EditCategory from './components/product/EditCategory';
 import router from './router';
+import utils from './utils';
 
 Vue.use(Vuetify);
 Vue.component('app-alert', AlertCmp);
@@ -33,7 +34,7 @@ axios.defaults.baseURL = baseURL;
 axios.defaults.headers.get.Accepts = 'application/json';
 
 axios.interceptors.request.use((config) => {
-  console.log('Request Interceptor', config);
+  utils.log(`Request Interceptor ${JSON.stringify(config)}`);
   const token = store.getters.token;
   if(token) {
     const now = moment();
@@ -57,7 +58,7 @@ axios.interceptors.request.use((config) => {
           }
         })
         .catch((err) => {
-          console.log(err);
+          utils.log(`Error: ${JSON.stringify(err)}`);
         })
         .finally(() => {
 
@@ -72,7 +73,7 @@ axios.interceptors.request.use((config) => {
 });
 
 axios.interceptors.response.use((res) => {
-  console.log('Response Interceptor', res);
+  utils.log(`Response Interceptor: ${JSON.stringify(res)}`);
   return res;
 });
 

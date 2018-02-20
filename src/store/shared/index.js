@@ -29,14 +29,11 @@ export default {
     },
   },
   actions: {
-    clearError({ commit }) {
-      commit('clearError');
-    },
     getImageUrl({ commit }, payload) {
       utils.resizeImage(payload.el)
         .then(res => commit('setImage', res))
         .catch((err) => {
-          console.log(err);
+          utils.log(err);
         });
     },
   },

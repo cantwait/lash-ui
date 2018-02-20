@@ -14,16 +14,6 @@
 <script>
 export default {
   props: ['deleteDialog'],
-  data() {
-    return {
-
-    };
-  },
-  computed: {
-    isDialogChange() {
-      return this.$store.getters.isDeleteDialog;
-    },
-  },
   methods: {
     onDeleteYes() {
       this.$emit('on-action-performed', true);

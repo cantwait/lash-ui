@@ -1,6 +1,7 @@
 import axios from 'axios';
 import _ from 'lodash';
-/* eslint-disable */
+import utils from '../../utils';
+
 export default {
   state: {
     user: null,
@@ -11,16 +12,16 @@ export default {
   },
   mutations: {
     setUser(state, payload) {
-        const s = state;
-        s.user = payload;
+      const s = state;
+      s.user = payload;
     },
     setToken(state, payload) {
-        const s = state;
-        s.token = payload;
+      const s = state;
+      s.token = payload;
     },
     setNewUserDialog(state, payload) {
-        const s = state;
-        s.newUserDialog = payload;
+      const s = state;
+      s.newUserDialog = payload;
     },
     setEditUserDialog(state, payload) {
       const s = state;
@@ -28,54 +29,51 @@ export default {
     },
     setUsers(state, payload) {
       const s = state;
-      if(payload.length > 0) {
-        s.users = _.uniqBy(_.union(s.users, payload),'id');
+      if (payload.length > 0) {
+        s.users = _.uniqBy(_.union(s.users, payload), 'id');
       }
     },
     removeFromUsers(state, payload) {
       const s = state;
-      if(payload) {
-        s.users = _.remove(s.users, (user) => {
-          return user.id != payload;
-        });
+      if (payload) {
+        s.users = _.remove(s.users, user => user.id !== payload);
       }
     },
     addUser(state, payload) {
       const s = state;
-      if(payload) {
+      if (payload) {
         s.users.push(payload);
       }
     },
     updateUsers(state, payload) {
       const s = state;
-      if(payload){
-        const index = _.findIndex(s.users, {id: payload.id});
+      if (payload) {
+        const index = _.findIndex(s.users, { id: payload.id });
         s.users.splice(index, 1, payload);
       }
     },
   },
   actions: {
     signUserUp({ commit }, payload) {
-      console.log(payload);
+      utils.log(payload);
       commit('clearError');
       commit('setLoading', true);
-      axios.post('/auth/register',{
+      axios.post('/auth/register', {
         email: payload.email,
-        password: payload.password
+        password: payload.password,
       })
-        .then((res)=>{
-            console.log(res.data);
-            commit('setUser', res.data.user);
-            commit('setToken', res.data.token);
-        })
-        .catch((error)=>{
-            console.log(error.response);
-            commit('setError', error.response.data.message);
-        })
-        .finally(()=>{
-            commit('setLoading', false);
-            console.log('finally block...');
-        });
+      .then((res) => {
+        utils.log(JSON.stringify(res.data));
+        commit('setUser', res.data.user);
+        commit('setToken', res.data.token);
+      })
+      .catch((error) => {
+        utils.log(error.response);
+        commit('setError', error.response.data.message);
+      })
+      .finally(() => {
+        commit('setLoading', false);
+      });
     },
     signUserIn({ commit }, payload) {
       commit('setLoading', true);
@@ -84,31 +82,30 @@ export default {
         email: payload.email,
         password: payload.password,
       }).then((res) => {
-        // eslint-disable-next-line
-        console.log('response: %s',res);
+        utils.log(`response: ${JSON.stringify(res)}`);
         commit('setUser', res.data.user);
         commit('setToken', res.data.token);
       })
-        .catch((error) => {
-          // eslint-disable-next-line
-          commit('setError', error.response.data.message);
-        })
-        .finally(()=>{
-            commit('setLoading', false);
-        });
+      .catch((error) => {
+        commit('setError', error.response.data.message);
+      })
+      .finally(() => {
+        commit('setLoading', false);
+      });
     },
     deleteUser({ commit }, id) {
-        axios.delete(`/users/${id}`)
-            .then((res)=>{
-                commit('removeFromUsers', id);
-                console.log('usuario eliminardo exito: %s', res);
-            })
-            .catch((err)=>{
-                console.log('usuario eliminado error: %s', err);
-            })
-            .finally(()=>{
-                console.log('eliminar usuario completado!')
-            });
+      axios.delete(`/users/${id}`)
+        .then((res) => {
+          if (res.status === 204) {
+            commit('removeFromUsers', id);
+          }
+        })
+        .catch((err) => {
+          utils.log(`usuario eliminado error: ${JSON.stringify(err)}`);
+        })
+        .finally(() => {
+          utils.log('eliminar usuario completado!');
+        });
     },
     getUsers({ commit }, payload) {
       if (payload.page === 1) {
@@ -119,31 +116,30 @@ export default {
         params: {
           page: payload.page,
           perPage: payload.perPage,
-        }
+        },
       })
-        .then((res)=>{
+        .then((res) => {
           commit('setUsers', res.data);
         })
-        .catch((err)=>{
-          console.log(err);
+        .catch((err) => {
+          utils.log(err);
         })
-        .finally(()=>{
+        .finally(() => {
           commit('setLoading', false);
-          console.log('fetch users finished!');
+          utils.log('fetch users finished!');
         });
     },
     saveUser({ commit }, payload) {
       commit('setLoading', true);
       axios.post('users', payload)
-        .then((res)=> {
-          console.log(res);
-          commit('addUser',res.data);
+        .then((res) => {
+          commit('addUser', res.data);
           commit('setNewUserDialog', false);
         })
-        .catch((err)=> {
-          console.log(err);
+        .catch((err) => {
+          utils.log(`Error deleting user: ${JSON.stringify(err)}`);
         })
-        .finally(()=> {
+        .finally(() => {
           commit('setLoading', false);
         });
     },
@@ -154,28 +150,17 @@ export default {
         role: payload.role,
       })
       .then((res) => {
-        if(res.data) {
+        if (res.data) {
           commit('updateUsers', res.data);
         }
       })
       .catch((err) => {
-        console.log(err);
+        utils.log(`Error updating user: ${JSON.stringify(err)}`);
       })
       .finally(() => {
         commit('setEditUserDialog', false);
-      })
+      });
     },
-    // autoSignIn({ commit }, payload) {
-    //   commit('setUser', {
-    //     id: payload.uid,
-    //     registeredMeetups: [],
-    //     fbKeys: {},
-    //   });
-    // },
-    // fetchUserData({ commit, getters }) {
-    //   console.log(getters);
-    //   commit('setLoading', true);
-    // },
     logout({ commit }) {
       commit('setUser', null);
       commit('setToken', null);
@@ -196,6 +181,6 @@ export default {
     },
     users(state) {
       return state.users;
-    }
+    },
   },
 };

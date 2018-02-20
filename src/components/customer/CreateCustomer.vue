@@ -1,15 +1,20 @@
 <template>
-  <v-dialog v-model="editDialogOpened" persistent max-width="500px">
-      <form @submit.prevent="onSaveCategory">
+  <v-dialog v-model="createDialogOpened" persistent max-width="500px">
+      <form @submit.prevent="onSaveCustomer">
         <v-card>
           <v-card-title>
             <span class="headline">Categoria</span>
           </v-card-title>
           <v-card-text>
             <v-flex x12>
-              <v-text-field label="nombre" v-model="editName" required></v-text-field>
+              <v-text-field label="Nombre" v-model="name" required></v-text-field>
             </v-flex>
-            <small>*Campo Obligatorio</small>
+            <v-flex x12>
+              <v-text-field label="Correo" v-model="email" required></v-text-field>
+            </v-flex>
+            <v-flex x12>
+              <v-text-field label="Telefono" v-model="phone" required></v-text-field>
+            </v-flex>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -22,13 +27,18 @@
 </template>
 <script>
 export default {
-  props: ['category', 'editDialogOpened'],
+  props: ['createDialogOpened'],
   data() {
     return {
-      editName: this.category.name,
+      name: '',
+      email: '',
+      phone: '',
     };
   },
   computed: {
+    isOpenDialog() {
+      return this.$store.getters.newUserDialog;
+    },
     error() {
       return this.$store.getters.error;
     },
@@ -36,27 +46,31 @@ export default {
       return this.$store.getters.loading;
     },
     formIsValid() {
-      return this.name !== '';
+      return this.name !== '' && this.email !== '' && this.phone !== '';
     },
   },
   methods: {
-    onSaveCategory() {
+    onSaveCustomer() {
       if (!this.formIsValid) {
         return;
       }
-      const editData = {
-        id: this.category.id,
-        name: this.editName,
+      const newCustomer = {
+        name: this.name,
+        email: this.email,
+        phone: this.phone,
       };
-      this.$store.dispatch('updateCategory', editData);
-      this.onDismissDialog();
+      this.$store.dispatch('saveCustomer', newCustomer);
+      this.$emit('on-create-customer', true);
+      this.resetForm();
     },
     onDismissDialog() {
-      this.$emit('on-edit-category', false);
+      this.$emit('on-create-customer', false);
       this.resetForm();
     },
     resetForm() {
       this.name = '';
+      this.phone = '';
+      this.email = '';
     },
   },
 };

@@ -1,5 +1,4 @@
 import ResizeImage from 'image-resize';
-import axios from 'axios';
 
 const ri = new ResizeImage({
   width: 400,
@@ -8,6 +7,13 @@ const ri = new ResizeImage({
 });
 
 export default {
+
+  log(string) {
+    if (process.env.NODE_ENV === 'development') {
+      // eslint-disable-next-line no-console
+      console.log(string);
+    }
+  },
     /**
     * Produces a File given a base64 string
     *
@@ -39,15 +45,5 @@ export default {
       ri.updateOptions(options);
     }
     return ri.play(inputComponent);
-  },
-    /**
-     * Update an image to cloudinary and returns a promise
-     * @param { FormData } formDataPic
-     */
-  uploadToCloudify(formDataPic) {
-    const ax = axios.create({
-      baseURL: 'https://api.cloudinary.com/v1_1/diri18hbk',
-    });
-    return ax.post('/upload', formDataPic);
   },
 };

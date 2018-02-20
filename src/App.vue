@@ -113,6 +113,7 @@
                 { text: 'Usuarios', link: '/users', icon: 'fa-users' },
                 { text: 'Productos', link: '/products', icon: 'fa fa-dropbox' },
                 { text: 'Categorias', link: '/categories', icon: 'fa fa-tags' },
+                { text: 'Clientes', link: '/customers', icon: 'fa-users' },
               ],
             },
           ];

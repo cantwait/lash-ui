@@ -7,17 +7,29 @@
           </v-card-title>
           <v-card-text>
             <v-flex x12>
-              <v-text-field label="Nombre" v-model.trim="name" required></v-text-field>
+              <v-text-field label="Nombre"
+                :rules="nameVal"
+                @blur="checkWhiteSpace"
+                :counter="25"
+                v-model.trim="name"
+                required></v-text-field>
             </v-flex>
             <v-flex x12>
-              <v-text-field label="Descripción" v-model.trim="description"></v-text-field>
+              <v-text-field
+                label="Descripción"
+                v-model.trim="description"
+                @blur="checkWhiteSpace"
+                required
+                :rules="descVal"
+                :counter="50"></v-text-field>
             </v-flex>
             <v-flex x12>
-              <v-text-field label="Precio" v-model.number="price" type="number" step="0.01" required></v-text-field>
+              <v-text-field ref="price" :rules="priceVal" label="Precio" prefix="$" v-model.number="price" type="number" step="0.01" required></v-text-field>
             </v-flex>
             <v-flex x12>
               <v-select
                 v-model="category"
+                :rules="categoryVal"
                 label="Seleccione una Categoria"
                 required
                 :items="categories"
@@ -29,7 +41,7 @@
               </v-select>
             </v-flex>
             <v-flex x12>
-              <v-text-field multi-line label="Especificaciones" placeholder="Defina las epecificaciones del producto acá" v-model="specs"></v-text-field>
+              <v-text-field :rules="specsVal" :counter="500" multi-line label="Especificaciones" placeholder="Defina las epecificaciones del producto acá" v-model="specs"></v-text-field>
             </v-flex>
           </v-card-text>
           <v-card-actions>
@@ -42,6 +54,8 @@
     </v-dialog>
 </template>
 <script>
+import _ from 'lodash';
+
 export default {
   props: ['createDialogOpened'],
   data() {
@@ -51,6 +65,25 @@ export default {
       description: '',
       specs: '',
       category: null,
+      nameVal: [
+        v => v.length <= 25 || 'Max 25 caracteres',
+        v => v.length >= 2 || 'Min 2 caracteres',
+        v => _.isEmpty(v.length) || 'Nombre no puede ser vacio',
+      ],
+      descVal: [
+        v => v.length <= 50 || 'Max 50 caracteres',
+        v => v.length >= 5 || 'Min 5 caracteres',
+        v => _.isEmpty(v.length) || 'Descripción no puede ser vacio',
+      ],
+      priceVal: [
+        v => v > 0 || 'Precio debe ser mayor a 0',
+      ],
+      categoryVal: [
+        v => !_.isNull(v) || 'Debe seleccionar una categoria',
+      ],
+      specsVal: [
+        v => v.length <= 500 || 'Max 500 caracteres',
+      ],
     };
   },
   computed: {

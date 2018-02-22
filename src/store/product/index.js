@@ -99,6 +99,7 @@ export default {
         });
     },
     saveProduct({ commit }, product) {
+      debugger;
       commit('setLoading', true);
       axios.post('/products', product)
       .then((res) => {

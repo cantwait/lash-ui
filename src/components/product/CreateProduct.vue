@@ -9,7 +9,6 @@
             <v-flex x12>
               <v-text-field label="Nombre"
                 :rules="nameVal"
-                @blur="checkWhiteSpace"
                 :counter="25"
                 v-model.trim="name"
                 required></v-text-field>
@@ -18,7 +17,6 @@
               <v-text-field
                 label="Descripción"
                 v-model.trim="description"
-                @blur="checkWhiteSpace"
                 required
                 :rules="descVal"
                 :counter="50"></v-text-field>

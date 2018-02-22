@@ -40,7 +40,7 @@
         fab
         top
         right
-        color="pink"
+        color="primary"
         @click.stop="onNewCustomer"
         >
         <v-icon>add</v-icon>
@@ -89,10 +89,11 @@ export default {
     },
   },
   created() {
-    if (this.query.page !== 1) {
-      this.query.page = 1;
-    }
-    this.$store.dispatch('getCustomers', this.query);
+    this.fetchData();
+  },
+  watch: {
+    // call again the method if the route changes
+    $route: 'fetchData',
   },
   methods: {
     onNewCustomer() {
@@ -134,6 +135,12 @@ export default {
       if (result) {
         // TODO update category
       }
+    },
+    fetchData() {
+      if (this.query.page !== 1) {
+        this.query.page = 1;
+      }
+      this.$store.dispatch('getCustomers', this.query);
     },
   },
   components: {

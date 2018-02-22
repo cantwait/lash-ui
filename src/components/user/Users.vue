@@ -40,7 +40,7 @@
         fab
         top
         right
-        color="pink"
+        color="primary"
         @click.stop="onNewUser"
         >
         <v-icon>add</v-icon>

@@ -14,6 +14,11 @@
                 <v-list-tile-sub-title>{{ item.price }}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-action>
+                <v-btn icon ripple @click.stop="onOpenPictureDialog(item)">
+                  <v-icon color="purple lighten-1">cloud_upload</v-icon>
+                </v-btn>
+              </v-list-tile-action>
+              <v-list-tile-action>
                 <v-btn icon ripple @click.stop="onOpenEditDialog(item)">
                   <v-icon color="blue lighten-1">edit</v-icon>
                 </v-btn>
@@ -40,7 +45,7 @@
         fab
         top
         right
-        color="pink"
+        color="primary"
         @click.stop="onNewProduct"
         >
         <v-icon>add</v-icon>
@@ -58,11 +63,15 @@
     <template v-if="product && isEditDialog">
       <lash-edit-product @on-edit-product="takeEditAction" :editDialogOpened="isEditDialog" :product="product"/>
     </template>
+    <template v-if="product && isPictureDialog">
+      <lash-pictures-admin @on-picture-dialog="takePictureDialogAction" :pictureDialogOpen="isPictureDialog" :product="product"></lash-pictures-admin>
+    </template>
   </v-layout>
 </template>
 <script>
 import CreateProduct from './CreateProduct';
 import EditProduct from './EditProduct';
+import ProductImageAdmin from '../shared/ProductImageAdmin';
 import utils from '../../utils';
 
 export default {
@@ -75,6 +84,7 @@ export default {
       idToDelete: null,
       iconClass: 'grey lighten-1 white--text',
       icon: 'local_offer',
+      isPictureDialog: false,
       query: {
         page: 1,
         perPage: 5,
@@ -134,10 +144,21 @@ export default {
         // TODO update category
       }
     },
+    onOpenPictureDialog(item) {
+      utils.log(`picture dialog ${JSON.stringify(item)}`);
+      this.isPictureDialog = true;
+      this.product = item;
+    },
+    takePictureDialogAction(result) {
+      utils.log(`${result}`);
+      this.isPictureDialog = false;
+      this.product = null;
+    },
   },
   components: {
     'lash-create-product': CreateProduct,
     'lash-edit-product': EditProduct,
+    'lash-pictures-admin': ProductImageAdmin,
   },
 };
 </script>

@@ -7,7 +7,7 @@
           </v-card-title>
           <v-card-text>
             <v-flex x12>
-              <v-text-field label="nombre" v-model="name" required></v-text-field>
+              <v-text-field label="nombre" :rules="nameVal" :counter="20" v-model="name" required></v-text-field>
             </v-flex>
             <v-flex x12>
               <v-text-field label="Email" v-model="email" required></v-text-field>
@@ -21,7 +21,7 @@
                 label="Seleccione el rol"
                 required
                 :items="roles"
-
+                :rules="roleVal"
               >
               </v-select>
             </v-flex>
@@ -49,6 +49,8 @@
     </v-dialog>
 </template>
 <script>
+import _ from 'lodash';
+
 export default {
   data() {
     return {
@@ -68,6 +70,14 @@ export default {
           value: 'user',
           text: 'Colaborador',
         },
+      ],
+      nameVal: [
+        v => v.length <= 20 || 'Max 20 caracteres',
+        v => v.length >= 3 || 'Min 3 caracteres',
+        v => _.isEmpty(v.length) || 'Nombre no puede ser vacio',
+      ],
+      roleVal: [
+        v => !_.isNull(v) || 'Debe seleccionar un rol',
       ],
     };
   },

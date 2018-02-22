@@ -39,7 +39,7 @@
         fab
         top
         right
-        color="pink"
+        color="primary"
         @click.stop="onNewCategory"
         >
         <v-icon>add</v-icon>

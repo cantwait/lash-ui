@@ -7,19 +7,20 @@
           </v-card-title>
           <v-card-text>
             <v-flex x12>
-              <v-text-field label="Nombre" v-model.trim="editName" required></v-text-field>
+              <v-text-field label="Nombre" :counter="25" :rules="nameVal" v-model.trim="editName" required></v-text-field>
             </v-flex>
             <v-flex x12>
-              <v-text-field label="Descripción" v-model.trim="editDescription"></v-text-field>
+              <v-text-field label="Descripción" :counter="50" :rules="descVal" required v-model.trim="editDescription"></v-text-field>
             </v-flex>
             <v-flex x12>
-              <v-text-field label="Precio" v-model.number="editPrice" type="number" step="0.01" required></v-text-field>
+              <v-text-field label="Precio" :rules="priceVal" v-model.number="editPrice" type="number" step="0.01" required></v-text-field>
             </v-flex>
             <v-flex x12>
               <v-select
                 v-model="editCategory"
                 label="Seleccione una Categoria"
                 required
+                :rules="categoryVal"
                 :items="categories"
                 item-text="name"
                 item-value="id"
@@ -28,7 +29,7 @@
               </v-select>
             </v-flex>
             <v-flex x12>
-              <v-text-field multi-line label="Especificaciones" placeholder="Defina las epecificaciones del producto acá" v-model="editSpecs"></v-text-field>
+              <v-text-field :rules="specsVal" :counter="500" multi-line label="Especificaciones" placeholder="Defina las epecificaciones del producto acá" v-model="editSpecs"></v-text-field>
             </v-flex>
             <small>*Campo Obligatorio</small>
           </v-card-text>
@@ -53,6 +54,25 @@ export default {
       editDescription: this.product.description,
       editSpecs: this.product.specs,
       editCategory: this.product.category,
+      nameVal: [
+        v => v.length <= 25 || 'Max 25 caracteres',
+        v => v.length >= 2 || 'Min 2 caracteres',
+        v => _.isEmpty(v.length) || 'Nombre no puede ser vacio',
+      ],
+      descVal: [
+        v => v.length <= 50 || 'Max 50 caracteres',
+        v => v.length >= 5 || 'Min 5 caracteres',
+        v => _.isEmpty(v.length) || 'Descripción no puede ser vacio',
+      ],
+      priceVal: [
+        v => v > 0 || 'Precio debe ser mayor a 0',
+      ],
+      categoryVal: [
+        v => !_.isNull(v) || 'Debe seleccionar una categoria',
+      ],
+      specsVal: [
+        v => v.length <= 500 || 'Max 500 caracteres',
+      ],
     };
   },
   computed: {

@@ -7,13 +7,13 @@
           </v-card-title>
           <v-card-text>
             <v-flex x12>
-              <v-text-field label="Nombre" v-model="editName" required></v-text-field>
+              <v-text-field  label="Nombre" v-model="editName" required></v-text-field>
             </v-flex>
             <v-flex x12>
               <v-text-field label="Correo" v-model="editEmail" required></v-text-field>
             </v-flex>
             <v-flex x12>
-              <v-text-field label="Telefono" v-model="editPhone" type='tel' required></v-text-field>
+              <v-text-field prepend-icon="phone" label="Telefono" v-model="editPhone" type='tel' required></v-text-field>
             </v-flex>
             <small>*Campo Obligatorio</small>
           </v-card-text>
@@ -27,6 +27,8 @@
     </v-dialog>
 </template>
 <script>
+import _ from 'lodash';
+
 export default {
   props: ['customer', 'editDialogOpened'],
   data() {
@@ -34,6 +36,16 @@ export default {
       editName: this.customer.name,
       editEmail: this.customer.email,
       editPhone: this.customer.phone,
+      nameVal: [
+        v => v.length <= 25 || 'Max 25 caracteres',
+        v => v.length >= 5 || 'Min 5 caracteres',
+        v => _.isEmpty(v.length) || 'Nombre no puede ser vacio',
+      ],
+      phoneVal: [
+        v => v.length <= 12 || 'Max 12 caracteres',
+        v => v.length >= 7 || 'Min 7 caracteres',
+        v => _.isEmpty(v.length) || 'Nombre no puede ser vacio',
+      ],
     };
   },
   computed: {

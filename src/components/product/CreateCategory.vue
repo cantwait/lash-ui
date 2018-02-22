@@ -7,7 +7,7 @@
           </v-card-title>
           <v-card-text>
             <v-flex x12>
-              <v-text-field label="nombre" v-model="name" required></v-text-field>
+              <v-text-field label="nombre" :counter="10" :rules="nameVal" v-model="name" required></v-text-field>
             </v-flex>
           </v-card-text>
           <v-card-actions>
@@ -20,11 +20,18 @@
     </v-dialog>
 </template>
 <script>
+import _ from 'lodash';
+
 export default {
   props: ['createDialogOpened'],
   data() {
     return {
       name: '',
+      valName: [
+        v => v.length <= 10 || 'Max 25 caracteres',
+        v => v.length >= 3 || 'Min 3 caracteres',
+        v => _.isEmpty(v.length) || 'Nombre no puede ser vacio',
+      ],
     };
   },
   computed: {

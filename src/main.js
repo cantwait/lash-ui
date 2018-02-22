@@ -19,7 +19,17 @@ import EditCategory from './components/product/EditCategory';
 import router from './router';
 import utils from './utils';
 
-Vue.use(Vuetify);
+Vue.use(Vuetify, {
+  theme: {
+    primary: "#F8BBD0",
+    secondary: "#F8BBD0",
+    accent: "#F8BBD0",
+    error: "#f44336",
+    warning: "#ffeb3b",
+    info: "#2196f3",
+    success: "#4caf50"
+  },
+});
 Vue.component('app-alert', AlertCmp);
 Vue.component('app-user-add-form-dialog', CreateUser);
 Vue.component('app-user-edit-form-dialog', EditUser);

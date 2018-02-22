@@ -9,6 +9,13 @@
       <v-list dense>
         <template v-for="(item, i) in items">
           <v-list-group v-if="item.children" v-bind:key="i" :value="item.active" no-action>
+            <v-list-tile slot="activator">
+              <v-list-tile-content>
+                <v-list-tile-title>
+                  {{ item.text }}
+                </v-list-tile-title>
+              </v-list-tile-content>
+            </v-list-tile>
             <v-list-tile slot="item">
               <v-list-tile-action>
                 <v-icon>{{ item.icon }}</v-icon>
@@ -58,7 +65,7 @@
         </template>
       </v-list>
     </v-navigation-drawer>
-    <v-toolbar>
+    <v-toolbar color="primary" app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer" class="hidden-md-and-up"></v-toolbar-side-icon>
       <v-toolbar-title>Lalalash icon here</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -100,7 +107,6 @@
         let menus = [
           { text: 'Home', link: '/', icon: 'fa-home' },
           { text: 'Entrar', link: '/signin', icon: 'fa-sign-in' },
-          { text: 'Registrarse', link: '/signup', icon: 'fa-user-plus' },
         ];
         if (this.isUserLoggedIn) {
           menus = [

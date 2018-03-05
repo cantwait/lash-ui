@@ -26,7 +26,7 @@
         style="display: none"
         ref="fileInput"
         accept="image/*"
-        multiple
+        @change="onUploadPictures"
         >
       <v-container fluid v-bind="{ [`grid-list-${size}`]: true }">
           <v-layout row wrap>
@@ -34,21 +34,24 @@
               xs12
               sm6
               lg3
-              v-for="n in 9"
-              :key="n"
+              v-for="pic in pics"
+              :key="pic.id"
             >
-              <v-card flat tile>
+              <v-card >
                 <v-card-media
-                  :src="`https://unsplash.it/150/300?image=${Math.floor(Math.random() * 100) + 1}`"
+                  :src="pic.url"
                   height="150px"
                 >
-                  <v-menu bottom right>
-                    <v-btn icon slot="activator" dark>
-                      <v-icon color="red lighten-1">remove_circle_outline</v-icon>
+                  <v-menu bottom right transition="slide-x-transition">
+                    <v-btn icon xs slot="activator" dark class="btn-menu">
+                      <v-icon color="white lighten-1">more_vert</v-icon>
                     </v-btn>
                     <v-list>
-                      <v-list-tile @click="onDeletePicture(n)">
-                        <v-list-tile-title>Eliminar</v-list-tile-title>
+                      <v-list-tile @click="onViewPicture(pic)">
+                        <v-list-tile-sub-title>Ver</v-list-tile-sub-title>
+                      </v-list-tile>
+                      <v-list-tile @click="onDeletePicture(pic.id)">
+                        <v-list-tile-sub-title>Eliminar</v-list-tile-sub-title>
                       </v-list-tile>
                     </v-list>
                   </v-menu>
@@ -58,17 +61,31 @@
           </v-layout>
         </v-container>
       <v-divider></v-divider>
-
+      <template :if="isViewDialogOpen && selectedPic">
+        <view-picture-carousel :isOpen="isViewDialogOpen" :pics="pics" :selectedPic="selectedPic" @on-close-view-dialog="onViewDialogClose"/>
+      </template>
     </v-card>
   </v-dialog>
 </template>
 <script>
+import ViewPictureCarousel from './ViewPictureCarousel';
 import out from '../../utils';
 
 export default {
   props: ['pictureDialogOpen', 'product'],
+  computed: {
+    pics() {
+      const files = this.$store.getters.pics;
+      if (files && files.length > 0) {
+        this.update = true;
+      }
+      return files;
+    },
+  },
   data() {
     return {
+      selectedPic: null,
+      isViewDialogOpen: false,
       dialog: false,
       notifications: false,
       sound: true,
@@ -112,13 +129,51 @@ export default {
     },
     onDeletePicture(item) {
       out.log(`removing single picture ${item}`);
+      const payload = {
+        product: this.$props.product.id,
+        item,
+      };
+      this.$store.dispatch('removePic', payload);
+    },
+    onUploadPictures(event) {
+      const file = event.target;
+      // reduce image
+      out.resizeImage(file)
+        .then((res) => {
+          // send base64 to store so the image can be uploaded to server
+          const payload = {
+            product: this.$props.product.id,
+            url: res,
+          };
+          this.$store.dispatch('savePicture', payload);
+        })
+        .catch(err => out.log('error resizing image: %s', err));
+    },
+    onViewPicture(pic) {
+      out.log('viewing picture: %s', pic.id);
+      this.isViewDialogOpen = !this.isViewDialogOpen;
+      this.selectedPic = pic;
+    },
+    onViewDialogClose(result) {
+      out.log('dialog closed: %s', result);
+      this.isViewDialogOpen = !this.isViewDialogOpen;
     },
   },
   created() {
-    out.log('component created');
+    this.$store.commit('setPics', []);
+    this.$store.dispatch('getPictures', this.$props.product.id);
+  },
+  destroy() {
+    out.log('destroying component!');
+    this.$store.commit('setPics', null);
+  },
+  components: {
+    ViewPictureCarousel,
   },
 };
 </script>
 <style scoped>
-
+  .btn-menu {
+    background-color: rgba(0,0,0,0.5);
+  }
 </style>

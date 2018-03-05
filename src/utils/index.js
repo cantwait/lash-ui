@@ -1,17 +1,17 @@
 import ResizeImage from 'image-resize';
 
 const ri = new ResizeImage({
-  width: 400,
+  width: 1014,
   format: 'png',
-  quality: 0.9,
+  quality: 1,
 });
 
 export default {
 
-  log(string) {
+  log(...val) {
     if (process.env.NODE_ENV === 'development') {
       // eslint-disable-next-line no-console
-      console.log(string);
+      console.log(...val);
     }
   },
     /**
@@ -45,5 +45,41 @@ export default {
       ri.updateOptions(options);
     }
     return ri.play(inputComponent);
+  },
+  resizeImages(files) {
+    debugger;
+    const b64images = [];
+    for (let i = 0; i <= files.length; i += 1) {
+      const reader = new FileReader();
+      reader.onloadend = function process() {
+        const tempImg = new Image();
+        tempImg.src = reader.result;
+        tempImg.onload = function onLoad() {
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 800;
+          let tempW = tempImg.width;
+          let tempH = tempImg.height;
+          if (tempW > tempH) {
+            if (tempW > MAX_WIDTH) {
+              tempH *= MAX_WIDTH / tempW;
+              tempW = MAX_WIDTH;
+            }
+          } else if (tempH > MAX_HEIGHT) {
+            tempW *= MAX_HEIGHT / tempH;
+            tempH = MAX_HEIGHT;
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = tempW;
+          canvas.height = tempH;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(this, 0, 0, tempW, tempH);
+          debugger;
+          b64images.push(canvas.toDataURL('image/png'));
+        };
+      };
+      reader.readAsDataURL(files[i]);
+    }
+
+    return b64images;
   },
 };

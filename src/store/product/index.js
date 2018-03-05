@@ -6,6 +6,7 @@ export default {
   state: {
     categories: [],
     products: [],
+    pics: [],
   },
   mutations: {
     setCategories(state, payload) {
@@ -18,6 +19,26 @@ export default {
       const s = state;
       if (payload.length > 0) {
         s.products = _.uniqBy(_.union(s.products, payload), 'id');
+      }
+    },
+    addPic(state, payload) {
+      if (payload) {
+        const s = state;
+        s.pics.push(payload);
+      }
+    },
+    setPics(state, payload) {
+      const s = state;
+      if (payload && payload.length > 0) {
+        s.pics = payload;
+      } else {
+        s.pics = [];
+      }
+    },
+    updatePics(state, payload) {
+      if (payload && payload.length > 0) {
+        const s = state;
+        s.pics = _.uniqBy(_.union(s.pics, payload), 'id');
       }
     },
     addCategory(state, payload) {
@@ -36,6 +57,12 @@ export default {
       const s = state;
       if (payload) {
         s.categories = _.remove(s.categories, category => category.id !== payload);
+      }
+    },
+    removePic(state, payload) {
+      if (payload) {
+        const s = state;
+        s.pics = _.remove(s.pics, pic => pic.id !== payload);
       }
     },
     removeProduct(state, payload) {
@@ -99,7 +126,6 @@ export default {
         });
     },
     saveProduct({ commit }, product) {
-      debugger;
       commit('setLoading', true);
       axios.post('/products', product)
       .then((res) => {
@@ -173,6 +199,54 @@ export default {
       .catch(err => utils.log(`Error updating category: ${JSON.stringify(err)}`))
       .finally(() => commit('setLoading', false));
     },
+    savePicture({ commit }, payload) {
+      commit('setLoading', true);
+      axios.post(`/products/${payload.product}/gallery`, {
+        url: payload.url,
+      })
+      .then((res) => {
+        if (res.status === 201) {
+          commit('addPic', res.data);
+        }
+      })
+      .catch(err => utils.log('Error uploading img: %s', err))
+      .finally(() => commit('setLoading', false));
+    },
+    savePictures({ commit }, payload) {
+      commit('setLoading', true);
+      axios.post(`/products/${payload.product}/galleries`, {
+        urls: payload.urls,
+      })
+      .then((res) => {
+        if (res.status === 201) {
+          if (payload.isUpdate) {
+            commit('updatePics', res.data);
+          } else {
+            commit('setPics', res.data);
+          }
+        }
+      })
+      .catch(err => utils.log('Error uploadingh pictures: %s', JSON.stringify(err)))
+      .finally(() => commit('setLoading', false));
+    },
+    getPictures({ commit }, payload) {
+      commit('setLoading', true);
+      axios.get(`/products/${payload}/gallery`)
+        .then(res => commit('setPics', res.data))
+        .catch(err => utils.log('Error fetching images: %s', JSON.stringify(err)))
+        .finally(() => commit('setLoading', false));
+    },
+    removePic({ commit }, payload) {
+      commit('setLoading', true);
+      axios.delete(`/products/${payload.product}/gallery/${payload.item}`)
+        .then((res) => {
+          if (res.status === 204) {
+            commit('removePic', payload.item);
+          }
+        })
+        .then(err => utils.log('Error deleting image: %s', JSON.stringify(err)))
+        .finally(() => commit('setLoading', false));
+    },
   },
   getters: {
     categories(state) {
@@ -180,6 +254,9 @@ export default {
     },
     products(state) {
       return state.products;
+    },
+    pics(state) {
+      return state.pics;
     },
   },
 };

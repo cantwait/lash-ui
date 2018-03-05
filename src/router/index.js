@@ -47,8 +47,8 @@ export default new Router({
       beforeEnter: AuthGuard,
     },
     {
-      path: '/products',
-      name: 'Products',
+      path: '/services',
+      name: 'Services',
       component: Products,
       beforeEnter: AuthGuard,
     },

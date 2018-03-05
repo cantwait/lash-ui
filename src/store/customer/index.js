@@ -81,6 +81,9 @@ export default {
       commit('setLoading', true);
       axios.patch(`/customers/${payload.id}`, {
         name: payload.name,
+        email: payload.email,
+        phone: payload.phone,
+        birthdate: payload.birthdate,
       })
       .then((res) => {
         if (res.status === 200) {

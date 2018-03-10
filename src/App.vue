@@ -84,8 +84,11 @@
       <v-container fluid fill-height>
         <v-layout
           justify-center
-          align-center>
-          <router-view></router-view>
+          align-top>
+          <router-view ></router-view>
+          <template v-if="showLoading">
+            <lash-loading/>
+          </template>
         </v-layout>
       </v-container>
     </v-content>
@@ -96,48 +99,56 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        drawer: false,
-      };
+import Loading from './components/shared/Loading';
+
+export default {
+  data() {
+    return {
+      drawer: false,
+    };
+  },
+  computed: {
+    showLoading() {
+      return this.$store.getters.loading;
     },
-    computed: {
-      items() {
-        let menus = [
+    items() {
+      let menus = [
+        { text: 'Home', link: '/', icon: 'fa-home' },
+        { text: 'Entrar', link: '/signin', icon: 'fa-sign-in' },
+      ];
+      if (this.isUserLoggedIn) {
+        menus = [
           { text: 'Home', link: '/', icon: 'fa-home' },
-          { text: 'Entrar', link: '/signin', icon: 'fa-sign-in' },
+          {
+            text: 'Admin',
+            icon: 'fa-lock',
+            active: false,
+            children: [
+              { text: 'Usuarios', link: '/users', icon: 'fa-users' },
+              { text: 'Servicios', link: '/services', icon: 'fa fa-dropbox' },
+              { text: 'Categorias', link: '/categories', icon: 'fa fa-tags' },
+              { text: 'Clientes', link: '/customers', icon: 'fa-users' },
+            ],
+          },
         ];
-        if (this.isUserLoggedIn) {
-          menus = [
-            { text: 'Home', link: '/', icon: 'fa-home' },
-            {
-              text: 'Admin',
-              icon: 'fa-lock',
-              active: false,
-              children: [
-                { text: 'Usuarios', link: '/users', icon: 'fa-users' },
-                { text: 'Productos', link: '/products', icon: 'fa fa-dropbox' },
-                { text: 'Categorias', link: '/categories', icon: 'fa fa-tags' },
-                { text: 'Clientes', link: '/customers', icon: 'fa-users' },
-              ],
-            },
-          ];
-        }
-        return menus;
-      },
-      isUserLoggedIn() {
-        const isUser = this.$store.getters.user !== null && this.$store.getters.token !== undefined;
-        const isToken = this.$store.getters.token !== null && this.$store.getters.token !== undefined;
-        return isUser && isToken;
-      },
+      }
+      return menus;
     },
-    methods: {
-      onLogout() {
-        this.$store.dispatch('logout');
-        this.drawer = !this.drawer;
-        this.$router.push('/');
-      },
+    isUserLoggedIn() {
+      const isUser = this.$store.getters.user !== null && this.$store.getters.token !== undefined;
+      const isToken = this.$store.getters.token !== null && this.$store.getters.token !== undefined;
+      return isUser && isToken;
     },
-  };
+  },
+  methods: {
+    onLogout() {
+      this.$store.dispatch('logout');
+      this.drawer = !this.drawer;
+      this.$router.push('/signin');
+    },
+  },
+  components: {
+    'lash-loading': Loading,
+  },
+};
 </script>

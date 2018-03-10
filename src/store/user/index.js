@@ -182,5 +182,14 @@ export default {
     users(state) {
       return state.users;
     },
+    isAdmin(state) {
+      return state.user && state.user.role === 'admin';
+    },
+    isCashier(state) {
+      return state.user && state.user.role === 'cashier';
+    },
+    isCollaborator(state) {
+      return state.user && state.user.role === 'collaborator';
+    },
   },
 };

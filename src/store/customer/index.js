@@ -5,8 +5,15 @@ import utils from '../../utils';
 export default {
   state: {
     customers: [],
+    customersCatalog: [],
   },
   mutations: {
+    setCatalog(state, payload) {
+      if (payload) {
+        const s = state;
+        s.customersCatalog = payload;
+      }
+    },
     setCustomers(state, payload) {
       if (payload) {
         const s = state;
@@ -32,6 +39,12 @@ export default {
         s.customers.splice(index, 1, payload);
       }
     },
+    removeCustomerFromCatalog(state, payload) {
+      if (payload) {
+        const s = state;
+        s.customersCatalog = _.remove(s.customersCatalog, { id: payload.customer.id });
+      }
+    },
   },
   actions: {
     getCustomers({ commit }, query) {
@@ -54,6 +67,21 @@ export default {
         .finally(() => {
           commit('setLoading', false);
         });
+    },
+    findCustomersLike({ commit }, name) {
+      commit('setLoading', true);
+      axios.get('customers/search', {
+        params: {
+          name,
+        },
+      })
+      .then((res) => {
+        // need to pass the queues so we can remove those
+        // customers already either in queues or sessions
+        commit('setCatalog', res.data);
+      })
+      .catch(e => utils.log('Error getting customers by name: %s', e))
+      .finally(() => commit('setLoading', false));
     },
     saveCustomer({ commit }, customer) {
       commit('setLoading', true);
@@ -97,6 +125,9 @@ export default {
   getters: {
     customers(state) {
       return state.customers;
+    },
+    catalog(state) {
+      return state.customersCatalog;
     },
   },
 };

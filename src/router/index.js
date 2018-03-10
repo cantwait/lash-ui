@@ -17,6 +17,7 @@ export default new Router({
       path: '/',
       name: 'Dashboard',
       component: Dashboard,
+      beforeEnter: AuthGuard,
     },
     {
       path: '/signin',
@@ -53,5 +54,5 @@ export default new Router({
       beforeEnter: AuthGuard,
     },
   ],
-  mode: 'hash',
+  mode: 'history',
 });

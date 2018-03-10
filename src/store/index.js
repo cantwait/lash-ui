@@ -6,6 +6,7 @@ import user from './user';
 import shared from './shared';
 import product from './product';
 import customer from './customer';
+import queue from './queue';
 
 Vue.use(Vuex);
 
@@ -16,6 +17,7 @@ const store = new Vuex.Store({
     shared,
     product,
     customer,
+    queue,
   },
 });
 

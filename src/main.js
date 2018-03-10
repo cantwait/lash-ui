@@ -4,6 +4,7 @@
 import Vue from 'vue';
 import Vuetify from 'vuetify';
 import * as moment from 'moment';
+import VuePusher from 'vue-pusher';
 import 'vuetify/dist/vuetify.css';
 import 'font-awesome/css/font-awesome.css';
 import axios from 'axios';
@@ -18,6 +19,14 @@ import CreateCategory from './components/product/CreateCategory';
 import EditCategory from './components/product/EditCategory';
 import router from './router';
 import utils from './utils';
+
+Vue.use(VuePusher, {
+  api_key: process.env.PUSHER_KEY,
+  options: {
+    cluster: process.env.PUSHER_CLUSTER,
+    encrypted: true,
+  }
+});
 
 Vue.use(Vuetify, {
   theme: {
@@ -64,14 +73,13 @@ axios.interceptors.request.use((config) => {
           if(res.data){
             store.commit('setToken',res.data);
             config.headers.authorization = 'Bearer ' + store.getters.token.accessToken;
-            return config;
           }
         })
         .catch((err) => {
           utils.log(`Error: ${JSON.stringify(err)}`);
         })
         .finally(() => {
-
+          return config;
         });
     } else {
       config.headers.authorization = 'Bearer ' + token.accessToken;

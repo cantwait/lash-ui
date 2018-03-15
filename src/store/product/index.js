@@ -19,6 +19,7 @@ export default {
     setProductsPerCategory(state, payload) {
       if (payload) {
         const s = state;
+        s.productsxcategory = [];
         s.productsxcategory = payload;
       }
     },

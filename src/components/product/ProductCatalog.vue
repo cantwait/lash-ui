@@ -1,10 +1,13 @@
 <template>
   <v-layout row justify-center>
     <v-dialog  v-model="isOpenDialog" fullscreen transition="dialog-bottom-transition" :overlay="false">
-      <v-card>
+      <v-card height="100%">
         <v-toolbar dark color="primary">
-          <v-btn icon @click.native="onCloseDialog" dark>
+          <v-btn v-if="!toggle" icon @click.native="onCloseDialog" dark>
             <v-icon>close</v-icon>
+          </v-btn>
+          <v-btn v-else icon @click.native="toggle = !toggle" dark>
+            <v-icon>arrow_back</v-icon>
           </v-btn>
           <v-toolbar-title>Categoria de Products</v-toolbar-title>
           <v-spacer></v-spacer>
@@ -12,11 +15,40 @@
             <v-btn dark flat @click.native="toggle = !toggle">action</v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-card v-if="toggle">
-          first container
+        <v-card height="100%" v-if="!toggle" transition="slide-x-transition">
+          <v-container fluid grid-list-sm>
+            <v-layout row wrap>
+              <v-flex
+                xs4
+                v-for="cat in categories"
+                :key="cat.id"
+              >
+                <v-card tile>
+                  <v-card-media @click="onCatTapped(cat)"
+                    :src="cat.icon"
+                    height="150"
+                  >
+                  </v-card-media>
+                  <v-card-title primary-title>
+                  <div>
+                    <div>{{ cat.name }}</div>
+                  </div>
+                </v-card-title>
+                </v-card>
+              </v-flex>
+            </v-layout>
+          </v-container>
         </v-card>
-        <v-card v-else>
-          second container
+        <v-card v-else transition="slide-x-transition">
+          <v-list three-line>
+          <template v-for="(p, index) in productByCategory">
+            <v-list-tile-content :key="index">
+              <v-list-tile-title v-html="p.name"></v-list-tile-title>
+              <v-list-tile-sub-title>Descripcion: {{ p.description }}</v-list-tile-sub-title>
+              <v-list-tile-sub-title>Precio: ${{ p.price }}</v-list-tile-sub-title>
+            </v-list-tile-content>
+          </template>
+        </v-list>
         </v-card>
       </v-card>
     </v-dialog>
@@ -33,12 +65,19 @@ export default {
       iconClass: 'grey lighten-1 white--text',
       icon: 'person',
       toggle: false,
+      category: null,
     };
   },
   computed: {
-    otheritems() {
-      return this.$store.getters.catalog;
+    categories() {
+      return this.$store.getters.categories;
     },
+    productByCategory() {
+      return this.$store.getters.productsByCategory;
+    },
+  },
+  created() {
+    this.fetchCategories();
   },
   methods: {
     onCloseDialog() {
@@ -55,6 +94,14 @@ export default {
     },
     onCreateSession(item) {
       utils.log('creating session...: %s', JSON.stringify(item));
+    },
+    fetchCategories() {
+      this.$store.dispatch('getCategories', { page: 1, perPage: 50 });
+    },
+    onCatTapped(cat) {
+      this.toggle = !this.toggle;
+      utils.log('cat tapped!: %s', JSON.stringify(cat));
+      this.$store.dispatch('getProductsPerCategory', cat.id);
     },
   },
 };

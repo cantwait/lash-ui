@@ -9,6 +9,9 @@
             <v-flex x12>
               <v-text-field label="nombre" :counter="10" :rules="valName" v-model="editName" required></v-text-field>
             </v-flex>
+            <v-flex x12>
+              <v-text-field label="Icono" v-model="editIcon" required></v-text-field>
+            </v-flex>
             <small>*Campo Obligatorio</small>
           </v-card-text>
           <v-card-actions>
@@ -28,6 +31,7 @@ export default {
   data() {
     return {
       editName: this.category.name,
+      editIcon: this.category.icon,
       valName: [
         v => v.length <= 10 || 'Max 25 caracteres',
         v => v.length >= 3 || 'Min 3 caracteres',
@@ -43,7 +47,7 @@ export default {
       return this.$store.getters.loading;
     },
     formIsValid() {
-      return this.name !== '';
+      return this.editName !== '' && this.editIcon !== '';
     },
   },
   methods: {
@@ -54,6 +58,7 @@ export default {
       const editData = {
         id: this.category.id,
         name: this.editName,
+        icon: this.editIcon,
       };
       this.$store.dispatch('updateCategory', editData);
       this.onDismissDialog();
@@ -63,7 +68,8 @@ export default {
       this.resetForm();
     },
     resetForm() {
-      this.name = '';
+      this.editName = '';
+      this.editIcon = '';
     },
   },
 };

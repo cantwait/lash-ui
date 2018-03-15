@@ -15,7 +15,7 @@
             <v-tab-item
             :id="'tab-1'">
                 <v-card flat>
-                    <v-card-text>Sesiones del sistema</v-card-text>
+                    <lash-sessions></lash-sessions>
                 </v-card>
             </v-tab-item>
             <v-tab-item :id="'tab-2'">
@@ -27,6 +27,7 @@
     </v-layout>
 </template>
 <script>
+import Sessions from './dashboard/Sessions';
 import Queues from './dashboard/Queues';
 
 export default {
@@ -37,6 +38,7 @@ export default {
   },
   components: {
     'lash-queues': Queues,
+    'lash-sessions': Sessions,
   },
 };
 </script>

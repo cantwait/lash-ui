@@ -5,6 +5,7 @@ import Vue from 'vue';
 import Vuetify from 'vuetify';
 import * as moment from 'moment';
 import VuePusher from 'vue-pusher';
+import VueTimeago from 'vue-timeago';
 import 'vuetify/dist/vuetify.css';
 import 'font-awesome/css/font-awesome.css';
 import axios from 'axios';
@@ -39,6 +40,16 @@ Vue.use(Vuetify, {
     success: "#4caf50"
   },
 });
+
+Vue.use(VueTimeago, {
+  name: 'lash-timeago', // component name, `timeago` by default
+  locale: 'es-ES',
+  locales: {
+    // you will need json-loader in webpack 1
+    'es-ES': require('vue-timeago/locales/es-ES.json')
+  }
+});
+
 Vue.component('app-alert', AlertCmp);
 Vue.component('app-user-add-form-dialog', CreateUser);
 Vue.component('app-user-edit-form-dialog', EditUser);

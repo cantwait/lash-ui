@@ -3,9 +3,9 @@
     <v-flex xs12 sm12 md6>
       <v-card>
         <v-toolbar color="white" light>
-          <v-toolbar-title color="primary">Clientes en espera...</v-toolbar-title>
+          <v-toolbar-title color="primary">Sesiones Activas</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn :if="canAdd" @click="onNewQueue" color="primary" icon>
+          <v-btn :if="canAdd" @click="onNewSession" color="primary" icon>
             <v-icon>add</v-icon>
           </v-btn>
         </v-toolbar>
@@ -16,9 +16,16 @@
                 <v-icon v-bind:class="[iconClass]">{{ icon }}</v-icon>
               </v-list-tile-avatar>
               <v-list-tile-content>
-                <v-list-tile-title>{{ item.customer.name }}</v-list-tile-title>
-                <v-list-tile-sub-title>{{ item.customer.phone }}</v-list-tile-sub-title>
+                <v-list-tile-title>Session # {{ index + 1 }}</v-list-tile-title>
+                <v-list-tile-sub-title>
+                  <lash-timeago :since="item.createdAt" :time="item.createdAt" :auto-update="60"/>
+                </v-list-tile-sub-title>
               </v-list-tile-content>
+              <v-list-tile-action>
+                <v-btn icon ripple @click.stop="onOpenServiceDialog(item)">
+                  <v-icon color="black lighten-1">mode_edit</v-icon>
+                </v-btn>
+              </v-list-tile-action>
               <v-list-tile-action :if="canDelete">
                 <v-btn icon ripple @click.stop="onOpenDeleteDialog(item)">
                   <v-icon color="red lighten-1">delete</v-icon>
@@ -35,19 +42,18 @@
       <lash-delete-dialog :deleteDialog="isDeleteDialog" @on-action-performed="takeDeleteAction"></lash-delete-dialog>
     </template>
     <!-- new/edit queue  -->
-    <template v-if="isDialogCreateOpened">
-      <lash-add-customer :createDialogOpened="isDialogCreateOpened" @on-customer-added="takeCreateAction"/>
+    <template v-if="isEditDialog">
+      <lash-service-dialog :editDialogOpened="isEditDialog" :sessionId="session.id" @on-update-service="performEditAction"/>
     </template>
   </v-layout>
 </template>
 <script>
-// import CreateQueue from './CreateQueue';
-import AddCustomer from './AddCustomer';
 import utils from '../../utils';
+import EditSession from './EditSession';
 
-const QUEUE_CHANNEL = 'queues';
-const ON_NEW_QUEUE = 'onNewQueue';
-const ON_REMOVE_QUEUE = 'onQueueRemoved';
+const SESSION_CHANNEL = 'sessions';
+const ON_SESSION = 'onSession';
+const ON_SESSION_REMOVE = 'onSessionRemove';
 
 export default {
   data() {
@@ -55,9 +61,9 @@ export default {
       isDeleteDialog: false,
       isEditDialog: false,
       isDialogCreateOpened: false,
-      queue: null,
+      session: null,
       iconClass: 'grey lighten-1 white--text',
-      icon: 'local_offer',
+      icon: 'watch_later',
     };
   },
   computed: {
@@ -65,49 +71,51 @@ export default {
       return this.$store.getters.loading;
     },
     items() {
-      return this.$store.getters.queues;
+      return this.$store.getters.sessions;
     },
     canDelete() {
-      return this.$store.getters.isAdmin || this.$store.getters.isCashier;
+      return this.$store.getters.isAdmin;
     },
     canAdd() {
-      return this.$store.getters.isAdmin || this.$store.getters.isCashier;
+      return this.$store.getters.isAdmin
+        || this.$store.getters.isCashier
+        || this.$store.getters.isCollaborator;
+    },
+    currentUser() {
+      return this.$store.getters.user;
     },
   },
   created() {
     this.fetchData();
   },
   mounted() {
-    const channel = this.$pusher.subscribe(QUEUE_CHANNEL);
-    channel.bind(ON_NEW_QUEUE, (queue) => {
-      this.$store.commit('addQueue', queue);
+    const channel = this.$pusher.subscribe(SESSION_CHANNEL);
+    channel.bind(ON_SESSION, (session) => {
+      this.$store.commit('addOrUpdateSession', session);
     });
 
-    channel.bind(ON_REMOVE_QUEUE, (id) => {
-      this.$store.commit('removeQueue', id);
-    });
+    channel.bind(ON_SESSION_REMOVE, id => this.$store.commit('removeSession', id));
   },
   destroyed() {
-    this.$pusher.unsubscribe(QUEUE_CHANNEL);
+    this.$pusher.unsubscribe(SESSION_CHANNEL);
   },
   watch: {
     // call again the method if the route changes
     $route: 'fetchData',
   },
   methods: {
-    onNewQueue() {
-      utils.log('onNewQueue');
-      this.isDialogCreateOpened = true;
+    onNewSession() {
+      utils.log('onNewSession');
+      const session = {
+        owner: this.currentUser,
+      };
+      this.$store.dispatch('saveSession', session);
+      // this.isDialogCreateOpened = true;
     },
     onOpenDeleteDialog(item) {
-      this.queue = item;
+      this.session = item;
       utils.log('onOpenDeleteDialog');
       this.isDeleteDialog = !this.isDeleteDialog;
-    },
-    onOpenEditDialog(item) {
-      utils.log(`onOpenEditDialog: ${JSON.stringify(item)}`);
-      this.queue = item;
-      this.isEditDialog = !this.isEditDialog;
     },
     onLoadMore() {
       utils.log('Loading more');
@@ -115,24 +123,29 @@ export default {
     takeDeleteAction(result) {
       utils.log(`result: ${result}`);
       if (result) {
-        this.$store.dispatch('removeQueue', this.queue.id);
-        this.queue = null;
+        this.$store.dispatch('removeSession', this.session.id);
+        // this.session = null;
       }
       this.isDeleteDialog = !this.isDeleteDialog;
     },
-    takeCreateAction(result) {
-      this.isDialogCreateOpened = !this.isDialogCreateOpened;
+    performEditAction(result) {
+      this.isEditDialog = !this.isEditDialog;
       utils.log(`result: ${result}`);
       if (result) {
-        // TODO save category
+        // TODO save
       }
     },
     fetchData() {
-      this.$store.dispatch('getQueues');
+      this.$store.dispatch('getSessions');
+    },
+    onOpenServiceDialog(item) {
+      utils.log(`onOpenServiceDialog: ${JSON.stringify(item)}`);
+      this.session = item;
+      this.isEditDialog = !this.isEditDialog;
     },
   },
   components: {
-    'lash-add-customer': AddCustomer,
+    'lash-service-dialog': EditSession,
   },
 };
 </script>

@@ -9,6 +9,9 @@
             <v-flex x12>
               <v-text-field label="nombre" :counter="10" :rules="nameVal" v-model="name" required></v-text-field>
             </v-flex>
+            <v-flex x12>
+              <v-text-field label="Icono" v-model="icon" required></v-text-field>
+            </v-flex>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -27,8 +30,9 @@ export default {
   data() {
     return {
       name: '',
-      valName: [
-        v => v.length <= 10 || 'Max 25 caracteres',
+      icon: '',
+      nameVal: [
+        v => v.length <= 25 || 'Max 25 caracteres',
         v => v.length >= 3 || 'Min 3 caracteres',
         v => _.isEmpty(v.length) || 'Nombre no puede ser vacio',
       ],
@@ -45,7 +49,7 @@ export default {
       return this.$store.getters.loading;
     },
     formIsValid() {
-      return this.name !== '';
+      return this.name !== '' && this.icon !== '';
     },
   },
   methods: {
@@ -55,6 +59,7 @@ export default {
       }
       const newCategory = {
         name: this.name,
+        icon: this.icon,
       };
       this.$store.dispatch('saveCategory', newCategory);
       this.$emit('on-create-category', true);
@@ -66,6 +71,7 @@ export default {
     },
     resetForm() {
       this.name = '';
+      this.icon = '';
     },
   },
 };

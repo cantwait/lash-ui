@@ -7,12 +7,19 @@ export default {
     categories: [],
     products: [],
     pics: [],
+    productsxcategory: [],
   },
   mutations: {
     setCategories(state, payload) {
       const s = state;
       if (payload.length > 0) {
         s.categories = _.uniqBy(_.union(s.categories, payload), 'id');
+      }
+    },
+    setProductsPerCategory(state, payload) {
+      if (payload) {
+        const s = state;
+        s.productsxcategory = payload;
       }
     },
     setProducts(state, payload) {
@@ -104,6 +111,17 @@ export default {
       .catch(err => utils.log(`Error getting products: ${JSON.stringify(err)}`))
       .finally(() => commit('setLoading', false));
     },
+    getProductsPerCategory({ commit }, payload) {
+      commit('setLoading', true);
+      axios.get(`/categories/${payload}/products`)
+        .then((res) => {
+          if (res.status === 200 && res.data) {
+            commit('setProductsPerCategory', res.data);
+          }
+        })
+        .catch()
+        .finally(() => commit('setLoading', false));
+    },
     getCategories({ commit }, query) {
       if (query.page === 1) {
         commit('setCategories', []);
@@ -190,6 +208,7 @@ export default {
       commit('setLoading', true);
       axios.patch(`/categories/${payload.id}`, {
         name: payload.name,
+        icon: payload.icon,
       })
       .then((res) => {
         if (res.status === 200) {
@@ -257,6 +276,9 @@ export default {
     },
     pics(state) {
       return state.pics;
+    },
+    productsByCategory(state) {
+      return state.productsxcategory;
     },
   },
 };

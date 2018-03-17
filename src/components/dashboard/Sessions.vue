@@ -16,7 +16,7 @@
                 <v-icon v-bind:class="[iconClass]">{{ icon }}</v-icon>
               </v-list-tile-avatar>
               <v-list-tile-content>
-                <v-list-tile-title>Session # {{ index + 1 }}</v-list-tile-title>
+                <v-list-tile-title>Session # {{ index + 1 }} {{ item.customer ? item.customer.name : '' }}</v-list-tile-title>
                 <v-list-tile-sub-title>
                   <lash-timeago :since="item.createdAt" :time="item.createdAt" :auto-update="60"/>
                 </v-list-tile-sub-title>
@@ -28,7 +28,7 @@
               </v-list-tile-action>
               <v-list-tile-action :if="canDelete">
                 <v-btn icon ripple @click.stop="onOpenDeleteDialog(item)">
-                  <v-icon color="red lighten-1">delete</v-icon>
+                  <v-icon color="black lighten-1">delete</v-icon>
                 </v-btn>
               </v-list-tile-action>
             </v-list-tile>

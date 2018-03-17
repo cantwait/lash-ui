@@ -31,6 +31,9 @@
             <v-flex x12>
               <v-text-field :rules="specsVal" :counter="500" multi-line label="Especificaciones" placeholder="Defina las epecificaciones del producto acá" v-model="editSpecs"></v-text-field>
             </v-flex>
+            <v-flex x12>
+              <v-checkbox label="Oferta" v-model="editOffer"></v-checkbox>
+            </v-flex>
             <small>*Campo Obligatorio</small>
           </v-card-text>
           <v-card-actions>
@@ -54,6 +57,7 @@ export default {
       editDescription: this.product.description,
       editSpecs: this.product.specs,
       editCategory: this.product.category,
+      editOffer: this.product.offer,
       nameVal: [
         v => v.length <= 25 || 'Max 25 caracteres',
         v => v.length >= 2 || 'Min 2 caracteres',
@@ -107,6 +111,7 @@ export default {
         price: this.editPrice,
         specs: this.editSpecs,
         category: this.editCategory,
+        offer: this.editOffer,
       };
       this.$store.dispatch('updateProduct', editData);
       this.$emit('on-create-product', true);

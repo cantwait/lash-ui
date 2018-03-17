@@ -11,7 +11,12 @@ export default {
     addOrUpdateSession(state, payload) {
       if (payload) {
         const s = state;
-        s.sessions.push(payload);
+        const index = _.findIndex(s.sessions, { id: payload.id });
+        if (index !== -1) {
+          s.sessions.splice(index, 1, payload);
+        } else {
+          s.sessions.push(payload);
+        }
       }
     },
     addProductToSession(state, payload) {
@@ -72,6 +77,38 @@ export default {
       .finally(() => {
         commit('setLoading', false);
       });
+    },
+    updateSession({ commit, state }, payload) {
+      debugger;
+      commit('setLoading', true);
+      const currSession = _.find(state.sessions, { id: payload.sessionId });
+      if ('customer' in payload) {
+        currSession.customer = payload.customer;
+      }
+      if ('services' in payload) {
+        const accum = (sum, s) => sum + s.price;
+
+        const currUser = payload.user;
+        const services = _.forEach(payload.services,
+          (value) => { const s = value; s.responsible = currUser; });
+        let prevTotal = 0;
+        if (currSession.services.length > 0) {
+          const prevServices = currSession.services;
+          prevTotal = _.reduce(prevServices, accum, 0);
+        }
+
+        const total = _.reduce(services, accum, prevTotal);
+
+        currSession.services = services.concat(currSession.services);
+
+        currSession.total = total;
+      }
+      axios.patch(`/sessions/${payload.sessionId}`, currSession)
+        .then((res) => {
+          utils.log('status: %s', res.status);
+        })
+        .catch(err => utils.log('error: %s', JSON.stringify(err)))
+        .finally(() => commit('setLoading', false));
     },
     removeSession({ commit }, id) {
       commit('setLoading', true);

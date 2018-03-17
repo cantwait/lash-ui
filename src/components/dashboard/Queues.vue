@@ -19,9 +19,14 @@
                 <v-list-tile-title>{{ item.customer.name }}</v-list-tile-title>
                 <v-list-tile-sub-title>{{ item.customer.phone }}</v-list-tile-sub-title>
               </v-list-tile-content>
+              <v-list-tile-action>
+                <v-btn icon ripple @click="onCreateSession(item)">
+                  <v-icon color="black lighten-1">add_to_queue</v-icon>
+                </v-btn>
+              </v-list-tile-action>
               <v-list-tile-action :if="canDelete">
                 <v-btn icon ripple @click.stop="onOpenDeleteDialog(item)">
-                  <v-icon color="red lighten-1">delete</v-icon>
+                  <v-icon color="black lighten-1">delete</v-icon>
                 </v-btn>
               </v-list-tile-action>
             </v-list-tile>
@@ -73,6 +78,9 @@ export default {
     canAdd() {
       return this.$store.getters.isAdmin || this.$store.getters.isCashier;
     },
+    currentUser() {
+      return this.$store.getters.user;
+    },
   },
   created() {
     this.fetchData();
@@ -95,6 +103,15 @@ export default {
     $route: 'fetchData',
   },
   methods: {
+    onCreateSession(item) {
+      utils.log('creating session...: %s', JSON.stringify(item));
+      const session = {
+        owner: this.currentUser,
+        customer: item.customer,
+      };
+      this.$store.dispatch('saveSession', session);
+      this.$store.dispatch('removeQueue', item.id);
+    },
     onNewQueue() {
       utils.log('onNewQueue');
       this.isDialogCreateOpened = true;

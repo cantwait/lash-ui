@@ -5,11 +5,17 @@
         <v-tabs class="lash-tabs" icons-and-text centered dark color="primary">
             <v-tabs-slider color="black"></v-tabs-slider>
             <v-tab href="#tab-1" class="lash-tabs">
-                Sesiones
+                <v-chip
+                  >
+                    <strong>{{ sessions }}</strong>
+                </v-chip>
                 <v-icon>desktop_mac</v-icon>
             </v-tab>
             <v-tab href="#tab-2" class="lash-tabs">
-                Lista de Espera
+                <v-chip
+                  >
+                    <strong>{{ queues }}</strong>
+                </v-chip>
                 <v-icon>history</v-icon>
             </v-tab>
             <v-tab-item
@@ -35,6 +41,14 @@ export default {
     return {
       text: 'Hello',
     };
+  },
+  computed: {
+    sessions() {
+      return this.$store.getters.sessions.length;
+    },
+    queues() {
+      return this.$store.getters.queues.length;
+    },
   },
   components: {
     'lash-queues': Queues,

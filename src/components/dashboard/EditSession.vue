@@ -9,8 +9,8 @@
           <v-toolbar-title>Servicios</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
-            <v-btn dark flat @click.native="saveSession">
-              <v-icon>save</v-icon>
+            <v-btn v-if="canFinalize" dark flat @click.native="onFinalizeSession">
+              <v-icon>move_to_inbox</v-icon>
             </v-btn>
             <v-btn dark flat @click.native="onAddService">
               <v-icon>add_circle</v-icon>
@@ -19,6 +19,7 @@
         </v-toolbar>
         <v-list three-line subheader>
           <v-subheader>Detalles</v-subheader>
+          <v-divider/>
           <v-list-tile avatar>
             <v-list-tile-content>
                 <template v-if="isCustomerNull">
@@ -31,6 +32,10 @@
                     <span>( {{ session.customer.phone }} )</span>
                   </v-chip>
                 </template>
+                <v-chip
+                  >
+                    <strong>$&nbsp;{{ session.total }}</strong>
+                  </v-chip>
             </v-list-tile-content>
             <v-list-tile-action>
               <v-btn :if="isCustomerNull" icon ripple @click="onAddCustomer">
@@ -40,31 +45,26 @@
           </v-list-tile>
         </v-list>
         <v-layout>
-        <v-flex xs12 sm6 offset-sm3>
+        <v-flex >
           <v-card>
-          <v-subheader>Servicios</v-subheader>
-            <v-container fluid grid-list-xs>
-              <v-layout row wrap>
-                <v-flex
-                  xs4
-                  v-for="(service, n) in session.services"
-                  :key="n"
-                >
-                  <v-card color="blue-grey darken-2" class="white--text">
-                    <v-card-title primary-title>
-                      <div class="headline">Name of Product</div>
-                      <div>Description</div>
-                      <div>Price: ${{ service.price }}</div>
-                    </v-card-title>
-                    <v-card-actions>
-                      <v-btn flat dark>
-                        <v-icon>photo</v-icon>
-                      </v-btn>
-                    </v-card-actions>
-                  </v-card>
-                </v-flex>
-              </v-layout>
-            </v-container>
+            <v-divider/>
+            <v-subheader>Servicios</v-subheader>
+            <v-divider />
+            <v-list two-line>
+            <template v-for="(service, index) in session.services">
+              <v-list-tile :key="index">
+                <v-list-tile-content >
+                  <v-list-tile-title>{{ service.name }}</v-list-tile-title>
+                  <v-list-tile-sub-title class="text--primary">Descripcion: {{ service.description }}</v-list-tile-sub-title>
+                </v-list-tile-content>
+                <v-list-tile-action >
+                    <v-list-tile-action-text>Precio: ${{ service.price }}</v-list-tile-action-text>
+                </v-list-tile-action>
+              </v-list-tile>
+              <v-divider v-if="index + 1 < session.services.length" :key="service.id"></v-divider>
+          </template>
+        </v-list>
+
           </v-card>
         </v-flex>
       </v-layout>
@@ -76,7 +76,10 @@
     </template>
     <!-- products catalog -->
     <template v-if="isProductCatalogOpen">
-      <lash-product-catalog :isOpenDialog="isProductCatalogOpen" @on-value-picked="setService"></lash-product-catalog>
+      <lash-product-catalog :isOpenDialog="isProductCatalogOpen" @on-value-picked="setServices"></lash-product-catalog>
+    </template>
+    <template v-if="isRatingCatalogOpen">
+      <lash-session-rating :isOpenDialog="isRatingCatalogOpen" @on-rating-action="finalizeSession"/>
     </template>
   </v-layout>
 </template>
@@ -84,6 +87,7 @@
 // import { find } from 'lodash';
 import utils from '../../utils';
 import CustomersSearchCatalogVue from '../shared/CustomersSearchCatalog';
+import RatingSession from './RatingSession';
 import ProductCatalog from '../product/ProductCatalog';
 
 export default {
@@ -96,6 +100,7 @@ export default {
       widgets: false,
       isCatalogOpen: false,
       isProductCatalogOpen: false,
+      isRatingCatalogOpen: false,
     };
   },
   computed: {
@@ -109,11 +114,32 @@ export default {
       const session = this.$store.getters.getSessionById(this.$props.sessionId);
       return typeof session.customer === 'undefined' || session.customer === null;
     },
+    canFinalize() {
+      return this.$store.getters.isAdmin || this.$store.isCashier;
+    },
     customers() {
       return this.$store.getters.catalog;
     },
   },
+  watch: {
+    session: (newVal) => {
+      debugger;
+      if (!newVal) {
+        this.editDialogOpened = !this.editDialogOpened;
+      }
+    },
+  },
   methods: {
+    onFinalizeSession() {
+      utils.log('opening rating component!...');
+      this.isRatingCatalogOpen = !this.isRatingCatalogOpen;
+    },
+    finalizeSession(result) {
+      if (result.valid) {
+        // TODO finish session logic here...
+      }
+      this.isRatingCatalogOpen = !this.isRatingCatalogOpen;
+    },
     saveSession() {
       utils.log('saving session...');
     },
@@ -138,30 +164,38 @@ export default {
           sessionId: this.$props.sessionId,
           customer,
         };
-
-        this.$store.commit('addCustomerToSession', payload);
+        this.$store.dispatch('updateSession', payload);
+        // this.$store.commit('addCustomerToSession', payload);
       }
     },
     onAddService() {
       this.isProductCatalogOpen = !this.isProductCatalogOpen;
     },
-    setService(product) {
+    setServices(products) {
       this.isProductCatalogOpen = !this.isProductCatalogOpen;
-      if (product) {
-        utils.log('adding product to session... %s', JSON.stringify(product));
+      if (products) {
+        utils.log('adding product to session... %s', JSON.stringify(products));
         const payload = {
-          sessionId: this.$props.sesionId,
-          product,
+          sessionId: this.$props.sessionId,
+          services: products,
+          user: this.currentUser,
         };
-
-        this.$store.commit('addProductToSession', payload);
+        this.$store.dispatch('updateSession', payload);
+        // this.$store.commit('addProductToSession', payload);
       }
     },
   },
   components: {
     'lash-customers-catalog': CustomersSearchCatalogVue,
     'lash-product-catalog': ProductCatalog,
+    'lash-session-rating': RatingSession,
   },
 };
 
 </script>
+
+<style scoped>
+.list {
+  padding: 8px 0 0 0;
+}
+</style>

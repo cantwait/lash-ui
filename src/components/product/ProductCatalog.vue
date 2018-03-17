@@ -1,5 +1,5 @@
 <template>
-  <v-layout row justify-center>
+  <v-layout >
     <v-dialog  v-model="isOpenDialog" fullscreen transition="dialog-bottom-transition" :overlay="false">
       <v-card height="100%">
         <v-toolbar dark color="primary">
@@ -12,11 +12,13 @@
           <v-toolbar-title>Categoria de Products</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
-            <v-btn dark flat @click.native="toggle = !toggle">action</v-btn>
+            <v-btn dark flat :disabled="selected.length === 0" @click="onAddProductsSelected">
+              <v-icon>check_circle</v-icon>
+            </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-card height="100%" v-if="!toggle" transition="slide-x-transition">
-          <v-container fluid grid-list-sm>
+        <v-card height="100%" v-if="!toggle" >
+          <v-container fluid grid-list-sm align-baseline>
             <v-layout row wrap>
               <v-flex
                 xs4
@@ -26,29 +28,42 @@
                 <v-card tile>
                   <v-card-media @click="onCatTapped(cat)"
                     :src="cat.icon"
-                    height="150"
+                    height="160px"
                   >
                   </v-card-media>
-                  <v-card-title primary-title>
-                  <div>
-                    <div>{{ cat.name }}</div>
-                  </div>
+                  <v-card-title >
+                    {{ cat.name }}
                 </v-card-title>
                 </v-card>
               </v-flex>
             </v-layout>
           </v-container>
         </v-card>
-        <v-card v-else transition="slide-x-transition">
-          <v-list three-line>
+        <v-card v-else >
           <template v-for="(p, index) in productByCategory">
-            <v-list-tile-content :key="index">
-              <v-list-tile-title v-html="p.name"></v-list-tile-title>
-              <v-list-tile-sub-title>Descripcion: {{ p.description }}</v-list-tile-sub-title>
-              <v-list-tile-sub-title>Precio: ${{ p.price }}</v-list-tile-sub-title>
-            </v-list-tile-content>
+            <v-list avatar ripple three-line :key="p.id">
+              <v-list-tile >
+                <v-list-tile-action>
+                  <v-checkbox
+                    :value="p"
+                    :id="p.id"
+                    v-model="selected"
+                  ></v-checkbox>
+                </v-list-tile-action>
+                <v-list-tile-content >
+                  <v-list-tile-title>{{ p.name }}</v-list-tile-title>
+                  <v-list-tile-sub-title class="text--primary">Descripcion: {{ p.description }}</v-list-tile-sub-title>
+                </v-list-tile-content>
+                <v-list-tile-action >
+                    <v-list-tile-action-text>Precio: ${{ p.price }}</v-list-tile-action-text>
+                </v-list-tile-action>
+              </v-list-tile>
+              <v-divider v-if="index + 1 < productByCategory.length" ></v-divider>
+            </v-list>
           </template>
-        </v-list>
+          <template v-if="productByCategory.length === 0">
+            No hay resultados...
+          </template>
         </v-card>
       </v-card>
     </v-dialog>
@@ -66,6 +81,7 @@ export default {
       icon: 'person',
       toggle: false,
       category: null,
+      selected: [],
     };
   },
   computed: {
@@ -103,10 +119,18 @@ export default {
       utils.log('cat tapped!: %s', JSON.stringify(cat));
       this.$store.dispatch('getProductsPerCategory', cat.id);
     },
+    onAddProductsSelected() {
+      debugger;
+      if (this.selected.length > 0) {
+        this.$emit('on-value-picked', this.selected);
+      }
+    },
   },
 };
 
 </script>
 <style scoped>
-
+.card__title {
+  padding: 10px;
+}
 </style>

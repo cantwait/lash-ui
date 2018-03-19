@@ -58,59 +58,62 @@ Vue.component('lash-create-category', CreateCategory);
 Vue.component('lash-edit-category', EditCategory);
 Vue.config.productionTip = false;
 
-const baseURL = process.env.NODE_ENV === 'production' ? 'https://lash-api.ddns.net/api/v1' : 'http://localhost:3000/api/v1';
+const baseURL = process.env.NODE_ENV === 'production' ? 'https://lash-api.ddns.net/api/v1' : 'http://192.168.1.112:3000/api/v1';
 
 axios.defaults.baseURL = baseURL;
 axios.defaults.headers.get.Accepts = 'application/json';
 
 axios.interceptors.request.use((config) => {
-  utils.log(`Request Interceptor ${JSON.stringify(config)}`);
+  let originalRequest = config;
   const token = store.getters.token;
-  if(token) {
+  if (token) {
     const now = moment();
     const tokenExpires = moment(token.expiresIn);
-    if(now.isAfter(tokenExpires)){
-      // need to refresh
+    const isTokenExpired = now.isAfter(tokenExpires);
+    if (isTokenExpired) {
       const axiosRefresh = axios.create({
         baseURL,
       });
-      const currUser = store.getters.user;
-      const body = {
-        email: currUser.email,
-        refreshToken: token.refreshToken,
-      }
-      axiosRefresh.post('/auth/refresh-token', body)
-        .then((res) => {
-          if(res.data){
-            store.commit('setToken',res.data);
-            config.headers.authorization = 'Bearer ' + store.getters.token.accessToken;
-          }
+      return issueToken(token)
+        .then((response) => {
+          store.commit('setToken',response.data);
+          originalRequest.headers.authorization = 'Bearer ' + response.data.accessToken;
+          return Promise.resolve(originalRequest);
         })
-        .catch((err) => {
-          utils.log(`Error: ${JSON.stringify(err)}`);
-        })
-        .finally(() => {
-          return config;
-        });
     } else {
       config.headers.authorization = 'Bearer ' + token.accessToken;
-      return config;
     }
-  }else{
-    return config;
   }
+  return config;
+}, (err) => {
+  return Promise.reject(err);
 });
+
+function issueToken(token) {
+  debugger;
+  return new Promise((resolve,reject) => {
+    const axiosRefresh = axios.create({
+      baseURL,
+    });
+    const currUser = store.getters.user;
+    const body = {
+      email: currUser.email,
+      refreshToken: token.refreshToken,
+    }
+    return axiosRefresh.post('/auth/refresh-token', body)
+        .then((res) => {
+          resolve(res);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+  });
+}
 
 axios.interceptors.response.use((res) => {
-  utils.log(`Response Interceptor: ${JSON.stringify(res)}`);
+  utils.log('Response Interceptor: %s', res);
   return res;
 });
-
-// axios.defaults.headers.common.Authorization = ;
-// axios.defaults.headers.post['Content-Type'] = 'application/json';
-/* eslint-disable no-new */
-
-
 
 new Vue({
   el: '#app',

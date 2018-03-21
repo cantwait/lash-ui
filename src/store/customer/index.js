@@ -6,6 +6,7 @@ export default {
   state: {
     customers: [],
     customersCatalog: [],
+    sessionsByCustomer: [],
   },
   mutations: {
     setCatalog(state, payload) {
@@ -14,10 +15,16 @@ export default {
         s.customersCatalog = payload;
       }
     },
+    setSessionsByCustomer(state, payload) {
+      if (payload) {
+        const s = state;
+        s.sessionsByCustomer = payload;
+      }
+    },
     setCustomers(state, payload) {
       if (payload) {
         const s = state;
-        s.customers = payload;
+        s.customers = _.uniqBy(_.union(s.customers, payload), 'id');
       }
     },
     addCustomer(state, payload) {
@@ -67,6 +74,13 @@ export default {
         .finally(() => {
           commit('setLoading', false);
         });
+    },
+    getSessionsByCustomer({ commit }, customerId) {
+      commit('setLoading', true);
+      axios.get(`/customers/${customerId}/sessions`)
+        .then(res => commit('setSessionsByCustomer', res.data))
+        .catch(err => utils.log('error: %s', err))
+        .finally(() => commit('setLoading', false));
     },
     findCustomersLike({ commit }, name) {
       commit('setLoading', true);
@@ -128,6 +142,9 @@ export default {
     },
     catalog(state) {
       return state.customersCatalog;
+    },
+    getSessionsByCustomer(state) {
+      return state.sessionsByCustomer;
     },
   },
 };

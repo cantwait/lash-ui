@@ -2,22 +2,22 @@
   <v-layout row justify-center>
     <v-dialog v-model="editDialogOpened" fullscreen transition="dialog-bottom-transition" :overlay="false">
       <v-card>
-        <v-toolbar dark color="primary">
-          <v-btn icon @click.native="onCloseDialog" dark>
+        <v-toolbar light color="primary">
+          <v-btn icon @click.native="onCloseDialog" >
             <v-icon>close</v-icon>
           </v-btn>
           <v-toolbar-title>Servicios</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
-            <v-btn v-if="canFinalize" dark flat @click.native="onFinalizeSession">
+            <v-btn v-if="canFinalize"  flat @click.native="onFinalizeSession">
               <v-icon>move_to_inbox</v-icon>
             </v-btn>
-            <v-btn dark flat @click.native="onAddService">
+            <v-btn  flat @click.native="onAddService">
               <v-icon>add_circle</v-icon>
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-list three-line subheader>
+        <v-list subheader>
           <v-subheader>Detalles</v-subheader>
           <v-divider/>
           <v-list-tile avatar>
@@ -32,16 +32,25 @@
                     <span>( {{ session.customer.phone }} )</span>
                   </v-chip>
                 </template>
-                <v-chip
-                  >
-                    <strong>$&nbsp;{{ session.total }}</strong>
-                  </v-chip>
             </v-list-tile-content>
             <v-list-tile-action>
-              <v-btn :if="isCustomerNull" icon ripple @click="onAddCustomer">
+              <v-btn v-if="isCustomerNull && caddAddCustomer" icon ripple @click="onAddCustomer">
                 <v-icon color="black lighten-1">edit</v-icon>
               </v-btn>
             </v-list-tile-action>
+            <v-list-tile-action>
+              <v-btn v-if="!isCustomerNull" icon ripple @click="onAddPhoto">
+                <v-icon color="black lighten-1">camera_enhance</v-icon>
+              </v-btn>
+            </v-list-tile-action>
+          </v-list-tile>
+          <v-list-tile avatar>
+            <v-list-tile-content>
+                <v-chip
+                  >
+                    <strong>$&nbsp;{{ session.total }}</strong>
+                </v-chip>
+            </v-list-tile-content>
           </v-list-tile>
         </v-list>
         <v-layout>
@@ -50,21 +59,26 @@
             <v-divider/>
             <v-subheader>Servicios</v-subheader>
             <v-divider />
-            <v-list two-line>
-            <template v-for="(service, index) in session.services">
-              <v-list-tile :key="index">
+            <v-list two-line v-for="(service, index) in session.services" :key="index">
+              <v-list-tile>
                 <v-list-tile-content >
                   <v-list-tile-title>{{ service.name }}</v-list-tile-title>
                   <v-list-tile-sub-title class="text--primary">Descripcion: {{ service.description }}</v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action >
+                    <v-list-tile-action-text class="lash__list__tile__action__text">{{ service.responsible.name }}</v-list-tile-action-text>
+                </v-list-tile-action>
+                <v-list-tile-action >
                     <v-list-tile-action-text>Precio: ${{ service.price }}</v-list-tile-action-text>
                 </v-list-tile-action>
+                <v-list-tile-action v-if="canFinalize">
+                  <v-btn icon ripple @click="onRemoveProduct(service)">
+                    <v-icon>delete</v-icon>
+                  </v-btn>
+                </v-list-tile-action>
               </v-list-tile>
-              <v-divider v-if="index + 1 < session.services.length" :key="service.id"></v-divider>
-          </template>
-        </v-list>
-
+              <v-divider v-if="index + 1 < session.services.length"></v-divider>
+            </v-list>
           </v-card>
         </v-flex>
       </v-layout>
@@ -81,14 +95,21 @@
     <template v-if="isRatingCatalogOpen">
       <lash-session-rating :isOpenDialog="isRatingCatalogOpen" @on-rating-action="finalizeSession"/>
     </template>
+    <!-- delete diaglo -->
+    <template v-if="isDeleteDialog">
+      <lash-delete-dialog :deleteDialog="isDeleteDialog" @on-action-performed="onProductRemoved"></lash-delete-dialog>
+    </template>
   </v-layout>
 </template>
 <script>
 // import { find } from 'lodash';
 import utils from '../../utils';
+import DeleteDialog from '../shared/DeleteDialog';
 import CustomersSearchCatalogVue from '../shared/CustomersSearchCatalog';
 import RatingSession from './RatingSession';
 import ProductCatalog from '../product/ProductCatalog';
+
+const STATE_CLOSED = 'closed';
 
 export default {
   props: ['editDialogOpened', 'sessionId'],
@@ -101,6 +122,9 @@ export default {
       isCatalogOpen: false,
       isProductCatalogOpen: false,
       isRatingCatalogOpen: false,
+      isPictureDialogOpen: false,
+      isDeleteDialog: false,
+      productIdRemoved: null,
     };
   },
   computed: {
@@ -120,25 +144,45 @@ export default {
     customers() {
       return this.$store.getters.catalog;
     },
+    caddAddCustomer() {
+      return this.$store.getters.isCashier || this.$store.getters.isAdmin;
+    },
   },
   watch: {
     session: (newVal) => {
-      debugger;
       if (!newVal) {
         this.editDialogOpened = !this.editDialogOpened;
       }
     },
   },
   methods: {
+    onProductRemoved() {
+      this.isDeleteDialog = !this.isDeleteDialog;
+      const payload = {
+        sessionId: this.$props.sessionId,
+        serviceRemove: this.serviceRemove,
+      };
+      this.$store.dispatch('updateSession', payload);
+      this.serviceRemove = null;
+    },
+    onRemoveProduct(service) {
+      this.serviceRemove = service;
+      this.isDeleteDialog = !this.isDeleteDialog;
+    },
     onFinalizeSession() {
       utils.log('opening rating component!...');
       this.isRatingCatalogOpen = !this.isRatingCatalogOpen;
     },
     finalizeSession(result) {
-      if (result.valid) {
-        // TODO finish session logic here...
-      }
+      const payload = {
+        sessionId: this.$props.sessionId,
+        state: STATE_CLOSED,
+        rating: result.rating,
+        comment: result.comment,
+      };
+      this.$store.dispatch('updateSession', payload);
       this.isRatingCatalogOpen = !this.isRatingCatalogOpen;
+      this.$emit('on-update-service', false);
     },
     saveSession() {
       utils.log('saving session...');
@@ -165,8 +209,10 @@ export default {
           customer,
         };
         this.$store.dispatch('updateSession', payload);
-        // this.$store.commit('addCustomerToSession', payload);
       }
+    },
+    onAddPhoto() {
+      utils.log('adding photo...');
     },
     onAddService() {
       this.isProductCatalogOpen = !this.isProductCatalogOpen;
@@ -181,7 +227,6 @@ export default {
           user: this.currentUser,
         };
         this.$store.dispatch('updateSession', payload);
-        // this.$store.commit('addProductToSession', payload);
       }
     },
   },
@@ -189,6 +234,7 @@ export default {
     'lash-customers-catalog': CustomersSearchCatalogVue,
     'lash-product-catalog': ProductCatalog,
     'lash-session-rating': RatingSession,
+    'lash-delete-dialog': DeleteDialog,
   },
 };
 
@@ -197,5 +243,8 @@ export default {
 <style scoped>
 .list {
   padding: 8px 0 0 0;
+}
+.lash__list__tile__action__text {
+  padding: 0 10px 0 0;
 }
 </style>

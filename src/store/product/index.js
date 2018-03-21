@@ -196,6 +196,8 @@ export default {
         description: payload.description,
         specs: payload.specs,
         category: payload.category,
+        generateFee: payload.generateFee,
+        offer: payload.offer,
       })
       .then((res) => {
         commit('updateProducts', res.data);

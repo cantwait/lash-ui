@@ -52,7 +52,8 @@
               </v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
-          <v-list-tile v-else :key="i+30" @click.stop="onLogout">
+        </template>
+        <v-list-tile v-if="isUserLoggedIn" @click.stop="onLogout">
             <v-list-tile-action>
               <v-icon>fa-sign-out</v-icon>
             </v-list-tile-action>
@@ -62,7 +63,6 @@
               </v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
-        </template>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar color="primary" app>
@@ -117,27 +117,36 @@ export default {
         { text: 'Entrar', link: '/signin', icon: 'fa-sign-in' },
       ];
       if (this.isUserLoggedIn) {
-        menus = [
-          { text: 'Home', link: '/', icon: 'fa-home' },
-          {
-            text: 'Admin',
-            icon: 'fa-lock',
-            active: false,
-            children: [
-              { text: 'Usuarios', link: '/users', icon: 'fa-users' },
-              { text: 'Servicios', link: '/services', icon: 'fa fa-dropbox' },
-              { text: 'Categorias', link: '/categories', icon: 'fa fa-tags' },
-              { text: 'Clientes', link: '/customers', icon: 'fa-users' },
-            ],
-          },
-        ];
+        if (this.isAdmin) {
+          menus = [
+            { text: 'Home', link: '/', icon: 'fa-home' },
+            { text: 'Perfil', link: '/profile', icon: 'fa-user-circle' },
+            {
+              text: 'Admin',
+              icon: 'fa-lock',
+              active: false,
+              children: [
+                { text: 'Usuarios', link: '/users', icon: 'fa-users' },
+                { text: 'Servicios', link: '/services', icon: 'fa fa-dropbox' },
+                { text: 'Categorias', link: '/categories', icon: 'fa fa-tags' },
+                { text: 'Clientes', link: '/customers', icon: 'fa-users' },
+              ],
+            },
+          ];
+        } else {
+          menus = [
+            { text: 'Home', link: '/', icon: 'fa-home' },
+            { text: 'Perfil', link: '/profile', icon: 'fa-user-circle' },
+          ];
+        }
       }
       return menus;
     },
     isUserLoggedIn() {
-      const isUser = this.$store.getters.user !== null && this.$store.getters.token !== undefined;
-      const isToken = this.$store.getters.token !== null && this.$store.getters.token !== undefined;
-      return isUser && isToken;
+      return this.$store.getters.user && this.$store.getters.token;
+    },
+    isAdmin() {
+      return this.$store.getters.isAdmin;
     },
   },
   methods: {

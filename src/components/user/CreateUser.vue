@@ -25,7 +25,16 @@
               >
               </v-select>
             </v-flex>
-            <v-flex xs12>
+            <v-flex x12>
+              <v-text-field label="Telefono" :rules="phoneVal" :counter="8" type="tel" v-model="phone" required></v-text-field>
+            </v-flex>
+            <v-flex x12>
+              <v-text-field label="Dirección" :rules="addressVal" :counter="100" v-model="address" required></v-text-field>
+            </v-flex>
+            <v-flex x12 v-if="role === 'user'">
+              <v-text-field label="% comisión" :rules="feeVal" min="0" max="10" type="number" v-model.number="fee" required></v-text-field>
+            </v-flex>
+            <!-- <v-flex xs12>
               <v-btn raised class="primary" @click="onPickFile">Subir Imagen</v-btn>
               <input
                 type="file"
@@ -33,10 +42,10 @@
                 ref="fileInput"
                 accept="image/*"
                 @change="onFilePicked">
-            </v-flex>
-            <v-flex x12>
+            </v-flex> -->
+            <!-- <v-flex x12>
               <img :src="imageURL">
-            </v-flex>
+            </v-flex> -->
             <small>*Campo Obligatorio</small>
           </v-card-text>
           <v-card-actions>
@@ -57,6 +66,9 @@ export default {
       name: '',
       email: '',
       role: '',
+      address: '',
+      phone: '',
+      fee: 0,
       roles: [
         {
           value: 'admin',
@@ -79,6 +91,18 @@ export default {
       roleVal: [
         v => !_.isNull(v) || 'Debe seleccionar un rol',
       ],
+      phoneVal: [
+        v => v.length <= 8 || 'Max 8 caracteres',
+        v => v.length >= 7 || 'Min 7 caracteres',
+      ],
+      addressVal: [
+        v => v.length <= 100 || 'Max 100 caracteres',
+        v => v.length >= 3 || 'Min 3 caracteres',
+      ],
+      feeVal: [
+        v => v <= 10 || 'Valor maximo 10%',
+        v => v > -1 || 'Valor no puede ser negativo',
+      ],
     };
   },
   computed: {
@@ -97,7 +121,16 @@ export default {
     formIsValid() {
       return this.name !== '' &&
       this.email !== '' &&
-      this.role !== '';
+      this.role !== '' &&
+      this.address !== '' &&
+      this.phone !== '';
+    },
+  },
+  watch: {
+    role(val) {
+      if (val && val !== 'user') {
+        this.fee = 0;
+      }
     },
   },
   methods: {
@@ -108,8 +141,10 @@ export default {
       const newUserData = {
         email: this.email,
         role: this.role,
-        picture: this.imageURL,
         name: this.name,
+        phone: this.phone,
+        address: this.address,
+        fee: this.fee,
       };
       this.$store.dispatch('saveUser', newUserData);
       this.$store.commit('setImageUrl', '');
@@ -139,6 +174,8 @@ export default {
       this.name = '';
       this.email = '';
       this.role = '';
+      this.phone = '';
+      this.address = '';
     },
   },
 };

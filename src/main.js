@@ -6,6 +6,7 @@ import Vuetify from 'vuetify';
 import * as moment from 'moment';
 import VuePusher from 'vue-pusher';
 import VueTimeago from 'vue-timeago';
+import VueFilter from 'vue-filter';
 import 'vuetify/dist/vuetify.css';
 import 'font-awesome/css/font-awesome.css';
 import axios from 'axios';
@@ -49,6 +50,8 @@ Vue.use(VueTimeago, {
     'es-ES': require('vue-timeago/locales/es-ES.json')
   }
 });
+
+Vue.use(VueFilter);
 
 Vue.component('app-alert', AlertCmp);
 Vue.component('app-user-add-form-dialog', CreateUser);

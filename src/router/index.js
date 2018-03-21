@@ -7,6 +7,7 @@ import Users from '@/components/user/Users';
 import Categories from '@/components/product/Categories';
 import Customers from '@/components/customer/Customers';
 import Products from '@/components/product/Products';
+import Profile from '@/components/shared/Profile';
 import AuthGuard from './auth.guard';
 
 Vue.use(Router);
@@ -51,6 +52,12 @@ export default new Router({
       path: '/services',
       name: 'Services',
       component: Products,
+      beforeEnter: AuthGuard,
+    },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: Profile,
       beforeEnter: AuthGuard,
     },
   ],

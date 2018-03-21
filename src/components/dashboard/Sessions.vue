@@ -5,7 +5,7 @@
         <v-toolbar color="white" light>
           <v-toolbar-title color="primary">Sesiones Activas</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn :if="canAdd" @click="onNewSession" color="primary" icon>
+          <v-btn v-if="canAdd" @click="onNewSession" color="primary" icon>
             <v-icon>add</v-icon>
           </v-btn>
         </v-toolbar>
@@ -26,7 +26,7 @@
                   <v-icon color="black lighten-1">mode_edit</v-icon>
                 </v-btn>
               </v-list-tile-action>
-              <v-list-tile-action :if="canDelete">
+              <v-list-tile-action v-if="canDelete">
                 <v-btn icon ripple @click.stop="onOpenDeleteDialog(item)">
                   <v-icon color="black lighten-1">delete</v-icon>
                 </v-btn>

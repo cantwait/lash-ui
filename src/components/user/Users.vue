@@ -14,13 +14,18 @@
                 <v-list-tile-sub-title>{{ item.email }}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-action>
+                <v-btn icon ripple @click.stop="onOpenSessions(item)">
+                  <v-icon color="black lighten-1">list</v-icon>
+                </v-btn>
+              </v-list-tile-action>
+              <v-list-tile-action>
                 <v-btn icon ripple @click.stop="onOpenEditDialog(item)">
-                  <v-icon color="blue lighten-1">edit</v-icon>
+                  <v-icon color="black lighten-1">edit</v-icon>
                 </v-btn>
               </v-list-tile-action>
               <v-list-tile-action>
                 <v-btn icon ripple @click.stop="onOpenDeleteDialog(item)">
-                  <v-icon color="red lighten-1">delete</v-icon>
+                  <v-icon color="black lighten-1">delete</v-icon>
                 </v-btn>
               </v-list-tile-action>
             </v-list-tile>
@@ -61,62 +66,83 @@
     </v-dialog>
     <!-- new/edit user  -->
     <app-user-add-form-dialog/>
-    <template v-if="user">
-      <app-user-edit-form-dialog :user="user"/>
+    <template v-if="dialogEdit && user">
+      <app-user-edit-form-dialog :isEditDialogOpen="dialogEdit" @on-edit-action="onUserEdited" :user="user"/>
+    </template>
+    <!-- sessions history dialog -->
+    <template v-if="isSessionDialogOpened">
+      <lash-user-sessions :sessionsDialog="isSessionDialogOpened" :user="user" @on-action-performed="onSessionDialogAction"></lash-user-sessions>
     </template>
   </v-layout>
 </template>
 <script>
-  export default {
-    data() {
-      return {
-        userToDelete: null,
-        dialogDelete: false,
-        user: null,
-        iconClass: 'grey lighten-1 white--text',
-        icon: 'person',
-        query: {
-          page: 1,
-          perPage: 5,
-        },
-      };
-    },
-    computed: {
-      loading() {
-        return this.$store.getters.loading;
+import UserSessions from './UserSessions';
+
+export default {
+  data() {
+    return {
+      userToDelete: null,
+      dialogDelete: false,
+      dialogEdit: false,
+      user: null,
+      iconClass: 'grey lighten-1 white--text',
+      icon: 'person',
+      isSessionDialogOpened: false,
+      query: {
+        page: 1,
+        perPage: 5,
       },
-      users() {
-        return this.$store.getters.users;
-      },
+    };
+  },
+  computed: {
+    loading() {
+      return this.$store.getters.loading;
     },
-    created() {
-      if (this.query.page !== 1) {
-        this.query.page = 1;
+    users() {
+      return this.$store.getters.users;
+    },
+  },
+  created() {
+    if (this.query.page !== 1) {
+      this.query.page = 1;
+    }
+    this.$store.dispatch('getUsers', this.query);
+  },
+  methods: {
+    onOpenSessions(item) {
+      this.user = item;
+      this.isSessionDialogOpened = !this.isSessionDialogOpened;
+    },
+    onSessionDialogAction() {
+      this.isSessionDialogOpened = !this.isSessionDialogOpened;
+    },
+    onDeletePerson() {
+      if (this.userToDelete) {
+        this.$store.dispatch('deleteUser', this.userToDelete);
+        this.dialogDelete = !this.dialogDelete;
       }
+    },
+    onOpenEditDialog(editUser) {
+      this.user = editUser;
+      this.dialogEdit = !this.dialogEdit;
+    },
+    onUserEdited() {
+      this.dialogEdit = !this.dialogEdit;
+    },
+    onLoadMore() {
+      this.query.page += 1;
       this.$store.dispatch('getUsers', this.query);
     },
-    methods: {
-      onDeletePerson() {
-        if (this.userToDelete) {
-          this.$store.dispatch('deleteUser', this.userToDelete);
-          this.dialogDelete = !this.dialogDelete;
-        }
-      },
-      onOpenEditDialog(editUser) {
-        this.user = editUser;
-        this.$store.commit('setEditUserDialog', true);
-      },
-      onLoadMore() {
-        this.query.page += 1;
-        this.$store.dispatch('getUsers', this.query);
-      },
-      onOpenDeleteDialog(selectedUser) {
-        this.dialogDelete = !this.dialogDelete;
-        this.userToDelete = selectedUser.id;
-      },
-      onNewUser() {
-        this.$store.commit('setNewUserDialog', true);
-      },
+    onOpenDeleteDialog(selectedUser) {
+      this.dialogDelete = !this.dialogDelete;
+      this.userToDelete = selectedUser.id;
     },
-  };
+    onNewUser() {
+      this.$store.commit('setNewUserDialog', true);
+    },
+  },
+  components: {
+    'lash-user-sessions': UserSessions,
+  },
+};
 </script>

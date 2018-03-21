@@ -1,5 +1,5 @@
 <template>
-  <v-dialog v-model="isOpenDialog" persistent max-width="500px">
+  <v-dialog v-model="isEditDialogOpen" persistent max-width="500px">
       <form @submit.prevent="onSaveUser">
         <v-card>
           <v-card-title>
@@ -7,14 +7,14 @@
           </v-card-title>
           <v-card-text>
             <v-flex x12>
-              <v-text-field label="nombre" :rules="nameVal" :counter="20" v-model="data.name" required></v-text-field>
+              <v-text-field label="nombre" :rules="nameVal" :counter="20" v-model="editName" required></v-text-field>
             </v-flex>
             <v-flex x12>
-              <v-text-field label="Email" v-model="data.email" required></v-text-field>
+              <v-text-field label="Email" v-model="editEmail" required></v-text-field>
             </v-flex>
             <v-flex x12>
               <v-select
-                v-model="data.role"
+                v-model="editRol"
                 label="Seleccione el rol"
                 required
                 :items="roles"
@@ -22,6 +22,15 @@
 
               >
               </v-select>
+            </v-flex>
+            <v-flex x12>
+              <v-text-field label="Telefono" :rules="phoneVal" :counter="8" type="tel" v-model="editPhone" required></v-text-field>
+            </v-flex>
+            <v-flex x12>
+              <v-text-field label="Dirección" :rules="addressVal" :counter="100" v-model="editAddress" required></v-text-field>
+            </v-flex>
+            <v-flex x12 v-if="editRol === 'user'">
+              <v-text-field label="% comisión" :rules="feeVal" min="0" max="10" type="number" v-model.number="editFee" required></v-text-field>
             </v-flex>
             <!-- <v-flex xs12>
               <v-btn raised class="primary" @click="onPickFile">Subir Imagen</v-btn>
@@ -50,12 +59,15 @@
 import _ from 'lodash';
 
 export default {
-  props: ['user'],
+  props: ['user', 'isEditDialogOpen'],
   data() {
     return {
       editName: this.user.name,
-      editMail: this.user.mail,
+      editEmail: this.user.email,
       editRol: this.user.role,
+      editPhone: this.user.phone,
+      editAddress: this.user.address,
+      editFee: this.user.fee,
       roles: [
         {
           value: 'admin',
@@ -71,12 +83,26 @@ export default {
         },
       ],
       nameVal: [
-        v => v.length <= 20 || 'Max 20 caracteres',
-        v => v.length >= 3 || 'Min 3 caracteres',
+        v => (v && v.length <= 20) || 'Max 20 caracteres',
+        v => (v && v.length >= 3) || 'Min 3 caracteres',
         v => _.isEmpty(v.length) || 'Nombre no puede ser vacio',
       ],
       roleVal: [
         v => !_.isNull(v) || 'Debe seleccionar un rol',
+      ],
+      phoneVal: [
+        v => !!v || 'Telefono es requerido',
+        v => (v && v.length) <= 8 || 'Max 8 caracteres',
+        v => (v && v.length) >= 7 || 'Min 7 caracteres',
+      ],
+      addressVal: [
+        v => !!v || 'La dirección es requerida',
+        v => (v && v.length <= 100) || 'Max 100 caracteres',
+        v => (v && v.length >= 3) || 'Min 3 caracteres',
+      ],
+      feeVal: [
+        v => v <= 10 || 'Valor maximo 10%',
+        v => v > -1 || 'Valor no puede ser negativo',
       ],
     };
   },
@@ -94,17 +120,11 @@ export default {
       return this.$store.getters.imageURL;
     },
     formIsValid() {
-      return this.name !== '' &&
-      this.email !== '' &&
-      this.role !== '';
-    },
-    data() {
-      return {
-        id: this.user.id,
-        name: this.user.name,
-        email: this.user.email,
-        role: this.user.role,
-      };
+      return this.editName !== '' &&
+      this.editEmail !== '' &&
+      this.editRol !== '' &&
+      this.editAddress !== '' &&
+      this.editPhone !== '';
     },
   },
   methods: {
@@ -113,33 +133,23 @@ export default {
         return;
       }
       const editData = {
-        id: this.data.id,
-        email: this.data.email,
-        role: this.data.role,
-        // picture: this.imageURL,
-        name: this.data.name,
+        id: this.user.id,
+        email: this.editEmail,
+        role: this.editRol,
+        name: this.editName,
+        address: this.editAddress,
+        phone: this.editPhone,
+        fee: this.editFee,
       };
       this.$store.dispatch('updateUser', editData);
-      // this.$store.commit('setImageUrl', '');
-      // this.$store.commit('setImageResized', '');
+
+      this.$emit('on-edit-action', true);
     },
     onDismissDialog() {
-      this.$store.commit('setEditUserDialog', false);
+      this.$emit('on-edit-action', false);
     },
     onPickFile() {
       this.$refs.fileInput.click();
-    },
-    onFilePicked(event) {
-      const files = event.target.files;
-      const filename = files[0].name;
-      if (filename.lastIndexOf('.') <= 0) {
-        // return alert('Please add a valid file!')
-      }
-      const payload = {
-        el: event.target,
-        name: filename,
-      };
-      this.$store.dispatch('getImageUrl', payload);
     },
   },
 };

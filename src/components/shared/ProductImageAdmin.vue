@@ -1,13 +1,13 @@
 <template>
   <v-dialog v-model="pictureDialogOpen" fullscreen transition="dialog-bottom-transition" :overlay="false">
     <v-card>
-      <v-toolbar dark color="primary">
+      <v-toolbar light color="primary">
         <v-btn icon @click.native="onCloseDialog()" >
           <v-icon>close</v-icon>
         </v-btn>
         <v-toolbar-title>Imagenes: {{product.name}}</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-menu bottom left>
+        <v-menu bottom left v-if="isAdmin">
             <v-btn icon slot="activator" >
               <v-icon>more_vert</v-icon>
             </v-btn>
@@ -28,17 +28,15 @@
         accept="image/*"
         @change="onUploadPictures"
         >
-      <v-container fluid v-bind="{ [`grid-list-${size}`]: true }">
+      <v-container fluid grid-list-sm align-baseline>
           <v-layout row wrap>
             <v-flex
-              xs12
-              sm6
-              lg3
+              xs4
               v-for="pic in pics"
               :key="pic.id"
             >
               <v-card >
-                <v-card-media
+                <v-card-media class="lash__card__media__background"
                   :src="pic.url"
                   height="150px"
                 >
@@ -50,7 +48,7 @@
                       <v-list-tile @click="onViewPicture(pic)">
                         <v-list-tile-sub-title>Ver</v-list-tile-sub-title>
                       </v-list-tile>
-                      <v-list-tile @click="onDeletePicture(pic.id)">
+                      <v-list-tile v-if="isAdmin" @click="onDeletePicture(pic.id)">
                         <v-list-tile-sub-title>Eliminar</v-list-tile-sub-title>
                       </v-list-tile>
                     </v-list>
@@ -80,6 +78,9 @@ export default {
         this.update = true;
       }
       return files;
+    },
+    isAdmin() {
+      return this.$store.getters.isAdmin;
     },
   },
   data() {
@@ -175,5 +176,8 @@ export default {
 <style scoped>
   .btn-menu {
     background-color: rgba(0,0,0,0.5);
+  }
+  .lash__card__media__background :first-child {
+    background-size: 100px !important;
   }
 </style>

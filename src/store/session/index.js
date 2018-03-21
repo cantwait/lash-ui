@@ -79,7 +79,6 @@ export default {
       });
     },
     updateSession({ commit, state }, payload) {
-      debugger;
       commit('setLoading', true);
       const currSession = _.find(state.sessions, { id: payload.sessionId });
       if ('customer' in payload) {
@@ -103,6 +102,26 @@ export default {
 
         currSession.total = total;
       }
+
+      if ('serviceRemove' in payload) {
+        const accum = (sum, s) => sum + s.price;
+        const prevServices = currSession.services;
+        const prevTotal = _.reduce(prevServices, accum, 0);
+        const s = payload.serviceRemove;
+        const index = _.findIndex(prevServices, serv => serv.id === s.id);
+        prevServices.splice(index, 1);
+        const newTotal = prevTotal - s.price;
+
+        currSession.services = prevServices;
+        currSession.total = newTotal;
+      }
+
+      if ('rating' in payload && 'comment' in payload && 'state' in payload) {
+        currSession.rating = payload.rating;
+        currSession.comment = payload.comment;
+        currSession.state = payload.state;
+      }
+
       axios.patch(`/sessions/${payload.sessionId}`, currSession)
         .then((res) => {
           utils.log('status: %s', res.status);

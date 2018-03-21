@@ -5,7 +5,7 @@
         <v-toolbar color="white" light>
           <v-toolbar-title color="primary">Clientes en espera...</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-btn :if="canAdd" @click="onNewQueue" color="primary" icon>
+          <v-btn v-if="canAdd" @click="onNewQueue" color="primary" icon>
             <v-icon>add</v-icon>
           </v-btn>
         </v-toolbar>
@@ -24,7 +24,7 @@
                   <v-icon color="black lighten-1">add_to_queue</v-icon>
                 </v-btn>
               </v-list-tile-action>
-              <v-list-tile-action :if="canDelete">
+              <v-list-tile-action v-if="canDelete">
                 <v-btn icon ripple @click.stop="onOpenDeleteDialog(item)">
                   <v-icon color="black lighten-1">delete</v-icon>
                 </v-btn>

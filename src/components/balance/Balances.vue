@@ -2,15 +2,16 @@
 <v-layout row>
     <v-flex >
       <v-card>
-        <v-list two-line subheader>
-          <v-subheader inset>Categorias</v-subheader>
+        <v-list threed-line subheader>
+          <v-subheader inset>Balance</v-subheader>
           <template v-for="(item,index) in items">
             <v-list-tile avatar  v-bind:key="item.id" >
               <v-list-tile-avatar>
-                <v-icon v-bind:class="[iconClass]">{{ icon }}</v-icon>
+                <v-icon v-bind:class="[iconClass]">{{ item.mode === 'income' ? 'trending_up' : 'trending_down' }}</v-icon>
               </v-list-tile-avatar>
               <v-list-tile-content>
-                <v-list-tile-title>{{ item.name }}</v-list-tile-title>
+                <v-list-tile-title>{{ item.mode | mode }}</v-list-tile-title>
+                <v-list-tile-sub-title>${{ item.amount | formatNumber }} - {{ item.createdAt | date(('%d/%m/%Y %I:%M:%s %p')) }}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-action>
                 <v-btn icon ripple @click.stop="onOpenEditDialog(item)">
@@ -48,18 +49,20 @@
     </v-flex>
     <!-- delete diaglo -->
     <template v-if="isDeleteDialog">
-      <lash-delete-dialog :deleteDialog="isDeleteDialog" @on-action-performed="takeDeleteAction"></lash-delete-dialog>
+      <lash-delete-dialog :deleteDialog="isDeleteDialog" @on-action-performed="onBalanceDeleted"></lash-delete-dialog>
     </template>
     <!-- new/edit user  -->
     <template v-if="isDialogCreateOpened">
-      <lash-create-category :createDialogOpened="isDialogCreateOpened" @on-create-category="takeCreateAction"/>
+      <lash-create-balance :createDialogOpened="isDialogCreateOpened" @on-create-balance="onBalanceCreated"/>
     </template>
-    <template v-if="category && isEditDialog">
-      <lash-edit-category @on-edit-category="takeEditAction" :editDialogOpened="isEditDialog" :category="category"/>
+    <template v-if="balance && isEditDialog">
+      <lash-edit-balance @on-edit-balance="onBalanceEdited" :editDialogOpened="isEditDialog" :balance="balance"/>
     </template>
   </v-layout>
 </template>
 <script>
+import CreateBalance from './CreateBalance';
+import EditBalance from './EditBalance';
 import utils from '../../utils';
 
 export default {
@@ -68,9 +71,9 @@ export default {
       isDeleteDialog: false,
       isEditDialog: false,
       isDialogCreateOpened: false,
-      category: null,
+      balance: null,
       iconClass: 'grey lighten-1 white--text',
-      icon: 'local_offer',
+      icon: 'account_balance_wallet',
       itemDeletable: null,
       query: {
         page: 1,
@@ -83,16 +86,23 @@ export default {
       return this.$store.getters.loading;
     },
     items() {
-      return this.$store.getters.categories;
+      return this.$store.getters.balances;
     },
   },
   created() {
-    if (this.query.page !== 1) {
-      this.query.page = 1;
-    }
-    this.$store.dispatch('getCategories', this.query);
+    this.fetchData();
+  },
+  watch: {
+    // call again the method if the route changes
+    $route: 'fetchData',
   },
   methods: {
+    fetchData() {
+      if (this.query.page !== 1) {
+        this.query.page = 1;
+      }
+      this.$store.dispatch('getBalances', this.query);
+    },
     onNewCategory() {
       utils.log('onNewCategory');
       this.isDialogCreateOpened = true;
@@ -104,7 +114,7 @@ export default {
     },
     onOpenEditDialog(item) {
       utils.log(`onOpenEditDialog: ${item}`);
-      this.category = item;
+      this.balance = item;
       this.isEditDialog = !this.isEditDialog;
     },
     onLoadMore() {
@@ -112,7 +122,7 @@ export default {
       this.query.page += 1;
       this.$store.dispatch('getCategories', this.query);
     },
-    takeDeleteAction(result) {
+    onBalanceDeleted(result) {
       utils.log(`result: ${result}`);
       if (result) {
         this.$store.dispatch('removeCategory', this.itemDeletable.id);
@@ -120,19 +130,37 @@ export default {
       this.isDeleteDialog = !this.isDeleteDialog;
       this.itemDeletable = null;
     },
-    takeCreateAction(result) {
+    onBalanceCreated(result) {
       this.isDialogCreateOpened = !this.isDialogCreateOpened;
       utils.log(`result: ${result}`);
       if (result) {
         // TODO save category
       }
     },
-    takeEditAction(result) {
+    onBalanceEdited(result) {
       this.isEditDialog = !this.isEditDialog;
       utils.log(`onTakeEditAction: ${result}`);
       if (result) {
         // TODO update category
       }
+    },
+  },
+  components: {
+    'lash-create-balance': CreateBalance,
+    'lash-edit-balance': EditBalance,
+  },
+  filters: {
+    mode(val) {
+      if (!val) return '';
+      if (val === 'income') {
+        return 'Entrada';
+      }
+      return 'Salida';
+    },
+    formatNumber(val) {
+      if (!val) return '';
+      // eslint-disable-next-line
+      return Number(Math.round(val+'e'+3)+'e-'+3);
     },
   },
 };

@@ -140,7 +140,6 @@ export default {
         });
     },
     getSessionsByUser({ commit }, userId) {
-      debugger;
       commit('setLoading', true);
       axios.get(`/users/${userId}/sessions`)
         .then(res => commit('setSessionsByUser', res.data))

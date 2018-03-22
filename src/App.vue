@@ -67,14 +67,37 @@
     </v-navigation-drawer>
     <v-toolbar color="primary" app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer" class="hidden-md-and-up"></v-toolbar-side-icon>
-      <v-toolbar-title>Lalalash icon here</v-toolbar-title>
+      <v-toolbar-title>Lalalash</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
-        <v-btn flat v-for="m in items" :key="m.text" :to="m.link">
-          <v-icon left>{{ m.icon }}</v-icon>
-            {{ m.text }}
-        </v-btn>
-        <v-btn v-if="isUserLoggedIn" @click="onLogout">
+        <template v-for="(m, i) in items">
+          <template v-if="m.children">
+            <v-menu offset-y :key="i+10">
+              <v-btn color="primary" light slot="activator">{{m.text}}</v-btn>
+              <v-list>
+                <v-list-tile :to="child.link"
+                  v-for="(child,j) in m.children"
+                  :key="j">
+                  <v-list-tile-action v-if="child.icon">
+                    <v-icon>{{ child.icon }}</v-icon>
+                  </v-list-tile-action>
+                  <v-list-tile-content>
+                    <v-list-tile-title>
+                      {{ child.text }}
+                    </v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-menu>
+          </template>
+          <template v-else>
+            <v-btn color="primary" light :key="i" :to="m.link">
+            <v-icon left>{{ m.icon }}</v-icon>
+              {{ m.text }}
+            </v-btn>
+          </template>
+        </template>
+        <v-btn color="primary" light v-if="isUserLoggedIn" @click="onLogout">
           <v-icon left>fa-sign-out</v-icon>
             Salir
         </v-btn>
@@ -130,6 +153,7 @@ export default {
                 { text: 'Servicios', link: '/services', icon: 'fa fa-dropbox' },
                 { text: 'Categorias', link: '/categories', icon: 'fa fa-tags' },
                 { text: 'Clientes', link: '/customers', icon: 'fa-users' },
+                { text: 'Balance', link: '/balances', icon: 'fa-balance-scale' },
               ],
             },
           ];

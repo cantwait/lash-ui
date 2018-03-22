@@ -12,8 +12,13 @@ export default {
     sessionsByUser: [],
     totalFee: 0,
     partialFee: [],
+    pwdValid: false,
   },
   mutations: {
+    setPwdValid(state, payload) {
+      const s = state;
+      s.pwdValid = payload;
+    },
     setSessionsByUser(state, payload) {
       if (payload) {
         const s = state;
@@ -146,6 +151,21 @@ export default {
         .catch(err => utils.log('error: %s', err))
         .finally(() => commit('setLoading', false));
     },
+    updatePassword({ commit }, payload) {
+      debugger;
+      commit('setLoading', true);
+      axios.post('/users/resetpwd', payload)
+        .then((res) => {
+          if (res.status === 204) {
+            commit('setPwdValid', true);
+          }
+        })
+        .catch((e) => {
+          commit('setError', e.response.data.message);
+          commit('setPwdValid', false);
+        })
+        .finally(() => commit('setLoading', false));
+    },
     getUsers({ commit }, payload) {
       if (payload.page === 1) {
         commit('setUsers', []);
@@ -241,6 +261,9 @@ export default {
     },
     partialFee(state) {
       return state.partialFee;
+    },
+    pwdValid(state) {
+      return state.pwdValid;
     },
   },
 };

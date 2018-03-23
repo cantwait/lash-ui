@@ -68,7 +68,7 @@
     <v-toolbar color="primary" app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer"  class="hidden-md-and-up">
       </v-toolbar-side-icon>
-      <v-toolbar-title><div style="background-image: url('/static/img/logo_100_x_300.png')"></div></v-toolbar-title>
+      <v-toolbar-title>Lalalash</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
         <template v-for="(m, i) in items">

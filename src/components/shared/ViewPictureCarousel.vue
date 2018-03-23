@@ -8,7 +8,7 @@
           </v-btn>
         </v-toolbar>
         <v-carousel>
-          <v-carousel-item :cycle="`false`" transition="fade" reverse-transition="fade" v-for="(p) in pics" :src="p.url" :key="p.id"></v-carousel-item>
+          <v-carousel-item class="lash__jumbotron__img" :cycle="`false`" transition="fade" reverse-transition="fade" v-for="(p) in pics" :src="p.url" :key="p.id"></v-carousel-item>
         </v-carousel>
       </v-card>
     </v-dialog>
@@ -35,6 +35,11 @@ export default Vue.extend({
 
 </script>
 <style scoped>
-
+.carousel :last-child {
+  display: block !important;
+}
+.lash__jumbotron__img :first-child:first-child {
+  height: 100% !important;
+}
 </style>
 

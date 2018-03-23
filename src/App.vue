@@ -52,7 +52,8 @@
               </v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
-          <v-list-tile v-else :key="i+30" @click.stop="onLogout">
+        </template>
+        <v-list-tile v-if="isUserLoggedIn" @click.stop="onLogout">
             <v-list-tile-action>
               <v-icon>fa-sign-out</v-icon>
             </v-list-tile-action>
@@ -62,19 +63,41 @@
               </v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
-        </template>
       </v-list>
     </v-navigation-drawer>
     <v-toolbar color="primary" app>
       <v-toolbar-side-icon @click.stop="drawer = !drawer" class="hidden-md-and-up"></v-toolbar-side-icon>
-      <v-toolbar-title>Lalalash icon here</v-toolbar-title>
+      <v-toolbar-title>Lalalash</v-toolbar-title>
       <v-spacer></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
-        <v-btn flat v-for="m in items" :key="m.text" :to="m.link">
-          <v-icon left>{{ m.icon }}</v-icon>
-            {{ m.text }}
-        </v-btn>
-        <v-btn v-if="isUserLoggedIn" @click="onLogout">
+        <template v-for="(m, i) in items">
+          <template v-if="m.children">
+            <v-menu offset-y :key="i+10">
+              <v-btn color="primary" light slot="activator">{{m.text}}</v-btn>
+              <v-list>
+                <v-list-tile :to="child.link"
+                  v-for="(child,j) in m.children"
+                  :key="j">
+                  <v-list-tile-action v-if="child.icon">
+                    <v-icon>{{ child.icon }}</v-icon>
+                  </v-list-tile-action>
+                  <v-list-tile-content>
+                    <v-list-tile-title>
+                      {{ child.text }}
+                    </v-list-tile-title>
+                  </v-list-tile-content>
+                </v-list-tile>
+              </v-list>
+            </v-menu>
+          </template>
+          <template v-else>
+            <v-btn color="primary" light :key="i" :to="m.link">
+            <v-icon left>{{ m.icon }}</v-icon>
+              {{ m.text }}
+            </v-btn>
+          </template>
+        </template>
+        <v-btn color="primary" light v-if="isUserLoggedIn" @click="onLogout">
           <v-icon left>fa-sign-out</v-icon>
             Salir
         </v-btn>
@@ -84,8 +107,11 @@
       <v-container fluid fill-height>
         <v-layout
           justify-center
-          align-center>
-          <router-view></router-view>
+          align-top>
+          <router-view ></router-view>
+          <template v-if="showLoading">
+            <lash-loading/>
+          </template>
         </v-layout>
       </v-container>
     </v-content>
@@ -96,48 +122,66 @@
 </template>
 
 <script>
-  export default {
-    data() {
-      return {
-        drawer: false,
-      };
+import Loading from './components/shared/Loading';
+
+export default {
+  data() {
+    return {
+      drawer: false,
+    };
+  },
+  computed: {
+    showLoading() {
+      return this.$store.getters.loading;
     },
-    computed: {
-      items() {
-        let menus = [
-          { text: 'Home', link: '/', icon: 'fa-home' },
-          { text: 'Entrar', link: '/signin', icon: 'fa-sign-in' },
-        ];
-        if (this.isUserLoggedIn) {
+    items() {
+      let menus = [
+        { text: 'Home', link: '/', icon: 'fa-home' },
+        { text: 'Entrar', link: '/signin', icon: 'fa-sign-in' },
+      ];
+      if (this.isUserLoggedIn) {
+        if (this.isAdmin) {
           menus = [
             { text: 'Home', link: '/', icon: 'fa-home' },
+            { text: 'Perfil', link: '/profile', icon: 'fa-user-circle' },
             {
               text: 'Admin',
               icon: 'fa-lock',
               active: false,
               children: [
                 { text: 'Usuarios', link: '/users', icon: 'fa-users' },
-                { text: 'Productos', link: '/products', icon: 'fa fa-dropbox' },
+                { text: 'Servicios', link: '/services', icon: 'fa fa-dropbox' },
                 { text: 'Categorias', link: '/categories', icon: 'fa fa-tags' },
                 { text: 'Clientes', link: '/customers', icon: 'fa-users' },
+                { text: 'Balance', link: '/balances', icon: 'fa-balance-scale' },
               ],
             },
           ];
+        } else {
+          menus = [
+            { text: 'Home', link: '/', icon: 'fa-home' },
+            { text: 'Perfil', link: '/profile', icon: 'fa-user-circle' },
+          ];
         }
-        return menus;
-      },
-      isUserLoggedIn() {
-        const isUser = this.$store.getters.user !== null && this.$store.getters.token !== undefined;
-        const isToken = this.$store.getters.token !== null && this.$store.getters.token !== undefined;
-        return isUser && isToken;
-      },
+      }
+      return menus;
     },
-    methods: {
-      onLogout() {
-        this.$store.dispatch('logout');
-        this.drawer = !this.drawer;
-        this.$router.push('/');
-      },
+    isUserLoggedIn() {
+      return this.$store.getters.user && this.$store.getters.token;
     },
-  };
+    isAdmin() {
+      return this.$store.getters.isAdmin;
+    },
+  },
+  methods: {
+    onLogout() {
+      this.$store.dispatch('logout');
+      this.drawer = !this.drawer;
+      this.$router.push('/signin');
+    },
+  },
+  components: {
+    'lash-loading': Loading,
+  },
+};
 </script>

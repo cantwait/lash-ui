@@ -7,13 +7,41 @@
           </v-card-title>
           <v-card-text>
             <v-flex x12>
-              <v-text-field label="Nombre" v-model="name" :rules="name" required></v-text-field>
+              <v-text-field label="Nombre" v-model="name" :counter="50" :rules="nameVal" required></v-text-field>
             </v-flex>
             <v-flex x12>
               <v-text-field label="Correo" v-model="email" required></v-text-field>
             </v-flex>
             <v-flex x12>
               <v-text-field prepend-icon="phone" label="Telefono" :rules="phoneVal" v-model="phone" required></v-text-field>
+            </v-flex>
+            <v-flex x12>
+              <v-menu
+                ref="menu"
+                lazy
+                :close-on-content-click="false"
+                v-model="bDaymenu"
+                transition="scale-transition"
+                offset-y
+                full-width
+                :nudge-right="40"
+                min-width="290px"
+              >
+                <v-text-field
+                  slot="activator"
+                  label="Fecha de Nacimiento"
+                  v-model="birthdate"
+                  prepend-icon="event"
+                  readonly
+                ></v-text-field>
+                <v-date-picker
+                  ref="picker"
+                  v-model="birthdate"
+                  @change="save"
+                  min="1950-01-01"
+                  :max="new Date().toISOString().substr(0, 10)"
+                ></v-date-picker>
+              </v-menu>
             </v-flex>
           </v-card-text>
           <v-card-actions>
@@ -26,7 +54,8 @@
     </v-dialog>
 </template>
 <script>
-import _ from 'lodash';
+import { isEmpty } from 'lodash';
+import moment from 'moment';
 
 export default {
   props: ['createDialogOpened'],
@@ -35,15 +64,17 @@ export default {
       name: '',
       email: '',
       phone: '',
+      birthdate: '',
+      bDaymenu: false,
       nameVal: [
-        v => v.length <= 25 || 'Max 25 caracteres',
-        v => v.length >= 5 || 'Min 5 caracteres',
-        v => _.isEmpty(v.length) || 'Nombre no puede ser vacio',
+        v => v.length <= 20 || 'Max 20 caracteres',
+        v => v.length >= 3 || 'Min 3 caracteres',
+        v => isEmpty(v.length) || 'Nombre no puede ser vacio',
       ],
       phoneVal: [
         v => v.length <= 12 || 'Max 12 caracteres',
         v => v.length >= 7 || 'Min 7 caracteres',
-        v => _.isEmpty(v.length) || 'Nombre no puede ser vacio',
+        v => isEmpty(v.length) || 'Nombre no puede ser vacio',
       ],
     };
   },
@@ -58,7 +89,7 @@ export default {
       return this.$store.getters.loading;
     },
     formIsValid() {
-      return this.name !== '' && this.email !== '' && this.phone !== '';
+      return this.name !== '' && this.email !== '' && this.phone !== '' && this.birthdate !== '';
     },
   },
   methods: {
@@ -66,10 +97,12 @@ export default {
       if (!this.formIsValid) {
         return;
       }
+      const bDate = moment(this.birthdate).add(12, 'hours');
       const newCustomer = {
         name: this.name,
         email: this.email,
         phone: this.phone,
+        birthdate: bDate,
       };
       this.$store.dispatch('saveCustomer', newCustomer);
       this.$emit('on-create-customer', true);
@@ -83,6 +116,9 @@ export default {
       this.name = '';
       this.phone = '';
       this.email = '';
+    },
+    save(date) {
+      this.$refs.menu.save(date);
     },
   },
 };

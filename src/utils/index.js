@@ -47,7 +47,6 @@ export default {
     return ri.play(inputComponent);
   },
   resizeImages(files) {
-    debugger;
     const b64images = [];
     for (let i = 0; i <= files.length; i += 1) {
       const reader = new FileReader();
@@ -73,7 +72,6 @@ export default {
           canvas.height = tempH;
           const ctx = canvas.getContext('2d');
           ctx.drawImage(this, 0, 0, tempW, tempH);
-          debugger;
           b64images.push(canvas.toDataURL('image/png'));
         };
       };

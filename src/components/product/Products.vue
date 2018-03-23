@@ -15,17 +15,17 @@
               </v-list-tile-content>
               <v-list-tile-action>
                 <v-btn icon ripple @click.stop="onOpenPictureDialog(item)">
-                  <v-icon color="purple lighten-1">cloud_upload</v-icon>
+                  <v-icon color="black lighten-1">cloud_upload</v-icon>
                 </v-btn>
               </v-list-tile-action>
               <v-list-tile-action>
                 <v-btn icon ripple @click.stop="onOpenEditDialog(item)">
-                  <v-icon color="blue lighten-1">edit</v-icon>
+                  <v-icon color="black lighten-1">edit</v-icon>
                 </v-btn>
               </v-list-tile-action>
               <v-list-tile-action>
                 <v-btn icon ripple @click.stop="onOpenDeleteDialog(item)">
-                  <v-icon color="red lighten-1">delete</v-icon>
+                  <v-icon color="black lighten-1">delete</v-icon>
                 </v-btn>
               </v-list-tile-action>
             </v-list-tile>

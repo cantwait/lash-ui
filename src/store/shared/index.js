@@ -2,6 +2,7 @@ import utils from '../../utils';
 
 export default {
   state: {
+    moreLoading: false,
     loading: false,
     error: null,
     image: null,
@@ -46,6 +47,9 @@ export default {
     },
     image(state) {
       return state.imageURL;
+    },
+    moreLoading(state) {
+      return state.moreLoading;
     },
   },
 };

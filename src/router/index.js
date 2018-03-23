@@ -7,6 +7,8 @@ import Users from '@/components/user/Users';
 import Categories from '@/components/product/Categories';
 import Customers from '@/components/customer/Customers';
 import Products from '@/components/product/Products';
+import Balances from '@/components/balance/Balances';
+import Profile from '@/components/shared/Profile';
 import AuthGuard from './auth.guard';
 
 Vue.use(Router);
@@ -17,6 +19,7 @@ export default new Router({
       path: '/',
       name: 'Dashboard',
       component: Dashboard,
+      beforeEnter: AuthGuard,
     },
     {
       path: '/signin',
@@ -47,11 +50,23 @@ export default new Router({
       beforeEnter: AuthGuard,
     },
     {
-      path: '/products',
-      name: 'Products',
+      path: '/services',
+      name: 'Services',
       component: Products,
       beforeEnter: AuthGuard,
     },
+    {
+      path: '/profile',
+      name: 'Profile',
+      component: Profile,
+      beforeEnter: AuthGuard,
+    },
+    {
+      path: '/balances',
+      name: 'Balance',
+      component: Balances,
+      beforeEnter: AuthGuard,
+    },
   ],
-  mode: 'hash',
+  mode: 'history',
 });

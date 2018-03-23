@@ -9,8 +9,46 @@ export default {
     newUserDialog: false,
     editUserDialog: false,
     users: [],
+    sessionsByUser: [],
+    totalFee: 0,
+    partialFee: [],
+    pwdValid: false,
   },
   mutations: {
+    setPwdValid(state, payload) {
+      const s = state;
+      s.pwdValid = payload;
+    },
+    setSessionsByUser(state, payload) {
+      if (payload) {
+        const s = state;
+        s.partialFee = [];
+        s.sessionsByUser = _.values(_.groupBy(payload, '_id'));
+        s.sessionsByUser.forEach((val, i) => {
+          // val represents the session array of services
+          // eslint-disable-next-line
+          const id = val[i]._id;
+          let subTotal = 0;
+          subTotal = _.reduce(val, (sum, ses) => {
+            utils.log('por aca...');
+            if (ses.services.generateFee) {
+              utils.log('price: %s', ses.services.price);
+              return sum + (ses.services.price * (ses.services.responsible.fee / 100));
+            }
+            return sum;
+          }, 0);
+
+          utils.log('subTotal: %s', JSON.stringify(subTotal));
+          const partial = {
+            id,
+            subTotal,
+          };
+          s.partialFee.push(partial);
+          s.totalFee = _.reduce(s.partialFee, (sum, pf) => sum + pf.subTotal, 0);
+        });
+        // _.values(_.each(payload, p => _.groupBy(p), '_id'));
+      }
+    },
     setUser(state, payload) {
       const s = state;
       s.user = payload;
@@ -82,7 +120,6 @@ export default {
         email: payload.email,
         password: payload.password,
       }).then((res) => {
-        utils.log(`response: ${JSON.stringify(res)}`);
         commit('setUser', res.data.user);
         commit('setToken', res.data.token);
       })
@@ -106,6 +143,27 @@ export default {
         .finally(() => {
           utils.log('eliminar usuario completado!');
         });
+    },
+    getSessionsByUser({ commit }, userId) {
+      commit('setLoading', true);
+      axios.get(`/users/${userId}/sessions`)
+        .then(res => commit('setSessionsByUser', res.data))
+        .catch(err => utils.log('error: %s', err))
+        .finally(() => commit('setLoading', false));
+    },
+    updatePassword({ commit }, payload) {
+      commit('setLoading', true);
+      axios.post('/users/resetpwd', payload)
+        .then((res) => {
+          if (res.status === 204) {
+            commit('setPwdValid', true);
+          }
+        })
+        .catch((e) => {
+          commit('setError', e.response.data.message);
+          commit('setPwdValid', false);
+        })
+        .finally(() => commit('setLoading', false));
     },
     getUsers({ commit }, payload) {
       if (payload.page === 1) {
@@ -148,6 +206,9 @@ export default {
         name: payload.name,
         email: payload.email,
         role: payload.role,
+        address: payload.address,
+        phone: payload.phone,
+        fee: payload.fee,
       })
       .then((res) => {
         if (res.data) {
@@ -181,6 +242,27 @@ export default {
     },
     users(state) {
       return state.users;
+    },
+    isAdmin(state) {
+      return state.user && state.user.role === 'admin';
+    },
+    isCashier(state) {
+      return state.user && state.user.role === 'cashier';
+    },
+    isCollaborator(state) {
+      return state.user && state.user.role === 'collaborator';
+    },
+    sessionsByUser(state) {
+      return state.sessionsByUser;
+    },
+    totalFee(state) {
+      return state.totalFee;
+    },
+    partialFee(state) {
+      return state.partialFee;
+    },
+    pwdValid(state) {
+      return state.pwdValid;
     },
   },
 };

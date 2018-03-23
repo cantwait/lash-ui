@@ -14,12 +14,12 @@
               </v-list-tile-content>
               <v-list-tile-action>
                 <v-btn icon ripple @click.stop="onOpenEditDialog(item)">
-                  <v-icon color="blue lighten-1">edit</v-icon>
+                  <v-icon color="black lighten-1">edit</v-icon>
                 </v-btn>
               </v-list-tile-action>
               <v-list-tile-action>
                 <v-btn icon ripple @click.stop="onOpenDeleteDialog(item)">
-                  <v-icon color="red lighten-1">delete</v-icon>
+                  <v-icon color="black lighten-1">delete</v-icon>
                 </v-btn>
               </v-list-tile-action>
             </v-list-tile>

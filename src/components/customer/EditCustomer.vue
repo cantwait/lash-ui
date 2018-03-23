@@ -15,6 +15,34 @@
             <v-flex x12>
               <v-text-field prepend-icon="phone" label="Telefono" v-model="editPhone" type='tel' required></v-text-field>
             </v-flex>
+            <v-flex x12>
+              <v-menu
+                ref="menu"
+                lazy
+                :close-on-content-click="false"
+                v-model="bDaymenu"
+                transition="scale-transition"
+                offset-y
+                full-width
+                :nudge-right="40"
+                min-width="290px"
+              >
+                <v-text-field
+                  slot="activator"
+                  label="Fecha de Nacimiento"
+                  v-model="editBirthdate"
+                  prepend-icon="event"
+                  readonly
+                ></v-text-field>
+                <v-date-picker
+                  ref="picker"
+                  v-model="editBirthdate"
+                  @change="save"
+                  min="1950-01-01"
+                  :max="new Date().toISOString().substr(0, 10)"
+                ></v-date-picker>
+              </v-menu>
+            </v-flex>
             <small>*Campo Obligatorio</small>
           </v-card-text>
           <v-card-actions>
@@ -36,9 +64,11 @@ export default {
       editName: this.customer.name,
       editEmail: this.customer.email,
       editPhone: this.customer.phone,
+      editBirthdate: this.customer.birthdate,
+      bDaymenu: false,
       nameVal: [
         v => v.length <= 25 || 'Max 25 caracteres',
-        v => v.length >= 5 || 'Min 5 caracteres',
+        v => v.length >= 3 || 'Min 3 caracteres',
         v => _.isEmpty(v.length) || 'Nombre no puede ser vacio',
       ],
       phoneVal: [
@@ -56,7 +86,7 @@ export default {
       return this.$store.getters.loading;
     },
     formIsValid() {
-      return this.editName !== '' && this.editEmail !== '' && this.editPhone !== '';
+      return this.editName !== '' && this.editEmail !== '' && this.editPhone !== '' && this.editBirthdate !== '';
     },
   },
   methods: {
@@ -69,6 +99,7 @@ export default {
         name: this.editName,
         email: this.editEmail,
         phone: this.editPhone,
+        birthdate: this.editBirthdate,
       };
       this.$store.dispatch('updateCustomer', editData);
       this.onDismissDialog();
@@ -81,6 +112,9 @@ export default {
       this.editName = '';
       this.editPhone = '';
       this.editEmail = '';
+    },
+    save(date) {
+      this.$refs.menu.save(date);
     },
   },
 };

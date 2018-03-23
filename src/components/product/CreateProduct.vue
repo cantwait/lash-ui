@@ -41,6 +41,12 @@
             <v-flex x12>
               <v-text-field :rules="specsVal" :counter="500" multi-line label="Especificaciones" placeholder="Defina las epecificaciones del producto acá" v-model="specs"></v-text-field>
             </v-flex>
+            <v-flex x12>
+              <v-checkbox label="Oferta" v-model="offer"></v-checkbox>
+            </v-flex>
+            <v-flex x12>
+              <v-checkbox label="Genera Comisión?" v-model="generateFee"></v-checkbox>
+            </v-flex>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -63,6 +69,8 @@ export default {
       description: '',
       specs: '',
       category: null,
+      offer: false,
+      generateFee: false,
       nameVal: [
         v => v.length <= 25 || 'Max 25 caracteres',
         v => v.length >= 2 || 'Min 2 caracteres',
@@ -112,6 +120,8 @@ export default {
         category: this.category,
         specs: this.specs,
         description: this.description,
+        offer: this.offer,
+        generateFee: this.generateFee,
       };
       this.$store.dispatch('saveProduct', newProduct);
       this.$emit('on-create-product', true);

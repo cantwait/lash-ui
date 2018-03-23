@@ -5,8 +5,8 @@
         <v-card-text>Tenga en cuenta que esta acción no se puede reversar.</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="red darken-1" flat @click.native="onDeleteYes">Si</v-btn>
-          <v-btn color="blue darken-1" flat @click.native="onDeleteNo">Cancelar</v-btn>
+          <v-btn color="black darken-1" flat @click.native="onDeleteYes">Si</v-btn>
+          <v-btn color="black darken-1" flat @click.native="onDeleteNo">Cancelar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

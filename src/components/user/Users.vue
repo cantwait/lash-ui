@@ -53,7 +53,7 @@
       </v-card-text>
     </v-flex>
     <!-- delete diaglo -->
-    <v-dialog v-model="dialogDelete" persistent max-width="290">
+    <!-- <v-dialog v-model="dialogDelete" persistent max-width="290">
       <v-card>
         <v-card-title class="headline">Esta seguro de esta acción?</v-card-title>
         <v-card-text>Tenga en cuenta que esta acción no se puede reversar.</v-card-text>
@@ -63,7 +63,11 @@
           <v-btn color="blue darken-1" flat @click.native="dialogDelete = !dialogDelete">Cancelar</v-btn>
         </v-card-actions>
       </v-card>
-    </v-dialog>
+    </v-dialog> -->
+     <!-- delete diaglo -->
+    <template v-if="dialogDelete">
+      <lash-delete-dialog :deleteDialog="dialogDelete" @on-action-performed="onDeletePerson"></lash-delete-dialog>
+    </template>
     <!-- new/edit user  -->
     <app-user-add-form-dialog/>
     <template v-if="dialogEdit && user">
@@ -76,6 +80,7 @@
   </v-layout>
 </template>
 <script>
+import utils from '../../utils';
 import UserSessions from './UserSessions';
 
 export default {
@@ -116,11 +121,14 @@ export default {
     onSessionDialogAction() {
       this.isSessionDialogOpened = !this.isSessionDialogOpened;
     },
-    onDeletePerson() {
-      if (this.userToDelete) {
-        this.$store.dispatch('deleteUser', this.userToDelete);
-        this.dialogDelete = !this.dialogDelete;
+    onDeletePerson(result) {
+      utils.log('onDeletePerson: %s', result);
+      if (result && this.userToDelete) {
+        utils.log('user to delete: %s', this.userToDelete);
+        this.$store.dispatch('deleteUser', this.userToDelete.id);
+        this.userToDelete = null;
       }
+      this.dialogDelete = !this.dialogDelete;
     },
     onOpenEditDialog(editUser) {
       this.user = editUser;
@@ -134,8 +142,9 @@ export default {
       this.$store.dispatch('getUsers', this.query);
     },
     onOpenDeleteDialog(selectedUser) {
+      utils.log('selecting user to delete: %s', JSON.stringify(selectedUser));
       this.dialogDelete = !this.dialogDelete;
-      this.userToDelete = selectedUser.id;
+      this.userToDelete = selectedUser;
     },
     onNewUser() {
       this.$store.commit('setNewUserDialog', true);

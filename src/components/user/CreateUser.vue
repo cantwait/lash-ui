@@ -147,8 +147,6 @@ export default {
         fee: this.fee,
       };
       this.$store.dispatch('saveUser', newUserData);
-      this.$store.commit('setImageUrl', '');
-      this.$store.commit('setImageResized', '');
       this.resetForm();
     },
     onDismissDialog() {

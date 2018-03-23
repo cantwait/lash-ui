@@ -47,8 +47,8 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn type="submit" :disabled="loading" :loading="loading" color="blue darken-1" flat>Guardar</v-btn>
-            <v-btn color="blue darken-1" flat @click.native="onDismissDialog">Cerrar</v-btn>
+            <v-btn type="submit" :disabled="loading" :loading="loading" color="black darken-1" flat>Guardar</v-btn>
+            <v-btn color="black darken-1" flat @click.native="onDismissDialog">Cerrar</v-btn>
           </v-card-actions>
         </v-card>
       </form>

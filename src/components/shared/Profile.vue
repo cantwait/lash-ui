@@ -1,6 +1,6 @@
 <template>
   <v-layout row>
-    <v-flex xs12 sm6 offset-sm3>
+    <v-flex>
       <v-card>
         <v-card-media :src="userPic" height="300px">
           <v-layout column class="media">

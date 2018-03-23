@@ -2,7 +2,7 @@
   <v-layout row justify-center>
     <v-dialog v-model="sessionsDialog" fullscreen transition="dialog-bottom-transition" :overlay="false">
       <v-card>
-        <v-flex xs12 sm6 offset-sm3>
+        <v-flex >
         <v-card>
           <v-toolbar light color="primary">
             <v-btn icon @click.native="onCloseSessionDialog">

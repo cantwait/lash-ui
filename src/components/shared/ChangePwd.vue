@@ -97,9 +97,6 @@ export default {
         newPwd: this.newPwd,
       };
       this.$store.dispatch('updatePassword', editData);
-      if (this.pwdValid) {
-        this.onDismissDialog();
-      }
     },
     onDismissDialog() {
       this.$emit('on-update-pwd', false);

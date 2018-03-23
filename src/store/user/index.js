@@ -152,7 +152,6 @@ export default {
         .finally(() => commit('setLoading', false));
     },
     updatePassword({ commit }, payload) {
-      debugger;
       commit('setLoading', true);
       axios.post('/users/resetpwd', payload)
         .then((res) => {

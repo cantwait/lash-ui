@@ -1,13 +1,15 @@
 <template>
   <v-container>
     <v-layout row v-if="error">
-      <v-flex xs12 sm6 offset-sm3>
+      <v-flex>
         <app-alert @dismissed="onDismissed" :text="error"></app-alert>
       </v-flex>
     </v-layout>
     <v-layout row>
-      <v-flex xs12 sm6 offset-sm3>
+      <v-flex>
         <v-card>
+          <v-card-media src="/static/img/logo_1000.png" height="150px">
+          </v-card-media>
           <v-card-text>
             <v-container>
               <form @submit.prevent="onSignin">
@@ -96,5 +98,9 @@ export default {
 .custom-loader {
   animation: loader 1s infinite;
   display: flex;
+}
+.card__media :first-child {
+  background-color: rgba(4, 4, 4, 1) !important;
+  background-size: 350px !important;
 }
 </style>

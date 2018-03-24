@@ -100,7 +100,7 @@ export default {
         v => v.length >= 3 || 'Min 3 caracteres',
       ],
       feeVal: [
-        v => v <= 10 || 'Valor maximo 10%',
+        v => v <= 20 || 'Valor maximo 20%',
         v => v > -1 || 'Valor no puede ser negativo',
       ],
     };

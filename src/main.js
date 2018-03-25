@@ -93,7 +93,6 @@ axios.interceptors.request.use((config) => {
 });
 
 function issueToken(token) {
-  debugger;
   return new Promise((resolve,reject) => {
     const axiosRefresh = axios.create({
       baseURL,

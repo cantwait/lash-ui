@@ -139,7 +139,7 @@ export default {
       return typeof session.customer === 'undefined' || session.customer === null;
     },
     canFinalize() {
-      return this.$store.getters.isAdmin || this.$store.isCashier;
+      return this.$store.getters.isAdmin || this.$store.getters.isCashier;
     },
     customers() {
       return this.$store.getters.catalog;

@@ -6,37 +6,61 @@
           <v-btn icon @click.native="onCloseDialog" dark>
             <v-icon>close</v-icon>
           </v-btn>
-          <v-text-field @input="debounceInput" color="white" prepend-icon="search" clearable placeholder="Ingrese su busqueda..." hide-details single-line></v-text-field>
-          <v-btn icon>
-            <v-icon>more_vert</v-icon>
-          </v-btn>
+          <v-text-field v-model="searchInput" @input="debounceInput" color="white" prepend-icon="search" clearable placeholder="Ingrese su busqueda..." hide-details single-line></v-text-field>
+          <v-menu bottom left>
+            <v-btn icon slot="activator" >
+              <v-icon>more_vert</v-icon>
+            </v-btn>
+            <v-list>
+              <v-list-tile @click="onCreateNewCustomer">
+                <v-list-tile-title>Crear Cliente</v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
         </v-toolbar>
         <v-divider></v-divider>
-        <v-card-text style="height: 300px;">
-          <v-radio-group v-model="value" column>
-            <template v-for="(item) in items">
-              <v-radio :key="item.id" :label="item.name" :value="item"></v-radio>
-            </template>
-          </v-radio-group>
-        </v-card-text>
-        <v-divider></v-divider>
-        <v-card-actions>
-          <v-btn color="black darken-1" flat @click.native="onPickCustomer">Guardar</v-btn>
-        </v-card-actions>
+        <v-card height="400px">
+          <v-list two-line>
+          <template v-for="(item, index) in items">
+            <v-list-tile
+              avatar
+              ripple
+              :key="item.title"
+            >
+              <v-list-tile-content>
+                <v-list-tile-title>{{ item.name }}</v-list-tile-title>
+              </v-list-tile-content>
+              <v-list-tile-action>
+                <v-list-tile-action-text>{{ item.phone }}</v-list-tile-action-text>
+              </v-list-tile-action>
+              <v-list-tile-action>
+                <v-btn icon ripple @click="onPickCustomer(item)">
+                  <v-icon color="grey lighten-1">add_circle</v-icon>
+                </v-btn>
+              </v-list-tile-action>
+            </v-list-tile>
+            <v-divider v-if="index + 1 < items.length" :key="index"></v-divider>
+          </template>
+        </v-list>
+        </v-card>
       </v-card>
     </v-dialog>
+    <template v-if="isDialogCreateOpened">
+      <lash-create-customer :createDialogOpened="isDialogCreateOpened" @on-create-customer="onCustomerCreated"/>
+    </template>
   </v-layout>
 </template>
 <script>
 import { debounce } from 'lodash';
+import CreateCustomer from '../customer/CreateCustomer';
 import utils from '../../utils';
 
 export default {
   props: ['isOpenDialog'],
   data() {
     return {
-      value: null,
-      dialog: false,
+      isDialogCreateOpened: false,
+      searchInput: '',
     };
   },
   computed: {
@@ -55,12 +79,27 @@ export default {
       utils.log('onCloseDialog');
       this.$emit('on-value-picked', null);
     },
-    onPickCustomer() {
-      utils.log('onPickElement');
-      if (this.value !== null) {
-        this.$emit('on-value-picked', this.value);
-      }
+    onPickCustomer(item) {
+      utils.log('onPickElement: %s', item);
+      this.$emit('on-value-picked', item);
     },
+    onCustomerAdded(customer) {
+      utils.log('customer added: %s', customer);
+    },
+    onCreateNewCustomer() {
+      utils.log('creating new customer...');
+      this.isDialogCreateOpened = !this.isDialogCreateOpened;
+    },
+    onCustomerCreated(result) {
+      if (result) {
+        utils.log('valor de busqueda: %s', this.searchInput);
+        setTimeout(() => this.$store.dispatch('findCustomersLike', this.searchInput), 1000);
+      }
+      this.isDialogCreateOpened = !this.isDialogCreateOpened;
+    },
+  },
+  components: {
+    'lash-create-customer': CreateCustomer,
   },
 };
 

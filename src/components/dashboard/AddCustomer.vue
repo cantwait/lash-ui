@@ -1,6 +1,6 @@
 <template>
   <v-layout row justify-center>
-    <v-dialog  v-model="createDialogOpened" fullscreen transition="dialog-bottom-transition" :overlay="false">
+    <v-dialog  v-model="isOpenDialog" fullscreen transition="dialog-bottom-transition" :overlay="false">
       <v-card>
         <v-toolbar dark color="primary">
           <v-btn icon @click.native="onDismissDialog" dark>
@@ -63,7 +63,7 @@ import CreateCustomer from '../customer/CreateCustomer';
 import utils from '../../utils';
 
 export default {
-  props: ['createDialogOpened'],
+  props: ['isOpenDialog'],
   data() {
     return {
       iconClass: 'grey lighten-1 white--text',
@@ -88,9 +88,9 @@ export default {
     },
     onCustomerCreated(result) {
       if (result) {
-        this.isDialogCreateOpened = !this.isDialogCreateOpened;
-        this.$store.dispatch('findCustomersLike', this.searchInput);
+        setTimeout(() => this.$store.dispatch('findCustomersLike', this.searchInput), 1000);
       }
+      this.isDialogCreateOpened = !this.isDialogCreateOpened;
     },
     onDismissDialog() {
       this.$emit('on-customer-added', false);

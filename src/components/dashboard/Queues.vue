@@ -41,7 +41,7 @@
     </template>
     <!-- new/edit queue  -->
     <template v-if="isDialogCreateOpened">
-      <lash-add-customer :createDialogOpened="isDialogCreateOpened" @on-customer-added="takeCreateAction"/>
+      <lash-add-customer :isOpenDialog="isDialogCreateOpened" @on-customer-added="takeCreateAction"/>
     </template>
   </v-layout>
 </template>
@@ -114,7 +114,7 @@ export default {
     },
     onNewQueue() {
       utils.log('onNewQueue');
-      this.isDialogCreateOpened = true;
+      this.isDialogCreateOpened = !this.isDialogCreateOpened;
     },
     onOpenDeleteDialog(item) {
       this.queue = item;

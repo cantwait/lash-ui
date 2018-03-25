@@ -46,11 +46,36 @@
           </v-list-tile>
           <v-list-tile avatar>
             <v-list-tile-content>
-                <v-chip
-                  >
-                    <strong>$&nbsp;{{ session.total }}</strong>
-                </v-chip>
+                Subtotal
             </v-list-tile-content>
+            <v-list-tile-action>
+              <v-chip
+                  >
+                    <strong>$&nbsp;{{ session.subtotal | formatNumber}}</strong>
+                </v-chip>
+            </v-list-tile-action>
+          </v-list-tile>
+          <v-list-tile avatar>
+            <v-list-tile-content>
+                ITBMS
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-chip
+                  >
+                    <strong>$&nbsp;{{ session.itbms | formatNumber}}</strong>
+                </v-chip>
+            </v-list-tile-action>
+          </v-list-tile>
+          <v-list-tile avatar>
+            <v-list-tile-content>
+                Total
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-chip
+                  >
+                    <strong>$&nbsp;{{ session.total | formatNumber}}</strong>
+                </v-chip>
+            </v-list-tile-action>
           </v-list-tile>
         </v-list>
         <v-layout>
@@ -235,6 +260,13 @@ export default {
     'lash-product-catalog': ProductCatalog,
     'lash-session-rating': RatingSession,
     'lash-delete-dialog': DeleteDialog,
+  },
+  filters: {
+    formatNumber(val) {
+      if (!val) return '';
+      // eslint-disable-next-line
+      return Number(Math.round(val+'e'+2)+'e-'+2);
+    },
   },
 };
 

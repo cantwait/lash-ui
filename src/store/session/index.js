@@ -2,6 +2,7 @@ import axios from 'axios';
 import _ from 'lodash';
 import utils from '../../utils';
 
+const ITBMS = 0.07;
 
 export default {
   state: {
@@ -90,30 +91,35 @@ export default {
         const currUser = payload.user;
         const services = _.forEach(payload.services,
           (value) => { const s = value; s.responsible = currUser; });
-        let prevTotal = 0;
+        let prevSubtotal = 0;
         if (currSession.services.length > 0) {
           const prevServices = currSession.services;
-          prevTotal = _.reduce(prevServices, accum, 0);
+          prevSubtotal = _.reduce(prevServices, accum, 0);
         }
 
-        const total = _.reduce(services, accum, prevTotal);
+        const subTotal = _.reduce(services, accum, prevSubtotal);
 
         currSession.services = services.concat(currSession.services);
-
-        currSession.total = total;
+        const itbms = subTotal * ITBMS;
+        currSession.itbms = itbms;
+        currSession.subtotal = subTotal;
+        currSession.total = subTotal + itbms;
       }
 
       if ('serviceRemove' in payload) {
         const accum = (sum, s) => sum + s.price;
         const prevServices = currSession.services;
-        const prevTotal = _.reduce(prevServices, accum, 0);
+        const prevSubtotal = _.reduce(prevServices, accum, 0);
         const s = payload.serviceRemove;
         const index = _.findIndex(prevServices, serv => serv.id === s.id);
         prevServices.splice(index, 1);
-        const newTotal = prevTotal - s.price;
+        const newSubTotal = prevSubtotal - s.price;
 
         currSession.services = prevServices;
-        currSession.total = newTotal;
+        currSession.subtotal = newSubTotal;
+        const newItbms = newSubTotal * ITBMS;
+        currSession.itbms = newItbms;
+        currSession.total = newSubTotal + newItbms;
       }
 
       if ('rating' in payload && 'comment' in payload && 'state' in payload) {
@@ -121,6 +127,8 @@ export default {
         currSession.comment = payload.comment;
         currSession.state = payload.state;
       }
+
+      utils.log('curr session: %s', JSON.stringify(currSession));
 
       axios.patch(`/sessions/${payload.sessionId}`, currSession)
         .then((res) => {

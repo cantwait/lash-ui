@@ -1,21 +1,11 @@
 <template>
-  <v-layout >
-    <v-dialog  v-model="isOpenDialog" fullscreen transition="dialog-bottom-transition" :overlay="false">
-      <v-card height="100%">
-        <v-toolbar light color="primary">
-          <v-btn v-if="!toggle" icon @click.native="onCloseDialog" >
-            <v-icon>close</v-icon>
-          </v-btn>
-          <v-btn v-else icon @click.native="toggle = !toggle" >
+  <v-card height="100%">
+        <v-toolbar color="white" light>
+          <v-btn v-if="toggle" icon @click.native="toggle = !toggle" >
             <v-icon>arrow_back</v-icon>
           </v-btn>
           <v-toolbar-title>Categoria de Productos</v-toolbar-title>
           <v-spacer></v-spacer>
-          <v-toolbar-items>
-            <v-btn  flat :disabled="selected.length === 0" @click="onAddProductsSelected">
-              <v-icon>check_circle</v-icon>
-            </v-btn>
-          </v-toolbar-items>
         </v-toolbar>
         <v-card height="100%" v-if="!toggle" >
           <v-container fluid grid-list-sm align-baseline>
@@ -44,24 +34,12 @@
           <template v-for="(p, index) in productByCategory">
             <v-list avatar ripple two-line :key="p.id">
               <v-list-tile >
-                <v-list-tile-action>
-                  <v-checkbox
-                    :value="p"
-                    :id="p.id"
-                    v-model="selected"
-                  ></v-checkbox>
-                </v-list-tile-action>
                 <v-list-tile-content >
                   <v-list-tile-title>{{ p.name }}</v-list-tile-title>
-                  <v-list-tile-sub-title class="text--primary lash__sub_title">{{ p.description }}</v-list-tile-sub-title>
+                  <v-list-tile-sub-title class="text--primary">{{ p.description }}</v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action >
                     <v-list-tile-action-text>Precio: ${{ p.price }}</v-list-tile-action-text>
-                </v-list-tile-action>
-                 <v-list-tile-action>
-                  <v-btn icon ripple @click.stop="onOpenPictureDialog(p)">
-                    <v-icon color="black lighten-1">photo</v-icon>
-                  </v-btn>
                 </v-list-tile-action>
               </v-list-tile>
               <v-divider v-if="index + 1 < productByCategory.length" ></v-divider>
@@ -71,12 +49,7 @@
             No hay resultados...
           </template>
         </v-card>
-      </v-card>
-    </v-dialog>
-    <template v-if="product && isPictureDialog">
-      <lash-pictures-admin @on-picture-dialog="onPictureDialogAction" :pictureDialogOpen="isPictureDialog" :product="product"></lash-pictures-admin>
-    </template>
-  </v-layout>
+  </v-card>
 </template>
 <script>
 import { debounce } from 'lodash';
@@ -154,11 +127,9 @@ export default {
 <style scoped>
 .card__title {
   padding: 10px;
+  font-size: 12px !important;
 }
 .lash__card__media__background :first-child {
   background-size: 100px !important;
-}
-.lash__sub_title {
-  font-size: 12px;
 }
 </style>

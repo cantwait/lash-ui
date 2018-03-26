@@ -9,7 +9,7 @@
             <v-flex x12>
               <v-text-field label="Nombre"
                 :rules="nameVal"
-                :counter="25"
+                :counter="60"
                 v-model.trim="name"
                 required></v-text-field>
             </v-flex>
@@ -19,7 +19,7 @@
                 v-model.trim="description"
                 required
                 :rules="descVal"
-                :counter="50"></v-text-field>
+                :counter="200"></v-text-field>
             </v-flex>
             <v-flex x12>
               <v-text-field ref="price" :rules="priceVal" label="Precio" prefix="$" v-model.number="price" type="number" step="0.01" required></v-text-field>
@@ -72,12 +72,12 @@ export default {
       offer: false,
       generateFee: false,
       nameVal: [
-        v => v.length <= 25 || 'Max 25 caracteres',
+        v => v.length <= 60 || 'Max 60 caracteres',
         v => v.length >= 2 || 'Min 2 caracteres',
         v => _.isEmpty(v.length) || 'Nombre no puede ser vacio',
       ],
       descVal: [
-        v => v.length <= 50 || 'Max 50 caracteres',
+        v => v.length <= 200 || 'Max 200 caracteres',
         v => v.length >= 5 || 'Min 5 caracteres',
         v => _.isEmpty(v.length) || 'Descripción no puede ser vacio',
       ],

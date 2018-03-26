@@ -7,10 +7,10 @@
           </v-card-title>
           <v-card-text>
             <v-flex x12>
-              <v-text-field label="Nombre" :counter="25" :rules="nameVal" v-model.trim="editName" required></v-text-field>
+              <v-text-field label="Nombre" :counter="60" :rules="nameVal" v-model.trim="editName" required></v-text-field>
             </v-flex>
             <v-flex x12>
-              <v-text-field label="Descripción" :counter="50" :rules="descVal" required v-model.trim="editDescription"></v-text-field>
+              <v-text-field label="Descripción" :counter="200" :rules="descVal" required v-model.trim="editDescription"></v-text-field>
             </v-flex>
             <v-flex x12>
               <v-text-field label="Precio" :rules="priceVal" v-model.number="editPrice" type="number" step="0.01" required></v-text-field>
@@ -63,12 +63,12 @@ export default {
       editOffer: this.product.offer,
       editGenerateFee: this.product.generateFee,
       nameVal: [
-        v => v.length <= 25 || 'Max 25 caracteres',
+        v => v.length <= 60 || 'Max 60 caracteres',
         v => v.length >= 2 || 'Min 2 caracteres',
         v => _.isEmpty(v.length) || 'Nombre no puede ser vacio',
       ],
       descVal: [
-        v => v.length <= 50 || 'Max 50 caracteres',
+        v => v.length <= 200 || 'Max 200 caracteres',
         v => v.length >= 5 || 'Min 5 caracteres',
         v => _.isEmpty(v.length) || 'Descripción no puede ser vacio',
       ],

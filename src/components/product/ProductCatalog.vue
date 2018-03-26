@@ -41,6 +41,16 @@
           </v-container>
         </v-card>
         <v-card v-else >
+          <v-toolbar color="white">
+            <v-text-field
+              v-model="pSearchFilter"
+              placeholder="Filtrar resultado"
+              prepend-icon="search"
+              solo
+              flat
+              autofocus
+            ></v-text-field>
+          </v-toolbar>
           <template v-for="(p, index) in productByCategory">
             <v-list avatar ripple two-line :key="p.id">
               <v-list-tile >
@@ -79,7 +89,7 @@
   </v-layout>
 </template>
 <script>
-import { debounce } from 'lodash';
+import { debounce, filter } from 'lodash';
 import ProductImageAdmin from '../shared/ProductImageAdmin';
 import utils from '../../utils';
 
@@ -94,6 +104,7 @@ export default {
       selected: [],
       isPictureDialog: false,
       product: null,
+      pSearchFilter: '',
     };
   },
   computed: {
@@ -101,6 +112,10 @@ export default {
       return this.$store.getters.categories;
     },
     productByCategory() {
+      if (this.pSearchFilter !== '') {
+        const func = v => v.name.toUpperCase().indexOf(this.pSearchFilter.toUpperCase()) !== -1;
+        return filter(this.$store.getters.productsByCategory, func);
+      }
       return this.$store.getters.productsByCategory;
     },
   },

@@ -77,7 +77,7 @@ export default {
       .catch(err => utils.log(`Error removing Balance: ${JSON.stringify(err)}`))
       .finally(() => commit('setLoading', false));
     },
-    updateCategory({ commit }, payload) {
+    updateBalance({ commit }, payload) {
       commit('setLoading', true);
       axios.patch(`/balances/${payload.id}`, {
         desc: payload.desc,
@@ -86,7 +86,7 @@ export default {
       })
       .then((res) => {
         if (res.status === 200) {
-          commit('updateBalances', res.data);
+          commit('updateBalance', res.data);
         }
       })
       .catch(err => utils.log(`Error updating category: ${JSON.stringify(err)}`))

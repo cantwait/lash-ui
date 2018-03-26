@@ -120,12 +120,12 @@ export default {
     onLoadMore() {
       utils.log('Loading more');
       this.query.page += 1;
-      this.$store.dispatch('getCategories', this.query);
+      this.$store.dispatch('getBalances', this.query);
     },
     onBalanceDeleted(result) {
       utils.log(`result: ${result}`);
       if (result) {
-        this.$store.dispatch('removeCategory', this.itemDeletable.id);
+        this.$store.dispatch('removeBalance', this.itemDeletable.id);
       }
       this.isDeleteDialog = !this.isDeleteDialog;
       this.itemDeletable = null;

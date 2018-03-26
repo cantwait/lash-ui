@@ -78,12 +78,13 @@ export default {
       if (!this.formIsValid) {
         return;
       }
-      const newBalance = {
-        desc: this.desc,
-        amount: this.amount,
-        mode: this.mode,
+      const balance = {
+        id: this.balance.id,
+        desc: this.editDesc,
+        amount: this.editAmount,
+        mode: this.editMode,
       };
-      this.$store.dispatch('saveBalance', newBalance);
+      this.$store.dispatch('updateBalance', balance);
       this.$emit('on-edit-balance', true);
       this.resetForm();
     },

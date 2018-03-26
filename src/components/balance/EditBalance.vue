@@ -70,11 +70,12 @@ export default {
       return this.$store.getters.loading;
     },
     formIsValid() {
-      return this.desc !== '' && this.amount > 0 && this.mode !== '';
+      return this.editDesc !== '' && this.editAmount > 0 && this.editMode !== '';
     },
   },
   methods: {
     onSaveBalance() {
+      debugger;
       if (!this.formIsValid) {
         return;
       }

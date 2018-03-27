@@ -16,7 +16,7 @@
           </v-card>
           <v-expansion-panel popout>
             <v-expansion-panel-content v-for="(item,i) in items" :key="i">
-              <div slot="header">{{ items[i][0].createdAt | date(('%d/%m/%Y %I:%M:%s %p')) }} - ${{partialFee[i].subtotal | formatNumber}}</div>
+              <div slot="header">{{ items[i][0].createdAt | date(('%d/%m/%Y %I:%M:%s %p')) }} - ${{partialFee[i].subTotal | formatNumber}}</div>
               <v-card v-for="(session, index) in items[i]" :key="index">
                 <v-card-title class="lash__card__tile" primary-title >
                   <div>

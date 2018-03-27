@@ -1,5 +1,11 @@
 import axios from 'axios';
-import _ from 'lodash';
+import groupBy from 'lodash/groupBy';
+import values from 'lodash/values';
+import reduce from 'lodash/reduce';
+import uniqBy from 'lodash/uniqBy';
+import union from 'lodash/union';
+import remove from 'lodash/remove';
+import findIndex from 'lodash/findIndex';
 import utils from '../../utils';
 
 export default {
@@ -20,16 +26,17 @@ export default {
       s.pwdValid = payload;
     },
     setSessionsByUser(state, payload) {
+      debugger;
       if (payload) {
         const s = state;
         s.partialFee = [];
-        s.sessionsByUser = _.values(_.groupBy(payload, '_id'));
-        s.sessionsByUser.forEach((val, i) => {
+        s.sessionsByUser = values(groupBy(payload, '_id'));
+        s.sessionsByUser.forEach((val) => {
           // val represents the session array of services
           // eslint-disable-next-line
-          const id = val[i]._id;
+          const id = val[0]._id;
           let subTotal = 0;
-          subTotal = _.reduce(val, (sum, ses) => {
+          subTotal = reduce(val, (sum, ses) => {
             utils.log('por aca...');
             if (ses.services.generateFee) {
               utils.log('price: %s', ses.services.price);
@@ -44,7 +51,7 @@ export default {
             subTotal,
           };
           s.partialFee.push(partial);
-          s.totalFee = _.reduce(s.partialFee, (sum, pf) => sum + pf.subTotal, 0);
+          s.totalFee = reduce(s.partialFee, (sum, pf) => sum + pf.subTotal, 0);
         });
         // _.values(_.each(payload, p => _.groupBy(p), '_id'));
       }
@@ -68,13 +75,13 @@ export default {
     setUsers(state, payload) {
       const s = state;
       if (payload.length > 0) {
-        s.users = _.uniqBy(_.union(s.users, payload), 'id');
+        s.users = uniqBy(union(s.users, payload), 'id');
       }
     },
     removeFromUsers(state, payload) {
       const s = state;
       if (payload) {
-        s.users = _.remove(s.users, user => user.id !== payload);
+        s.users = remove(s.users, user => user.id !== payload);
       }
     },
     addUser(state, payload) {
@@ -86,7 +93,7 @@ export default {
     updateUsers(state, payload) {
       const s = state;
       if (payload) {
-        const index = _.findIndex(s.users, { id: payload.id });
+        const index = findIndex(s.users, { id: payload.id });
         s.users.splice(index, 1, payload);
       }
     },

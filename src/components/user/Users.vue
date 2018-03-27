@@ -13,7 +13,7 @@
                 <v-list-tile-title>{{ item.name }}</v-list-tile-title>
                 <v-list-tile-sub-title>{{ item.email }}</v-list-tile-sub-title>
               </v-list-tile-content>
-              <v-list-tile-action>
+              <v-list-tile-action v-if="isCollaborator(item)">
                 <v-btn icon ripple @click.stop="onOpenSessions(item)">
                   <v-icon color="black lighten-1">list</v-icon>
                 </v-btn>
@@ -148,6 +148,9 @@ export default {
     },
     onNewUser() {
       this.$store.commit('setNewUserDialog', true);
+    },
+    isCollaborator(user) {
+      return user.role === 'user';
     },
   },
   components: {

@@ -59,7 +59,7 @@ export default {
       editPrice: this.product.price,
       editDescription: this.product.description,
       editSpecs: this.product.specs,
-      editCategory: this.product.category,
+      editCategory: this.product.category.id,
       editOffer: this.product.offer,
       editGenerateFee: this.product.generateFee,
       nameVal: [
@@ -108,13 +108,14 @@ export default {
       if (!this.formIsValid) {
         return;
       }
+      debugger;
       const editData = {
         id: this.product.id,
         name: this.editName,
         description: this.editDescription,
         price: this.editPrice,
         specs: this.editSpecs,
-        category: this.editCategory.id,
+        category: this.editCategory,
         offer: this.editOffer,
         generateFee: this.editGenerateFee,
       };

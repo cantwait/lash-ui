@@ -3,6 +3,13 @@
     <v-flex >
       <v-card>
         <v-list two-line subheader>
+          <v-toolbar dark color="primary">
+            <v-spacer></v-spacer>
+            <!-- <v-text-field v-model="searchInput" @input="debounceInput" color="white" prepend-icon="search" clearable placeholder="Ingrese su busqueda..." hide-details single-line></v-text-field> -->
+            <v-btn icon @click.stop="onNewCategory">
+              <v-icon>add_circle</v-icon>
+            </v-btn>
+          </v-toolbar>
           <v-subheader inset>Categorias</v-subheader>
           <template v-for="(item,index) in items">
             <v-list-tile avatar  v-bind:key="item.id" >
@@ -32,7 +39,7 @@
           <v-btn @click.stop="onLoadMore" flat :loading="loading">Cargar más</v-btn>
         </v-layout>
       </v-container>
-      <v-card-text style="height: 100px; position: relative">
+      <!-- <v-card-text style="height: 100px; position: relative">
       <v-btn
         absolute
         dark
@@ -44,7 +51,7 @@
         >
         <v-icon>add</v-icon>
       </v-btn>
-      </v-card-text>
+      </v-card-text> -->
     </v-flex>
     <!-- delete diaglo -->
     <template v-if="isDeleteDialog">

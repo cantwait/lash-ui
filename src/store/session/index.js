@@ -1,5 +1,8 @@
 import axios from 'axios';
-import _ from 'lodash';
+import forEach from 'lodash/forEach';
+import reduce from 'lodash/reduce';
+import remove from 'lodash/remove';
+import findIndex from 'lodash/findIndex';
 import utils from '../../utils';
 
 const ITBMS = 0.07;
@@ -12,7 +15,7 @@ export default {
     addOrUpdateSession(state, payload) {
       if (payload) {
         const s = state;
-        const index = _.findIndex(s.sessions, { id: payload.id });
+        const index = findIndex(s.sessions, { id: payload.id });
         if (index !== -1) {
           s.sessions.splice(index, 1, payload);
         } else {
@@ -25,8 +28,8 @@ export default {
         const s = state;
         const sessionId = payload.sessionId;
         const product = payload.product;
-        const session = _.find(s.sessions, { id: sessionId });
-        const index = _.findIndex(s.sessions, { id: sessionId });
+        const session = find(s.sessions, { id: sessionId });
+        const index = findIndex(s.sessions, { id: sessionId });
         session.push(product);
         s.sessions.splice(index, 1, session);
       }
@@ -36,9 +39,9 @@ export default {
         const s = state;
         const sessionId = payload.sessionId;
         const customer = payload.customer;
-        const session = _.find(s.sessions, { id: sessionId });
+        const session = find(s.sessions, { id: sessionId });
         session.customer = customer;
-        const index = _.findIndex(s.sessions, { id: sessionId });
+        const index = findIndex(s.sessions, { id: sessionId });
         s.sessions.splice(index, 1, session);
       }
     },
@@ -53,7 +56,7 @@ export default {
     removeSession(state, payload) {
       const s = state;
       if (payload) {
-        s.sessions = _.remove(s.sessions, session => session.id !== payload);
+        s.sessions = remove(s.sessions, session => session.id !== payload);
       }
     },
   },
@@ -81,7 +84,7 @@ export default {
     },
     updateSession({ commit, state }, payload) {
       commit('setLoading', true);
-      const currSession = _.find(state.sessions, { id: payload.sessionId });
+      const currSession = find(state.sessions, { id: payload.sessionId });
       if ('customer' in payload) {
         currSession.customer = payload.customer;
       }
@@ -89,15 +92,15 @@ export default {
         const accum = (sum, s) => sum + s.price;
 
         const currUser = payload.user;
-        const services = _.forEach(payload.services,
+        const services = forEach(payload.services,
           (value) => { const s = value; s.responsible = currUser; });
         let prevSubtotal = 0;
         if (currSession.services.length > 0) {
           const prevServices = currSession.services;
-          prevSubtotal = _.reduce(prevServices, accum, 0);
+          prevSubtotal = reduce(prevServices, accum, 0);
         }
 
-        const subTotal = _.reduce(services, accum, prevSubtotal);
+        const subTotal = reduce(services, accum, prevSubtotal);
 
         currSession.services = services.concat(currSession.services);
         const itbms = subTotal * ITBMS;
@@ -109,9 +112,9 @@ export default {
       if ('serviceRemove' in payload) {
         const accum = (sum, s) => sum + s.price;
         const prevServices = currSession.services;
-        const prevSubtotal = _.reduce(prevServices, accum, 0);
+        const prevSubtotal = reduce(prevServices, accum, 0);
         const s = payload.serviceRemove;
-        const index = _.findIndex(prevServices, serv => serv.id === s.id);
+        const index = findIndex(prevServices, serv => serv.id === s.id);
         prevServices.splice(index, 1);
         const newSubTotal = prevSubtotal - s.price;
 
@@ -154,7 +157,7 @@ export default {
       return state.sessions;
     },
     getSessionById(state) {
-      return keyword => _.find(state.sessions, { id: keyword });
+      return keyword => find(state.sessions, { id: keyword });
     },
   },
 };

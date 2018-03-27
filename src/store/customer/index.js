@@ -1,5 +1,8 @@
 import axios from 'axios';
-import _ from 'lodash';
+import uniqBy from 'lodash/uniqBy';
+import union from 'lodash/union';
+import remove from 'lodash/remove';
+import findIndex from 'lodash/findIndex';
 import utils from '../../utils';
 
 export default {
@@ -22,9 +25,11 @@ export default {
       }
     },
     setCustomers(state, payload) {
-      if (payload) {
-        const s = state;
-        s.customers = _.uniqBy(_.union(s.customers, payload), 'id');
+      const s = state;
+      if (payload && payload.length > 0) {
+        s.customers = uniqBy(union(s.customers, payload), 'id');
+      } else {
+        s.customers = [];
       }
     },
     addCustomer(state, payload) {
@@ -36,20 +41,20 @@ export default {
     removeCustomer(state, payload) {
       const s = state;
       if (payload) {
-        s.customers = _.remove(s.customers, customer => customer.id !== payload);
+        s.customers = remove(s.customers, customer => customer.id !== payload);
       }
     },
     updateCustomers(state, payload) {
       const s = state;
       if (payload) {
-        const index = _.findIndex(s.customers, { id: payload.id });
+        const index = findIndex(s.customers, { id: payload.id });
         s.customers.splice(index, 1, payload);
       }
     },
     removeCustomerFromCatalog(state, payload) {
       if (payload) {
         const s = state;
-        s.customersCatalog = _.remove(s.customersCatalog, { id: payload.customer.id });
+        s.customersCatalog = remove(s.customersCatalog, { id: payload.customer.id });
       }
     },
   },
@@ -66,7 +71,9 @@ export default {
         },
       })
         .then((res) => {
-          commit('setCustomers', res.data);
+          if (res.status === 200 && res.data.length > 0) {
+            commit('setCustomers', res.data);
+          }
         })
         .catch((err) => {
           utils.log(`Error getting customers: ${JSON.stringify(err)}`);

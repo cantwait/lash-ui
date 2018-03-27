@@ -1,5 +1,8 @@
 import axios from 'axios';
-import _ from 'lodash';
+import uniqBy from 'lodash/uniqBy';
+import union from 'lodash/union';
+import remove from 'lodash/remove';
+import findIndex from 'lodash/findIndex';
 import utils from '../../utils';
 
 export default {
@@ -10,7 +13,9 @@ export default {
     setBalances(state, payload) {
       const s = state;
       if (payload.length > 0) {
-        s.balances = _.uniqBy(_.union(s.balances, payload), 'id');
+        s.balances = uniqBy(union(s.balances, payload), 'id');
+      } else {
+        s.balances = [];
       }
     },
     addBalance(state, payload) {
@@ -22,13 +27,13 @@ export default {
     removeBalance(state, payload) {
       const s = state;
       if (payload) {
-        s.balances = _.remove(s.balances, balance => balance.id !== payload);
+        s.balances = remove(s.balances, balance => balance.id !== payload);
       }
     },
     updateBalance(state, payload) {
       const s = state;
       if (payload) {
-        const index = _.findIndex(s.balances, { id: payload.id });
+        const index = findIndex(s.balances, { id: payload.id });
         s.balances.splice(index, 1, payload);
       }
     },
@@ -46,7 +51,9 @@ export default {
         },
       })
         .then((res) => {
-          commit('setBalances', res.data);
+          if (res.status === 200 && res.data.length > 0) {
+            commit('setBalances', res.data);
+          }
         })
         .catch((err) => {
           utils.log(`Error getting balance info: ${JSON.stringify(err)}`);

@@ -26,7 +26,6 @@ export default {
       s.pwdValid = payload;
     },
     setSessionsByUser(state, payload) {
-      debugger;
       if (payload) {
         const s = state;
         s.partialFee = [];
@@ -53,7 +52,6 @@ export default {
           s.partialFee.push(partial);
           s.totalFee = reduce(s.partialFee, (sum, pf) => sum + pf.subTotal, 0);
         });
-        // _.values(_.each(payload, p => _.groupBy(p), '_id'));
       }
     },
     setUser(state, payload) {
@@ -76,6 +74,8 @@ export default {
       const s = state;
       if (payload.length > 0) {
         s.users = uniqBy(union(s.users, payload), 'id');
+      } else {
+        s.users = [];
       }
     },
     removeFromUsers(state, payload) {
@@ -184,7 +184,9 @@ export default {
         },
       })
         .then((res) => {
-          commit('setUsers', res.data);
+          if (res.data.length > 0) {
+            commit('setUsers', res.data);
+          }
         })
         .catch((err) => {
           utils.log(err);

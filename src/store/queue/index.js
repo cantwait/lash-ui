@@ -1,5 +1,5 @@
 import axios from 'axios';
-import _ from 'lodash';
+import remove from 'lodash/remove';
 import utils from '../../utils';
 
 
@@ -11,7 +11,7 @@ export default {
     addQueue(state, payload) {
       if (payload) {
         const s = state;
-        s.queues.push(payload);
+        s.queues = payload;
       }
     },
     setQueues(state, payload) {
@@ -25,7 +25,7 @@ export default {
     removeQueue(state, payload) {
       const s = state;
       if (payload) {
-        s.queues = _.remove(s.queues, queue => queue.id !== payload);
+        s.queues = remove(s.queues, queue => queue.id !== payload);
       }
     },
   },

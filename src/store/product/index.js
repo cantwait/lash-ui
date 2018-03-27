@@ -1,5 +1,8 @@
 import axios from 'axios';
-import _ from 'lodash';
+import uniqBy from 'lodash/uniqBy';
+import union from 'lodash/union';
+import remove from 'lodash/remove';
+import findIndex from 'lodash/findIndex';
 import utils from '../../utils';
 
 export default {
@@ -13,7 +16,9 @@ export default {
     setCategories(state, payload) {
       const s = state;
       if (payload.length > 0) {
-        s.categories = _.uniqBy(_.union(s.categories, payload), 'id');
+        s.categories = uniqBy(union(s.categories, payload), 'id');
+      } else {
+        s.categories = [];
       }
     },
     setProductsPerCategory(state, payload) {
@@ -26,7 +31,9 @@ export default {
     setProducts(state, payload) {
       const s = state;
       if (payload.length > 0) {
-        s.products = _.uniqBy(_.union(s.products, payload), 'id');
+        s.products = uniqBy(union(s.products, payload), 'id');
+      } else {
+        s.products = [];
       }
     },
     addPic(state, payload) {
@@ -46,7 +53,7 @@ export default {
     updatePics(state, payload) {
       if (payload && payload.length > 0) {
         const s = state;
-        s.pics = _.uniqBy(_.union(s.pics, payload), 'id');
+        s.pics = uniqBy(union(s.pics, payload), 'id');
       }
     },
     addCategory(state, payload) {
@@ -64,32 +71,32 @@ export default {
     removeCategory(state, payload) {
       const s = state;
       if (payload) {
-        s.categories = _.remove(s.categories, category => category.id !== payload);
+        s.categories = remove(s.categories, category => category.id !== payload);
       }
     },
     removePic(state, payload) {
       if (payload) {
         const s = state;
-        s.pics = _.remove(s.pics, pic => pic.id !== payload);
+        s.pics = remove(s.pics, pic => pic.id !== payload);
       }
     },
     removeProduct(state, payload) {
       if (payload) {
         const s = state;
-        s.products = _.remove(s.products, p => p.id !== payload);
+        s.products = remove(s.products, p => p.id !== payload);
       }
     },
     updateCategories(state, payload) {
       const s = state;
       if (payload) {
-        const index = _.findIndex(s.categories, { id: payload.id });
+        const index = findIndex(s.categories, { id: payload.id });
         s.categories.splice(index, 1, payload);
       }
     },
     updateProducts(state, payload) {
       if (payload) {
         const s = state;
-        const index = _.findIndex(s.products, { id: payload.id });
+        const index = findIndex(s.products, { id: payload.id });
         s.products.splice(index, 1, payload);
       }
     },
@@ -107,7 +114,9 @@ export default {
         },
       })
       .then((res) => {
-        commit('setProducts', res.data);
+        if (res.data.length > 0) {
+          commit('setProducts', res.data);
+        }
       })
       .catch(err => utils.log(`Error getting products: ${JSON.stringify(err)}`))
       .finally(() => commit('setLoading', false));
@@ -135,7 +144,9 @@ export default {
         },
       })
         .then((res) => {
-          commit('setCategories', res.data);
+          if (res.data.length > 0) {
+            commit('setCategories', res.data);
+          }
         })
         .catch((err) => {
           utils.log(`Error getting categories: ${JSON.stringify(err)}`);

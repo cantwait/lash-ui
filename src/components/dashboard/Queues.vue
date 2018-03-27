@@ -1,6 +1,6 @@
 <template>
 <v-layout row wrap>
-    <v-flex xs12 sm12 md6>
+    <v-flex >
       <v-card>
         <v-toolbar color="white" light>
           <v-toolbar-title color="primary">Clientes en espera...</v-toolbar-title>

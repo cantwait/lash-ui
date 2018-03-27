@@ -6,19 +6,13 @@
           <v-btn icon @click.native="onDismissDialog" dark>
             <v-icon>close</v-icon>
           </v-btn>
-          <v-toolbar-title></v-toolbar-title>
+          <v-toolbar-title>
+          </v-toolbar-title>
           <v-spacer></v-spacer>
           <v-text-field v-model="searchInput" @input="debounceInput" color="white" prepend-icon="search" clearable placeholder="Ingrese su busqueda..." hide-details single-line></v-text-field>
-          <v-menu bottom left>
-            <v-btn icon slot="activator" >
-              <v-icon>more_vert</v-icon>
-            </v-btn>
-            <v-list>
-              <v-list-tile @click="onCreateNewCustomer">
-                <v-list-tile-title>Crear Cliente</v-list-tile-title>
-              </v-list-tile>
-            </v-list>
-          </v-menu>
+          <v-btn icon @click="onCreateNewCustomer">
+            <v-icon>add</v-icon>
+          </v-btn>
         </v-toolbar>
         <v-list>
           <template v-if="items.length === 0 && searchInitialized">

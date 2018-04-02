@@ -2,7 +2,7 @@
   <v-layout row justify-center>
     <v-dialog v-model="sessionsDialog" fullscreen transition="dialog-bottom-transition" :overlay="false">
       <v-card>
-        <v-flex xs12 sm6 offset-sm3>
+        <v-flex>
         <v-card>
           <v-toolbar light color="primary">
             <v-btn icon @click.native="onCloseSessionDialog">
@@ -13,7 +13,7 @@
           </v-toolbar>
           <v-expansion-panel popout>
             <v-expansion-panel-content v-for="(item,i) in items" :key="i">
-              <div slot="header">{{ item.createdAt | date(('%d/%m/%Y %I:%M:%s %p')) }} - ${{item.total}}</div>
+              <div slot="header">{{ item.createdAt | date(('%d/%m/%Y %I:%M:%s %p')) }} - ${{item.subtotal}}</div>
               <v-card>
                 <v-card-title primary-title v-for="(service, index) in item.services" :key="index">
                   <div>

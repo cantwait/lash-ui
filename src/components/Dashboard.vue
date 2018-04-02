@@ -29,6 +29,11 @@
                 </v-chip>
                 <!-- <v-icon>shopping_cart</v-icon> -->
             </v-tab>
+            <v-tab v-if="isAdminOrCashier" href="#tab-4" class="lash-tabs">
+                Balance
+              <v-chip>0
+              </v-chip>
+            </v-tab>
             <v-tab-item :id="'tab-1'">
                     <lash-sessions></lash-sessions>
             </v-tab-item>
@@ -37,6 +42,9 @@
             </v-tab-item>
             <v-tab-item :id="'tab-3'">
                     <lash-catalog></lash-catalog>
+            </v-tab-item>
+             <v-tab-item :id="'tab-4'">
+                    <lash-balance/>
             </v-tab-item>
         </v-tabs>
       </v-card>
@@ -47,6 +55,7 @@
 import Sessions from './dashboard/Sessions';
 import Queues from './dashboard/Queues';
 import ProductsPerCategory from './shared/ProductsPerCategory';
+import Balance from './dashboard/Balance';
 
 export default {
   data() {
@@ -64,11 +73,16 @@ export default {
     categories() {
       return this.$store.getters.categories.length;
     },
+    isAdminOrCashier() {
+      return this.$store.getters.isAdmin || this.$store.getters.isCashier;
+    },
   },
   components: {
     'lash-queues': Queues,
     'lash-sessions': Sessions,
     'lash-catalog': ProductsPerCategory,
+    'lash-balance': Balance,
+
   },
 };
 </script>

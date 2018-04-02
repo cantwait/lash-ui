@@ -9,9 +9,10 @@ export default {
   },
   mutations: {
     addQueue(state, payload) {
+      debugger;
       if (payload) {
         const s = state;
-        s.queues = payload;
+        s.queues.push(payload);
       }
     },
     setQueues(state, payload) {

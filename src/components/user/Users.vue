@@ -20,6 +20,11 @@
                 <v-list-tile-title>{{ item.name }}</v-list-tile-title>
                 <v-list-tile-sub-title>{{ item.email }}</v-list-tile-sub-title>
               </v-list-tile-content>
+              <v-list-tile-action>
+                <v-btn icon ripple @click.stop="onResetPwd(item)">
+                  <v-icon color="black lighten-1">refresh</v-icon>
+                </v-btn>
+              </v-list-tile-action>
               <v-list-tile-action v-if="isCollaborator(item)">
                 <v-btn icon ripple @click.stop="onOpenSessions(item)">
                   <v-icon color="black lighten-1">list</v-icon>
@@ -84,6 +89,13 @@
     <template v-if="isSessionDialogOpened">
       <lash-user-sessions :sessionsDialog="isSessionDialogOpened" :user="user" @on-action-performed="onSessionDialogAction"></lash-user-sessions>
     </template>
+     <v-snackbar
+      :timeout="4000"
+      v-model="isPwdReset"
+      :bottom="true"
+      >
+      {{ text }}
+    </v-snackbar>
   </v-layout>
 </template>
 <script>
@@ -100,6 +112,7 @@ export default {
       iconClass: 'grey lighten-1 white--text',
       icon: 'person',
       isSessionDialogOpened: false,
+      text: 'La contraseña ha sido reseteada!',
       query: {
         page: 1,
         perPage: 5,
@@ -112,6 +125,9 @@ export default {
     },
     users() {
       return this.$store.getters.users;
+    },
+    isPwdReset() {
+      return this.$store.getters.isPwdReset;
     },
   },
   created() {
@@ -158,6 +174,9 @@ export default {
     },
     isCollaborator(user) {
       return user.role === 'user';
+    },
+    onResetPwd(user) {
+      this.$store.dispatch('resetPwd', user.id);
     },
   },
   components: {

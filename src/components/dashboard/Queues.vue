@@ -50,10 +50,6 @@
 import AddCustomer from './AddCustomer';
 import utils from '../../utils';
 
-const QUEUE_CHANNEL = 'queues';
-const ON_NEW_QUEUE = 'onNewQueue';
-const ON_REMOVE_QUEUE = 'onQueueRemoved';
-
 export default {
   data() {
     return {
@@ -63,6 +59,10 @@ export default {
       queue: null,
       iconClass: 'grey lighten-1 white--text',
       icon: 'local_offer',
+      environment: process.env.NODE_ENV,
+      queuesChannel: process.env.PUSHER_QUEUE_CHANNEL,
+      onNewQueueEvt: process.env.PUSHER_ON_NEW_QUEUE,
+      onRemoveQueue: process.env.PUSHER_ON_QUEUE_REMOVED,
     };
   },
   computed: {
@@ -86,17 +86,17 @@ export default {
     this.fetchData();
   },
   mounted() {
-    const channel = this.$pusher.subscribe(QUEUE_CHANNEL);
-    channel.bind(ON_NEW_QUEUE, (queue) => {
+    const channel = this.$pusher.subscribe(this.queuesChannel);
+    channel.bind(this.onNewQueueEvt, (queue) => {
       this.$store.commit('addQueue', queue);
     });
 
-    channel.bind(ON_REMOVE_QUEUE, (id) => {
+    channel.bind(this.onRemoveQueue, (id) => {
       this.$store.commit('removeQueue', id);
     });
   },
   destroyed() {
-    this.$pusher.unsubscribe(QUEUE_CHANNEL);
+    this.$pusher.unsubscribe(this.queuesChannel);
   },
   watch: {
     // call again the method if the route changes

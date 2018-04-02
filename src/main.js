@@ -61,7 +61,7 @@ Vue.component('lash-create-category', CreateCategory);
 Vue.component('lash-edit-category', EditCategory);
 Vue.config.productionTip = false;
 
-const baseURL = process.env.NODE_ENV === 'production' ? 'https://api.lalalashbeautybar.com/api/v1' : 'http://192.168.1.121:3000/api/v1';
+const baseURL = process.env.NODE_ENV === 'production' ? 'https://api.lalalashbeautybar.com/api/v1' : 'http://192.168.1.123:3000/api/v1';
 
 axios.defaults.baseURL = baseURL;
 axios.defaults.headers.get.Accepts = 'application/json';

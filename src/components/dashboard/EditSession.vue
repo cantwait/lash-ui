@@ -9,7 +9,7 @@
           <v-toolbar-title>Servicios</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
-            <v-btn v-if="canFinalize"  flat @click.native="onFinalizeSession">
+            <v-btn v-if="canFinalize && session.services.length > 0 && session.customer !== null"  flat @click.native="onFinalizeSession">
               <v-icon>move_to_inbox</v-icon>
             </v-btn>
             <v-btn  flat @click.native="onAddService">
@@ -44,6 +44,14 @@
               </v-btn>
             </v-list-tile-action>
           </v-list-tile>
+          <v-list-tile avatar v-if="caddAddCustomer && session.services.length > 0">
+            <v-list-tile-content>
+                Usa Impuesto ?
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-switch @change="onItbmChange" v-model="session.isTax"></v-switch>
+            </v-list-tile-action>
+          </v-list-tile>
           <v-list-tile avatar>
             <v-list-tile-content>
                 Subtotal
@@ -55,7 +63,7 @@
                 </v-chip>
             </v-list-tile-action>
           </v-list-tile>
-          <v-list-tile avatar>
+          <v-list-tile avatar v-if="session.isTax">
             <v-list-tile-content>
                 ITBMS
             </v-list-tile-content>
@@ -66,7 +74,7 @@
                 </v-chip>
             </v-list-tile-action>
           </v-list-tile>
-          <v-list-tile avatar>
+          <v-list-tile avatar v-if="session.isTax">
             <v-list-tile-content>
                 Total
             </v-list-tile-content>
@@ -175,6 +183,7 @@ export default {
   },
   watch: {
     session: (newVal) => {
+      utils.log('cambio...');
       if (!newVal) {
         this.editDialogOpened = !this.editDialogOpened;
       }
@@ -186,6 +195,7 @@ export default {
       const payload = {
         sessionId: this.$props.sessionId,
         serviceRemove: this.serviceRemove,
+        isTax: this.session.isTax,
       };
       this.$store.dispatch('updateSession', payload);
       this.serviceRemove = null;
@@ -250,6 +260,17 @@ export default {
           sessionId: this.$props.sessionId,
           services: products,
           user: this.currentUser,
+          isTax: this.session.isTax,
+        };
+        this.$store.dispatch('updateSession', payload);
+      }
+    },
+    onItbmChange() {
+      if (this.session.services.length > 0) {
+        utils.log('updating itbms and total');
+        const payload = {
+          sessionId: this.$props.sessionId,
+          isTax: this.session.isTax,
         };
         this.$store.dispatch('updateSession', payload);
       }

@@ -6,13 +6,33 @@ import findIndex from 'lodash/findIndex';
 import find from 'lodash/find';
 import utils from '../../utils';
 
-const ITBMS = 0.07;
+// const ITBMS = 0.07;
+
+const ACUMM = (sum, s) => sum + s.subtotal;
+const SERVICESACUM = (sum, s) => sum + s.services.length;
 
 export default {
   state: {
     sessions: [],
+    balance: {
+      total: 0,
+      sessions: 0,
+      services: 0,
+    },
   },
   mutations: {
+    setBalance(state, payload) {
+      debugger;
+      if (payload) {
+        const s = state;
+        const balance = {
+          total: reduce(payload, ACUMM, 0),
+          sessions: payload.length,
+          services: reduce(payload, SERVICESACUM, 0),
+        };
+        s.balance = balance;
+      }
+    },
     addOrUpdateSession(state, payload) {
       if (payload) {
         const s = state;
@@ -71,6 +91,15 @@ export default {
       .catch(err => utils.log(`Error getting sessions: ${JSON.stringify(err)}`))
       .finally(() => commit('setLoading', false));
     },
+    getBalance({ commit }, date) {
+      debugger;
+      commit('setLoading', true);
+      const encodedDate = encodeURI(date);
+      axios.get(`/sessions/balance/${encodedDate}`)
+        .then(res => commit('setBalance', commit('setBalance', res.data)))
+        .catch(e => utils.log('error: %s', e))
+        .finally(() => commit('setLoading', false));
+    },
     saveSession({ commit }, session) {
       commit('setLoading', true);
       axios.post('/sessions', session)
@@ -86,6 +115,9 @@ export default {
     updateSession({ commit, state }, payload) {
       commit('setLoading', true);
       const currSession = find(state.sessions, { id: payload.sessionId });
+      if ('isItbms' in payload) {
+        currSession.isTax = payload.isItbms;
+      }
       if ('customer' in payload) {
         currSession.customer = payload.customer;
       }
@@ -104,10 +136,10 @@ export default {
         const subTotal = reduce(services, accum, prevSubtotal);
 
         currSession.services = services.concat(currSession.services);
-        const itbms = subTotal * ITBMS;
-        currSession.itbms = itbms;
+        // const itbms = subTotal * ITBMS;
+        // currSession.itbms = itbms;
         currSession.subtotal = subTotal;
-        currSession.total = subTotal + itbms;
+        // currSession.total = subTotal + itbms;
       }
 
       if ('serviceRemove' in payload) {
@@ -121,9 +153,9 @@ export default {
 
         currSession.services = prevServices;
         currSession.subtotal = newSubTotal;
-        const newItbms = newSubTotal * ITBMS;
-        currSession.itbms = newItbms;
-        currSession.total = newSubTotal + newItbms;
+        // const newItbms = newSubTotal * ITBMS;
+        // currSession.itbms = newItbms;
+        // currSession.total = newSubTotal + newItbms;
       }
 
       if ('rating' in payload && 'comment' in payload && 'state' in payload) {
@@ -159,6 +191,9 @@ export default {
     },
     getSessionById(state) {
       return keyword => find(state.sessions, { id: keyword });
+    },
+    balance(state) {
+      return state.balance;
     },
   },
 };

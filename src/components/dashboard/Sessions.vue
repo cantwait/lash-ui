@@ -51,10 +51,6 @@
 import utils from '../../utils';
 import EditSession from './EditSession';
 
-const SESSION_CHANNEL = 'sessions';
-const ON_SESSION = 'onSession';
-const ON_SESSION_REMOVE = 'onSessionRemove';
-
 export default {
   data() {
     return {
@@ -64,6 +60,9 @@ export default {
       session: null,
       iconClass: 'grey lighten-1 white--text',
       icon: 'watch_later',
+      sessionChannel: process.env.PUSHER_SESSION_CHANNEL,
+      onSessionEvt: process.env.PUSHER_ON_SESSION,
+      onSessionRemoveEvt: process.env.PUSHER_ON_SESSION_REMOVE,
     };
   },
   computed: {
@@ -89,15 +88,15 @@ export default {
     this.fetchData();
   },
   mounted() {
-    const channel = this.$pusher.subscribe(SESSION_CHANNEL);
-    channel.bind(ON_SESSION, (session) => {
+    const channel = this.$pusher.subscribe(this.sessionChannel);
+    channel.bind(this.onSessionEvt, (session) => {
       this.$store.commit('addOrUpdateSession', session);
     });
 
-    channel.bind(ON_SESSION_REMOVE, id => this.$store.commit('removeSession', id));
+    channel.bind(this.onSessionRemoveEvt, id => this.$store.commit('removeSession', id));
   },
   destroyed() {
-    this.$pusher.unsubscribe(SESSION_CHANNEL);
+    this.$pusher.unsubscribe(this.sessionChannel);
   },
   watch: {
     // call again the method if the route changes

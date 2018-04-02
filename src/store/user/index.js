@@ -19,8 +19,13 @@ export default {
     totalFee: 0,
     partialFee: [],
     pwdValid: false,
+    isPwdReset: false,
   },
   mutations: {
+    setPwdReset(state, payload) {
+      const s = state;
+      s.isPwdReset = payload;
+    },
     setPwdValid(state, payload) {
       const s = state;
       s.pwdValid = payload;
@@ -158,6 +163,17 @@ export default {
         .catch(err => utils.log('error: %s', err))
         .finally(() => commit('setLoading', false));
     },
+    resetPwd({ commit }, id) {
+      commit('setLoading', true);
+      axios.get(`/users/${id}/reset`)
+        .then((res) => {
+          utils.log(res.status);
+          commit('setPwdReset', true);
+          setTimeout(() => commit('setPwdReset', false), 4000);
+        })
+        .catch(err => utils.log(err))
+        .finally(() => commit('setLoading', false));
+    },
     updatePassword({ commit }, payload) {
       commit('setLoading', true);
       axios.post('/users/resetpwd', payload)
@@ -272,6 +288,9 @@ export default {
     },
     pwdValid(state) {
       return state.pwdValid;
+    },
+    isPwdReset(state) {
+      return state.isPwdReset;
     },
   },
 };

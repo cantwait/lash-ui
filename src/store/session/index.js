@@ -22,7 +22,6 @@ export default {
   },
   mutations: {
     setBalance(state, payload) {
-      debugger;
       if (payload) {
         const s = state;
         const balance = {
@@ -92,7 +91,6 @@ export default {
       .finally(() => commit('setLoading', false));
     },
     getBalance({ commit }, date) {
-      debugger;
       commit('setLoading', true);
       const encodedDate = encodeURI(date);
       axios.get(`/sessions/balance/${encodedDate}`)

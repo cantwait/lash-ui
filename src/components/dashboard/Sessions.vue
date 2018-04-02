@@ -5,6 +5,9 @@
         <v-toolbar color="white" light>
           <v-toolbar-title color="primary">Sesiones Activas</v-toolbar-title>
           <v-spacer></v-spacer>
+          <v-btn v-if="canAdd" @click="onRefresh" color="primary" icon>
+            <v-icon>refresh</v-icon>
+          </v-btn>
           <v-btn v-if="canAdd" @click="onNewSession" color="primary" icon>
             <v-icon>add</v-icon>
           </v-btn>
@@ -77,8 +80,7 @@ export default {
     },
     canAdd() {
       return this.$store.getters.isAdmin
-        || this.$store.getters.isCashier
-        || this.$store.getters.isCollaborator;
+        || this.$store.getters.isCashier;
     },
     currentUser() {
       return this.$store.getters.user;
@@ -141,6 +143,9 @@ export default {
       utils.log(`onOpenServiceDialog: ${JSON.stringify(item)}`);
       this.session = item;
       this.isEditDialog = !this.isEditDialog;
+    },
+    onRefresh() {
+      this.fetchData();
     },
   },
   components: {

@@ -11,6 +11,15 @@
             <v-toolbar-title>Sesiones del Usuario: {{ user.name }}</v-toolbar-title>
             <v-spacer></v-spacer>
           </v-toolbar>
+          <v-card>
+            <v-card-text>
+              <v-flex x12>
+                <lash-date-range @on-date-picked="setDateFrom" :placeholder="'desde'" :key="'from'"/>
+                <lash-date-range @on-date-picked="setDateTo" :placeholder="'hasta'" :key="'to'"/>
+                <v-btn depressed small @click="onSearchSessions">Buscar</v-btn>
+              </v-flex>
+            </v-card-text>
+          </v-card>
           <v-card v-if="items.length > 0">
             <v-card-title>Total Comisiones: ${{ totalFee | formatNumber}}</v-card-title>
           </v-card>
@@ -40,6 +49,8 @@
   </v-layout>
 </template>
 <script>
+import * as moment from 'moment';
+import DateMenu from '../shared/DateMenu';
 import utils from '../../utils';
 
 export default {
@@ -57,16 +68,42 @@ export default {
   },
   data() {
     return {
+      from: '',
+      to: '',
     };
   },
   methods: {
     onCloseSessionDialog() {
       this.$emit('on-action-performed', true);
     },
+    setDateFrom(date) {
+      utils.log('date from: %s', date);
+      this.from = date;
+    },
+    setDateTo(date) {
+      utils.log('date to: %s', date);
+      this.to = date;
+    },
+    onSearchSessions() {
+      this.getSessionsByUser();
+    },
+    getSessionsByUser() {
+      if (this.from !== '' && this.to !== '' && moment(this.to) > moment(this.from)) {
+        utils.log('meet condition!');
+        const query = {
+          userId: this.$props.user.id,
+          from: this.from,
+          to: this.to,
+        };
+        this.$store.dispatch('getSessionsByUser', query);
+      } else {
+        this.$store.dispatch('getSessionsByUser', { userId: this.$props.user.id });
+      }
+    },
   },
   created() {
     utils.log('onCreated hook!');
-    this.$store.dispatch('getSessionsByUser', this.$props.user.id);
+    this.getSessionsByUser();
   },
   filters: {
     formatNumber(val) {
@@ -74,6 +111,9 @@ export default {
       // eslint-disable-next-line
       return Number(Math.round(val+'e'+3)+'e-'+3);
     },
+  },
+  components: {
+    'lash-date-range': DateMenu,
   },
 };
 

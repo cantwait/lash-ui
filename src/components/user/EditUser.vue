@@ -29,7 +29,7 @@
             <v-flex x12>
               <v-text-field label="Dirección" :rules="addressVal" :counter="100" v-model="editAddress" required></v-text-field>
             </v-flex>
-            <v-flex x12 v-if="editRol === 'user'">
+            <v-flex x12>
               <v-text-field label="% comisión" :rules="feeVal" min="0" max="20" type="number" v-model.number="editFee" required></v-text-field>
             </v-flex>
             <!-- <v-flex xs12>

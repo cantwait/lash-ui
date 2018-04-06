@@ -41,15 +41,12 @@ export default {
           const id = val[0]._id;
           let subTotal = 0;
           subTotal = reduce(val, (sum, ses) => {
-            utils.log('por aca...');
             if (ses.services.generateFee) {
-              utils.log('price: %s', ses.services.price);
               return sum + (ses.services.price * (ses.services.responsible.fee / 100));
             }
             return sum;
           }, 0);
 
-          utils.log('subTotal: %s', JSON.stringify(subTotal));
           const partial = {
             id,
             subTotal,
@@ -156,9 +153,18 @@ export default {
           utils.log('eliminar usuario completado!');
         });
     },
-    getSessionsByUser({ commit }, userId) {
+    getSessionsByUser({ commit }, query) {
+      const userId = query.userId;
+      const qry = {
+        from: '',
+        to: '',
+      };
+      if ('from' in query && 'to' in query) {
+        qry.from = query.from;
+        qry.to = query.to;
+      }
       commit('setLoading', true);
-      axios.get(`/users/${userId}/sessions`)
+      axios.get(`/users/${userId}/sessions`, { query: qry })
         .then(res => commit('setSessionsByUser', res.data))
         .catch(err => utils.log('error: %s', err))
         .finally(() => commit('setLoading', false));

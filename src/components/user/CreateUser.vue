@@ -31,7 +31,7 @@
             <v-flex x12>
               <v-text-field label="Dirección" :rules="addressVal" :counter="100" v-model="address" required></v-text-field>
             </v-flex>
-            <v-flex x12 v-if="role === 'user'">
+            <v-flex x12>
               <v-text-field label="% comisión" :rules="feeVal" min="0" max="20" type="number" v-model.number="fee" required></v-text-field>
             </v-flex>
             <!-- <v-flex xs12>

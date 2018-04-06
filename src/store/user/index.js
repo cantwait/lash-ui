@@ -164,7 +164,7 @@ export default {
         qry.to = query.to;
       }
       commit('setLoading', true);
-      axios.get(`/users/${userId}/sessions`, { query: qry })
+      axios.get(`/users/${userId}/sessions`, { params: qry })
         .then(res => commit('setSessionsByUser', res.data))
         .catch(err => utils.log('error: %s', err))
         .finally(() => commit('setLoading', false));

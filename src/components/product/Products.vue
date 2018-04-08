@@ -4,6 +4,13 @@
       <v-card>
         <v-list two-line subheader>
           <v-toolbar dark color="primary">
+            <v-text-field
+                placeholder="Busqueda por nombre"
+                v-model.trim="pName">
+            </v-text-field>
+            <v-btn icon @click.stop="onProductSearch">
+              <v-icon>search</v-icon>
+            </v-btn>
             <v-spacer></v-spacer>
             <!-- <v-text-field v-model="searchInput" @input="debounceInput" color="white" prepend-icon="search" clearable placeholder="Ingrese su busqueda..." hide-details single-line></v-text-field> -->
             <v-btn icon @click.stop="onNewProduct">
@@ -92,6 +99,7 @@ export default {
       iconClass: 'grey lighten-1 white--text',
       icon: 'local_offer',
       isPictureDialog: false,
+      pName: '',
       query: {
         page: 1,
         perPage: 5,
@@ -110,6 +118,11 @@ export default {
     },
   },
   methods: {
+    onProductSearch() {
+      this.query.page = 1;
+      this.query.name = this.pName;
+      this.$store.dispatch('getProducts', this.query);
+    },
     onNewProduct() {
       utils.log('onNewProduct');
       this.isDialogCreateOpened = true;
@@ -127,6 +140,7 @@ export default {
     onLoadMore() {
       utils.log('Loading more');
       this.query.page += 1;
+      this.query.name = this.pName;
       this.$store.dispatch('getProducts', this.query);
     },
     takeDeleteAction(result) {

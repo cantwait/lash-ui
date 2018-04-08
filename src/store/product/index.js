@@ -106,12 +106,18 @@ export default {
       if (query.page === 1) {
         commit('setProducts', []);
       }
+      const qry = {
+        page: query.page,
+        perPage: query.perPage,
+      };
+
+      if ('name' in query) {
+        qry.name = query.name;
+      }
+
       commit('setLoading', true);
       axios.get('/products', {
-        params: {
-          page: query.page,
-          perPage: query.perPage,
-        },
+        params: qry,
       })
       .then((res) => {
         if (res.data.length > 0) {

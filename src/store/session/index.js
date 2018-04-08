@@ -8,7 +8,17 @@ import utils from '../../utils';
 
 // const ITBMS = 0.07;
 
-const ACUMM = (sum, s) => sum + s.subtotal;
+// const ACUMM = (sum, s) => sum + s.subtotal;
+
+const ACUMM = (sum, s) => {
+  let ac = sum;
+  if (s.total > 0) {
+    ac = sum + s.total;
+  } else {
+    ac = sum + s.subtotal;
+  }
+  return ac;
+};
 const SERVICESACUM = (sum, s) => sum + s.services.length;
 
 export default {

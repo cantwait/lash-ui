@@ -62,6 +62,9 @@ export default {
       return this.$store.getters.catalog;
     },
   },
+  created() {
+    this.$store.commit('setCatalog', []);
+  },
   methods: {
     // eslint-disable-next-line
     debounceInput: debounce(function (e) {

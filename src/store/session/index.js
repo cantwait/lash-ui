@@ -129,6 +129,9 @@ export default {
       if ('customer' in payload) {
         currSession.customer = payload.customer;
       }
+      if ('transactionType' in payload) {
+        currSession.transactionType = payload.transactionType;
+      }
       if ('services' in payload) {
         const accum = (sum, s) => sum + s.price;
 

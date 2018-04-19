@@ -17,7 +17,139 @@
             </v-btn>
           </v-toolbar-items>
         </v-toolbar>
-        <v-list subheader>
+        <v-flex xs12>
+          <v-layout row>
+            <v-flex xs10>
+              <v-card  class="lash-padding" tile flat>
+                <v-card-text
+                >
+                  <template v-if="isCustomerNull">
+                    Agregar Cliente...
+                  </template>
+                  <template v-else>
+                    <v-chip
+                    >
+                      <strong>{{ session.customer.name }}</strong>&nbsp;
+                      <span>( {{ session.customer.phone }} )</span>
+                    </v-chip>
+                  </template>
+                </v-card-text>
+              </v-card>
+            </v-flex>
+            <v-flex xs2>
+              <v-card class="lash-padding"  tile flat>
+                <v-card-text>
+                <template v-if="isCustomerNull && caddAddCustomer">
+                  <v-btn icon ripple @click="onAddCustomer">
+                    <v-icon color="black lighten-1">edit</v-icon>
+                  </v-btn>
+                </template>
+                <template v-else>
+                  <v-btn v-if="!isCustomerNull" icon  @click="onAddPhoto">
+                    <v-icon color="black lighten-1">camera_enhance</v-icon>
+                  </v-btn>
+                </template>
+                </v-card-text>
+              </v-card>
+            </v-flex>
+          </v-layout>
+        </v-flex>
+        <v-flex xs12 v-if="caddAddCustomer && session.services.length > 0">
+            <v-layout row>
+              <v-flex xs10>
+                <v-card class="lash-padding" tile flat>
+                  <v-card-text>IMPUESTO?</v-card-text>
+                </v-card>
+              </v-flex>
+              <v-flex  xs2>
+                <v-card class="lash-padding" tile flat>
+                  <v-card-text>
+                    <v-switch @change="onItbmChange" class="lash-switch" v-model="session.isTax"></v-switch>
+                  </v-card-text>
+                </v-card>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+
+          <v-flex xs12 v-if="caddAddCustomer && session.services.length > 0">
+            <v-layout row>
+              <v-flex xs10>
+                <v-card class="lash-padding padding30" tile flat>
+                  <v-card-text>TARJETA/EFECTIVO</v-card-text>
+                </v-card>
+              </v-flex>
+              <v-flex  xs2>
+                <v-card class="lash-padding" tile flat>
+                  <v-card-text>
+                    <v-radio-group @change="onTransactionTypeChange" v-model="session.transactionType">
+                      <v-radio label="E" value="cash"></v-radio>
+                      <v-radio label="T" value="card"></v-radio>
+                    </v-radio-group>
+                  </v-card-text>
+                </v-card>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+
+
+          <v-flex xs12 v-if="caddAddCustomer && session.services.length > 0">
+            <v-layout row>
+              <v-flex  xs10>
+                <v-card class="lash-padding" tile flat>
+                  <v-card-text>SUBTOTAL</v-card-text>
+                </v-card>
+              </v-flex>
+              <v-flex xs2>
+                <v-card class="lash-padding" tile flat>
+                  <v-card-text>
+                    <v-chip>
+                      <strong>$&nbsp;{{ session.subtotal | formatNumber}}</strong>
+                    </v-chip>
+                  </v-card-text>
+                </v-card>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+
+
+          <v-flex  xs12 v-if="caddAddCustomer && session.services.length > 0 && session.isTax">
+            <v-layout row>
+              <v-flex xs10>
+                <v-card class="lash-padding" tile flat>
+                  <v-card-text>ITBMS</v-card-text>
+                </v-card>
+              </v-flex>
+              <v-flex xs2>
+                <v-card class="lash-padding" tile flat>
+                  <v-card-text>
+                    <v-chip>
+                    <strong>$&nbsp;{{ session.itbms | formatNumber}}</strong>
+                    </v-chip>
+                  </v-card-text>
+                </v-card>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+
+          <v-flex xs12 v-if="caddAddCustomer && session.services.length > 0 && session.isTax">
+            <v-layout row>
+              <v-flex xs10>
+                <v-card class="lash-padding" tile flat>
+                  <v-card-text>TOTAL</v-card-text>
+                </v-card>
+              </v-flex>
+              <v-flex xs2>
+                <v-card class="lash-padding" tile flat>
+                  <v-card-text>
+                    <v-chip>
+                      <strong>$&nbsp;{{ session.total | formatNumber}}</strong>
+                    </v-chip>
+                  </v-card-text>
+                </v-card>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+        <!-- <v-list subheader>
           <v-subheader>Detalles</v-subheader>
           <v-divider/>
           <v-list-tile avatar>
@@ -43,6 +175,17 @@
                 <v-icon color="black lighten-1">camera_enhance</v-icon>
               </v-btn>
             </v-list-tile-action>
+          </v-list-tile>
+          <v-list-tile>
+            <v-list-tile-content>
+              Tipo de pago
+            </v-list-tile-content>
+            <list-tile-action>
+              <v-radio-group v-model="radios" :mandatory="false">
+                <v-radio label="Radio 1" value="radio-1"></v-radio>
+                <v-radio label="Radio 2" value="radio-2"></v-radio>
+              </v-radio-group>
+            </list-tile-action>
           </v-list-tile>
           <v-list-tile avatar v-if="caddAddCustomer && session.services.length > 0">
             <v-list-tile-content>
@@ -85,7 +228,7 @@
                 </v-chip>
             </v-list-tile-action>
           </v-list-tile>
-        </v-list>
+        </v-list> -->
         <v-layout>
         <v-flex >
           <v-card>
@@ -234,6 +377,13 @@ export default {
       // Simulated ajax query
       this.$store.dispatch('findCustomersLike', v);
     },
+    onTransactionTypeChange() {
+      const payload = {
+        sessionId: this.$props.sessionId,
+        transactionType: this.session.transactionType,
+      };
+      this.$store.dispatch('updateSession', payload);
+    },
     onSetCustomer(customer) {
       utils.log('getting result from dialog...');
       this.isCatalogOpen = !this.isCatalogOpen;
@@ -300,4 +450,15 @@ export default {
 .lash__list__tile__action__text {
   padding: 0 10px 0 0;
 }
+.lash-switch :last-child {
+  min-height: 0px !important;
+}
+.lash-padding .card__text {
+  padding: 5px 16px 5px 16px !important;
+}
+
+.padding30 {
+  padding: 30px 0px
+}
+
 </style>

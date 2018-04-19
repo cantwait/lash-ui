@@ -25,7 +25,7 @@
                   <v-icon color="black lighten-1">refresh</v-icon>
                 </v-btn>
               </v-list-tile-action>
-              <v-list-tile-action v-if="isCollaborator(item)">
+              <v-list-tile-action v-if="isFee(item)">
                 <v-btn icon ripple @click.stop="onOpenSessions(item)">
                   <v-icon color="black lighten-1">list</v-icon>
                 </v-btn>
@@ -174,6 +174,9 @@ export default {
     },
     isCollaborator(user) {
       return user.role === 'user';
+    },
+    isFee(user) {
+      return user.fee > 0;
     },
     onResetPwd(user) {
       this.$store.dispatch('resetPwd', user.id);

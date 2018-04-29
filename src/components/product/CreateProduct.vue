@@ -47,6 +47,9 @@
             <v-flex x12>
               <v-checkbox label="Genera Comisión?" v-model="generateFee"></v-checkbox>
             </v-flex>
+            <v-flex x12>
+              <v-checkbox label="Activo?" v-model="active"></v-checkbox>
+            </v-flex>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -71,6 +74,7 @@ export default {
       category: null,
       offer: false,
       generateFee: false,
+      active: true,
       nameVal: [
         v => v.length <= 60 || 'Max 60 caracteres',
         v => v.length >= 2 || 'Min 2 caracteres',
@@ -122,6 +126,7 @@ export default {
         description: this.description,
         offer: this.offer,
         generateFee: this.generateFee,
+        active: this.active,
       };
       this.$store.dispatch('saveProduct', newProduct);
       this.$emit('on-create-product', true);

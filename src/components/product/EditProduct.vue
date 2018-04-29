@@ -37,6 +37,9 @@
             <v-flex x12>
               <v-checkbox label="Genera Comisión?" v-model="editGenerateFee"></v-checkbox>
             </v-flex>
+            <v-flex x12>
+              <v-checkbox label="Activo?" v-model="editActive"></v-checkbox>
+            </v-flex>
             <small>*Campo Obligatorio</small>
           </v-card-text>
           <v-card-actions>
@@ -62,6 +65,7 @@ export default {
       editCategory: this.product.category.id,
       editOffer: this.product.offer,
       editGenerateFee: this.product.generateFee,
+      editActive: this.product.active,
       nameVal: [
         v => v.length <= 60 || 'Max 60 caracteres',
         v => v.length >= 2 || 'Min 2 caracteres',
@@ -108,7 +112,6 @@ export default {
       if (!this.formIsValid) {
         return;
       }
-      debugger;
       const editData = {
         id: this.product.id,
         name: this.editName,
@@ -118,6 +121,7 @@ export default {
         category: this.editCategory,
         offer: this.editOffer,
         generateFee: this.editGenerateFee,
+        active: this.editActive,
       };
       this.$store.dispatch('updateProduct', editData);
       this.$emit('on-create-product', true);

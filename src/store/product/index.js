@@ -121,6 +121,7 @@ export default {
       })
       .then((res) => {
         if (res.data.length > 0) {
+          utils.log('Products: %s', JSON.stringify(res.data));
           commit('setProducts', res.data);
         }
       })
@@ -215,6 +216,7 @@ export default {
         category: payload.category,
         generateFee: payload.generateFee,
         offer: payload.offer,
+        active: payload.active,
       })
       .then((res) => {
         commit('updateProducts', res.data);

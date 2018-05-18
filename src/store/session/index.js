@@ -132,38 +132,42 @@ export default {
       if ('transactionType' in payload) {
         currSession.transactionType = payload.transactionType;
       }
-      if ('services' in payload) {
+      if ('discount' in payload) {
+        utils.log('discount: %s', payload.discount);
+        const prevServices = currSession.services;
         const accum = (sum, s) => sum + s.price;
+        const subtotal = reduce(prevServices, accum, 0);
+        currSession.subtotal = subtotal;
+        currSession.discount = payload.discount;
+      }
+      if ('services' in payload) {
+        // const accum = (sum, s) => sum + s.price;
 
         const currUser = payload.user;
         const services = forEach(payload.services,
           (value) => { const s = value; s.responsible = currUser; });
-        let prevSubtotal = 0;
-        if (currSession.services.length > 0) {
-          const prevServices = currSession.services;
-          prevSubtotal = reduce(prevServices, accum, 0);
-        }
+        // let prevSubtotal = 0;
+        // if (currSession.services.length > 0) {
+        //   const prevServices = currSession.services;
+        //   prevSubtotal = reduce(prevServices, accum, 0);
+        // }
 
-        const subTotal = reduce(services, accum, prevSubtotal);
+        // const subTotal = reduce(services, accum, prevSubtotal);
 
         currSession.services = services.concat(currSession.services);
         // const itbms = subTotal * ITBMS;
         // currSession.itbms = itbms;
-        currSession.subtotal = subTotal;
+        // currSession.subtotal = subTotal;
         // currSession.total = subTotal + itbms;
       }
 
       if ('serviceRemove' in payload) {
-        const accum = (sum, s) => sum + s.price;
         const prevServices = currSession.services;
-        const prevSubtotal = reduce(prevServices, accum, 0);
         const s = payload.serviceRemove;
         const index = findIndex(prevServices, serv => serv.id === s.id);
         prevServices.splice(index, 1);
-        const newSubTotal = prevSubtotal - s.price;
 
         currSession.services = prevServices;
-        currSession.subtotal = newSubTotal;
         // const newItbms = newSubTotal * ITBMS;
         // currSession.itbms = newItbms;
         // currSession.total = newSubTotal + newItbms;

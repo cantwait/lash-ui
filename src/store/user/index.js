@@ -41,10 +41,16 @@ export default {
           const id = val[0]._id;
           let subTotal = 0;
           subTotal = reduce(val, (sum, ses) => {
+            let su = sum;
             if (ses.services.generateFee) {
-              return sum + (ses.services.price * (ses.services.responsible.fee / 100));
+              if (ses.discount && ses.discount > 0) {
+                su += (((ses.services.price) - (ses.services.price * ses.discount))
+                 * (ses.services.responsible.fee / 100));
+              } else {
+                su += (ses.services.price * (ses.services.responsible.fee / 100));
+              }
             }
-            return sum;
+            return su;
           }, 0);
 
           const partial = {

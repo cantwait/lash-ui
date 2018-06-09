@@ -35,9 +35,16 @@
                 </v-card-title>
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <div v-if="session.services.generateFee">Comisión:
+                  <template v-if="session.discount && session.discount > 0">
+                    <div v-if="session.services.generateFee">Comisión:
+                      {{(session.services.price - (session.services.price * session.discount))* (session.services.responsible.fee / 100) | formatNumber}}
+                    </div>
+                  </template>
+                  <template v-else>
+                    <div v-if="session.services.generateFee">Comisión:
                       {{session.services.price * (session.services.responsible.fee / 100) | formatNumber}}
-                  </div>
+                    </div>
+                  </template>
                 </v-card-actions>
               </v-card>
             </v-expansion-panel-content>

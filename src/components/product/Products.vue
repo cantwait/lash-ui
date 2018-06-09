@@ -20,11 +20,8 @@
           <v-subheader inset>Productos</v-subheader>
           <template v-for="(item,index) in items">
             <v-list-tile avatar  v-bind:key="item.id" >
-              <v-list-tile-avatar>
-                <v-icon v-bind:class="[iconClass]">{{ icon }}</v-icon>
-              </v-list-tile-avatar>
               <v-list-tile-content>
-                <v-list-tile-title>{{ item.name }}</v-list-tile-title>
+                <v-list-tile-title>{{ item.name | truncate }}</v-list-tile-title>
                 <v-list-tile-sub-title>{{ item.price }}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-action>
@@ -180,6 +177,13 @@ export default {
     'lash-create-product': CreateProduct,
     'lash-edit-product': EditProduct,
     'lash-pictures-admin': ProductImageAdmin,
+  },
+  filters: {
+    truncate(val) {
+      if (!val) return '';
+      // eslint-disable-next-line
+      return val.length > 30 ? val.substring(0,30) + '...' : val;
+    },
   },
 };
 </script>

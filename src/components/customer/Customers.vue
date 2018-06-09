@@ -13,9 +13,6 @@
           <v-subheader inset>Clientes</v-subheader>
           <template v-for="(item,index) in items">
             <v-list-tile avatar  v-bind:key="item.id" >
-              <v-list-tile-avatar>
-                <v-icon v-bind:class="[iconClass]">{{ icon }}</v-icon>
-              </v-list-tile-avatar>
               <v-list-tile-content>
                 <v-list-tile-title>{{ item.name }}</v-list-tile-title>
                 <v-list-tile-sub-title>{{ item.phone }}</v-list-tile-sub-title>

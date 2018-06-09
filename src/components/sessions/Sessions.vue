@@ -10,9 +10,6 @@
           <v-subheader inset>Sesiones de Cliente</v-subheader>
           <template v-for="(item,index) in items">
             <v-list-tile avatar  v-bind:key="item.id" >
-              <v-list-tile-avatar>
-                <v-icon v-bind:class="[iconClass]">{{ icon }}</v-icon>
-              </v-list-tile-avatar>
               <v-list-tile-content>
                 <v-list-tile-title>{{ item.customer.name }}</v-list-tile-title>
                 <v-list-tile-sub-title>${{ (item.total || item.subtotal) | formatNumber }} - {{ item.createdAt | date(('%d/%m/%Y %I:%M:%s %p')) }}</v-list-tile-sub-title>
@@ -34,7 +31,7 @@
       </v-container>
     </v-flex>
     <template v-if="session && isViewSession">
-      <lash-sessions-view @on-view-session="onSessionViewed" :editDialogOpened="isViewSession" :session="session"/>
+      <lash-sessions-view @on-view-session="onSessionViewed" :viewDialogOpened="isViewSession" :session="session"/>
     </template>
   </v-layout>
 </template>
@@ -80,6 +77,8 @@ export default {
     },
     onOpenViewSession(item) {
       utils.log(`Opening Session from customer: ${item.customer.name} - ${item.subtotal}`);
+      this.session = item;
+      this.isViewSession = !this.isViewSession;
     },
     onLoadMore() {
       utils.log('Loading more');

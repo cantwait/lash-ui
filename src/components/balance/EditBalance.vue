@@ -7,7 +7,7 @@
           </v-card-title>
           <v-card-text>
             <v-flex x12>
-              <v-text-field type="number" label="Monto" :rules="amountRules" v-model.number="editAmount" required></v-text-field>
+              <v-text-field type="number" step=0.01 label="Monto" :rules="amountRules" v-model.number="editAmount" required></v-text-field>
             </v-flex>
             <v-flex x12>
               <v-select

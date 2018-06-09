@@ -8,6 +8,7 @@ import Categories from '@/components/product/Categories';
 import Customers from '@/components/customer/Customers';
 import Products from '@/components/product/Products';
 import Balances from '@/components/balance/Balances';
+import Sessions from '@/components/sessions/Sessions';
 import Profile from '@/components/shared/Profile';
 import AuthGuard from './auth.guard';
 
@@ -65,6 +66,12 @@ export default new Router({
       path: '/balances',
       name: 'Balance',
       component: Balances,
+      beforeEnter: AuthGuard,
+    },
+    {
+      path: '/sessions',
+      name: 'Sessions',
+      component: Sessions,
       beforeEnter: AuthGuard,
     },
   ],

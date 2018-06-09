@@ -1,9 +1,11 @@
 import axios from 'axios';
 import forEach from 'lodash/forEach';
 import reduce from 'lodash/reduce';
+import uniqBy from 'lodash/uniqBy';
 import remove from 'lodash/remove';
 import findIndex from 'lodash/findIndex';
 import find from 'lodash/find';
+import union from 'lodash/union';
 import utils from '../../utils';
 
 // const ITBMS = 0.07;
@@ -29,8 +31,17 @@ export default {
       sessions: 0,
       services: 0,
     },
+    sessionsPaginated: [],
   },
   mutations: {
+    setSessionsPaginated(state, payload) {
+      const s = state;
+      if (payload.length > 0) {
+        s.sessionsPaginated = uniqBy(union(s.sessionsPaginated, payload), 'id');
+      } else {
+        s.sessionsPaginated = [];
+      }
+    },
     setBalance(state, payload) {
       if (payload) {
         const s = state;
@@ -99,6 +110,30 @@ export default {
       })
       .catch(err => utils.log(`Error getting sessions: ${JSON.stringify(err)}`))
       .finally(() => commit('setLoading', false));
+    },
+    getSessionsPaginated({ commit }, query) {
+      if (query.page === 1) {
+        commit('setSessionsPaginated', []);
+      }
+      commit('setLoading', true);
+      axios.get('/sessions', {
+        params: {
+          page: query.page,
+          perPage: query.perPage,
+          state: 'any',
+        },
+      })
+        .then((res) => {
+          if (res.status === 200 && res.data.length > 0) {
+            commit('setSessionsPaginated', res.data);
+          }
+        })
+        .catch((err) => {
+          utils.log(`Error getting sessions info: ${JSON.stringify(err)}`);
+        })
+        .finally(() => {
+          commit('setLoading', false);
+        });
     },
     getBalance({ commit }, date) {
       commit('setLoading', true);
@@ -201,6 +236,9 @@ export default {
     },
   },
   getters: {
+    sessionsPaginated(state) {
+      return state.sessionsPaginated;
+    },
     sessions(state) {
       return state.sessions;
     },

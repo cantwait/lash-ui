@@ -155,6 +155,7 @@ export default {
                 { text: 'Categorias', link: '/categories', icon: 'fa fa-tags' },
                 { text: 'Clientes', link: '/customers', icon: 'fa-users' },
                 { text: 'Balance', link: '/balances', icon: 'fa-balance-scale' },
+                { text: 'Sesiones', link: '/sessions', icon: 'fa-list-ul' },
               ],
             },
           ];

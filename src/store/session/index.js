@@ -95,14 +95,12 @@ export default {
       }
     },
     removeSession(state, payload) {
-      debugger;
       const s = state;
       if (payload) {
         s.sessions = remove(s.sessions, session => session.id !== payload);
       }
     },
     removePaginatedSession(state, payload) {
-      debugger;
       const s = state;
       if (payload) {
         s.sessionsPaginated = remove(s.sessionsPaginated, session => session.id !== payload);

@@ -95,9 +95,17 @@ export default {
       }
     },
     removeSession(state, payload) {
+      debugger;
       const s = state;
       if (payload) {
         s.sessions = remove(s.sessions, session => session.id !== payload);
+      }
+    },
+    removePaginatedSession(state, payload) {
+      debugger;
+      const s = state;
+      if (payload) {
+        s.sessionsPaginated = remove(s.sessionsPaginated, session => session.id !== payload);
       }
     },
   },
@@ -229,6 +237,17 @@ export default {
       .then((res) => {
         if (res.status === 204) {
           // commit('removeQueue', id);
+        }
+      })
+      .catch(err => utils.log(`Error removing products: ${JSON.stringify(err)}`))
+      .finally(() => commit('setLoading', false));
+    },
+    deleteSession({ commit }, id) {
+      commit('setLoading', true);
+      axios.delete(`/sessions/${id}`)
+      .then((res) => {
+        if (res.status === 204) {
+          commit('removePaginatedSession', id);
         }
       })
       .catch(err => utils.log(`Error removing products: ${JSON.stringify(err)}`))

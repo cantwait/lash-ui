@@ -19,6 +19,11 @@
                   <v-icon color="black lighten-1">pageview</v-icon>
                 </v-btn>
               </v-list-tile-action>
+              <v-list-tile-action>
+                <v-btn icon ripple @click.stop="onOpenDeleteDialog(item)">
+                  <v-icon color="black lighten-1">delete</v-icon>
+                </v-btn>
+              </v-list-tile-action>
             </v-list-tile>
             <v-divider v-if="index + 1 < items.length" v-bind:key="index"></v-divider>
           </template>
@@ -33,6 +38,10 @@
     <template v-if="session && isViewSession">
       <lash-sessions-view @on-view-session="onSessionViewed" :viewDialogOpened="isViewSession" :session="session"/>
     </template>
+     <!-- delete diaglo -->
+    <template v-if="dialogDelete">
+      <lash-delete-dialog :deleteDialog="dialogDelete" @on-action-performed="onDeleteSession"></lash-delete-dialog>
+    </template>
   </v-layout>
 </template>
 <script>
@@ -42,10 +51,12 @@ import utils from '../../utils';
 export default {
   data() {
     return {
+      sessionToDelete: null,
       isViewSession: false,
       session: null,
       iconClass: 'grey lighten-1 white--text',
       icon: 'money',
+      dialogDelete: false,
       itemDeletable: null,
       query: {
         page: 1,
@@ -80,6 +91,13 @@ export default {
       this.session = item;
       this.isViewSession = !this.isViewSession;
     },
+    onDeleteSession(result) {
+      if (result && this.sessionToDelete) {
+        this.$store.dispatch('deleteSession', this.sessionToDelete.id);
+        this.sessionToDelete = null;
+      }
+      this.dialogDelete = !this.dialogDelete;
+    },
     onLoadMore() {
       utils.log('Loading more');
       this.query.page += 1;
@@ -91,6 +109,10 @@ export default {
       if (result) {
         // nothing
       }
+    },
+    onOpenDeleteDialog(selectedSession) {
+      this.dialogDelete = !this.dialogDelete;
+      this.sessionToDelete = selectedSession;
     },
   },
   components: {

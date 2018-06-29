@@ -42,6 +42,13 @@ export default {
         s.sessionsPaginated = [];
       }
     },
+    updateSessions(state, payload) {
+      const s = state;
+      if (payload) {
+        const index = findIndex(s.sessionsPaginated, { id: payload.id });
+        s.sessionsPaginated.splice(index, 1, payload);
+      }
+    },
     setBalance(state, payload) {
       if (payload) {
         const s = state;
@@ -161,6 +168,24 @@ export default {
         commit('setLoading', false);
       });
     },
+    updatePaginatedSessionItems({ state, commit }, payload) {
+      commit('setLoading', true);
+      utils.log('session id: %s', payload.sessionId);
+      const currSession = find(state.sessionsPaginated, { id: payload.sessionId });
+      if ('service' in payload) {
+        const serviceEdited = payload.service;
+        const idx = findIndex(currSession.services, { id: serviceEdited.id });
+        currSession.services.splice(idx, 1, serviceEdited);
+        currSession.isCrudUpdate = true;
+      }
+      axios.patch(`/sessions/${payload.sessionId}`, currSession)
+        .then((res) => {
+          commit('updateSessions', res.data);
+          utils.log('status: %s', res.status);
+        })
+        .catch(err => utils.log('error: %s', JSON.stringify(err)))
+        .finally(() => commit('setLoading', false));
+    },
     updateSession({ commit, state }, payload) {
       commit('setLoading', true);
       const currSession = find(state.sessions, { id: payload.sessionId });
@@ -187,19 +212,7 @@ export default {
         const currUser = payload.user;
         const services = forEach(payload.services,
           (value) => { const s = value; s.responsible = currUser; });
-        // let prevSubtotal = 0;
-        // if (currSession.services.length > 0) {
-        //   const prevServices = currSession.services;
-        //   prevSubtotal = reduce(prevServices, accum, 0);
-        // }
-
-        // const subTotal = reduce(services, accum, prevSubtotal);
-
         currSession.services = services.concat(currSession.services);
-        // const itbms = subTotal * ITBMS;
-        // currSession.itbms = itbms;
-        // currSession.subtotal = subTotal;
-        // currSession.total = subTotal + itbms;
       }
 
       if ('serviceRemove' in payload) {
@@ -209,9 +222,6 @@ export default {
         prevServices.splice(index, 1);
 
         currSession.services = prevServices;
-        // const newItbms = newSubTotal * ITBMS;
-        // currSession.itbms = newItbms;
-        // currSession.total = newSubTotal + newItbms;
       }
 
       if ('rating' in payload && 'comment' in payload && 'state' in payload) {

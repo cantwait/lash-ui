@@ -20,8 +20,15 @@ export default {
     partialFee: [],
     pwdValid: false,
     isPwdReset: false,
+    usersCatalog: [],
   },
   mutations: {
+    setCatalog(state, payload) {
+      if (payload) {
+        const s = state;
+        s.usersCatalog = payload;
+      }
+    },
     setPwdReset(state, payload) {
       const s = state;
       s.isPwdReset = payload;
@@ -174,6 +181,21 @@ export default {
         .then(res => commit('setSessionsByUser', res.data))
         .catch(err => utils.log('error: %s', err))
         .finally(() => commit('setLoading', false));
+    },
+    findUsersLike({ commit }, name) {
+      commit('setLoading', true);
+      axios.get('users/search', {
+        params: {
+          name,
+        },
+      })
+      .then((res) => {
+        // need to pass the queues so we can remove those
+        // customers already either in queues or sessions
+        commit('setCatalog', res.data);
+      })
+      .catch(e => utils.log('Error getting users by name: %s', e))
+      .finally(() => commit('setLoading', false));
     },
     resetPwd({ commit }, id) {
       commit('setLoading', true);

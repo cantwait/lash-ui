@@ -34,6 +34,12 @@
               <v-list-tile-sub-title>$ {{ session.total > 0 ? session.total : session.subtotal | formatNumber }}</v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
+          <v-list-tile >
+            <v-list-tile-content>
+              <v-list-tile-title>Cobrado en</v-list-tile-title>
+              <v-list-tile-sub-title>$ {{ session.transactionType | formatTransaction }}</v-list-tile-sub-title>
+            </v-list-tile-content>
+          </v-list-tile>
         </v-list>
         <v-list one-line subheader >
           <v-subheader>Servicios</v-subheader>
@@ -98,6 +104,10 @@ export default {
       if (!val) return '';
       // eslint-disable-next-line
       return Number(Math.round(val+'e'+2)+'e-'+2);
+    },
+    formatTransaction(val) {
+      if(!val) return '';
+      return val === 'card' ? 'Tarjeta' : 'Efectivo';
     },
   },
   components: {

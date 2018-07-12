@@ -11,7 +11,7 @@
           <template v-for="(item,index) in items">
             <v-list-tile avatar  v-bind:key="item.id" >
               <v-list-tile-content>
-                <v-list-tile-title>{{ item.customer.name }}</v-list-tile-title>
+                <v-list-tile-title>{{ item.customer ? item.customer.name : 'Sin Cliente' }}</v-list-tile-title>
                 <v-list-tile-sub-title>${{ (item.total || item.subtotal) | formatNumber }} - {{ item.createdAt | date(('%d/%m/%Y %I:%M:%s %p')) }}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-action>

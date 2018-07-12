@@ -36,8 +36,8 @@
           </v-list-tile>
           <v-list-tile >
             <v-list-tile-content>
-              <v-list-tile-title>Cobrado en</v-list-tile-title>
-              <v-list-tile-sub-title>$ {{ session.transactionType | formatTransaction }}</v-list-tile-sub-title>
+              <v-list-tile-title>Tipo de transacción</v-list-tile-title>
+              <v-list-tile-sub-title>{{ session.transactionType | formatTransaction }}</v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -45,7 +45,7 @@
           <v-subheader>Servicios</v-subheader>
           <v-list-tile avatar v-for="(service) in session.services" v-bind:key="service.id">
             <v-list-tile-content>
-              <v-list-tile-title>{{ service.name }}</v-list-tile-title>
+              <v-list-tile-title>{{ service.name }} - ${{ service.price | formatNumber}}</v-list-tile-title>
               <v-list-tile-sub-title>{{ service.responsible.name }}</v-list-tile-sub-title>
             </v-list-tile-content>
             <v-list-tile-action>
@@ -106,7 +106,7 @@ export default {
       return Number(Math.round(val+'e'+2)+'e-'+2);
     },
     formatTransaction(val) {
-      if(!val) return '';
+      if (!val) return 'N/A';
       return val === 'card' ? 'Tarjeta' : 'Efectivo';
     },
   },

@@ -25,7 +25,7 @@
           <v-list-tile >
             <v-list-tile-content>
               <v-list-tile-title>Cliente</v-list-tile-title>
-              <v-list-tile-sub-title>{{ session.customer.name }} - {{ session.customer.phone }}</v-list-tile-sub-title>
+              <v-list-tile-sub-title>{{ session.customer ? session.customer.name : 'Sin Cliente' }} - {{ session.customer ? session.customer.phone : 'NA' }}</v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
           <v-list-tile >

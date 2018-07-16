@@ -87,7 +87,6 @@ export default {
       this.$store.dispatch('getSessionsPaginated', this.query);
     },
     onOpenViewSession(item) {
-      utils.log(`Opening Session from customer: ${item.customer.name} - ${item.subtotal}`);
       this.session = item;
       this.isViewSession = !this.isViewSession;
     },

@@ -9,7 +9,7 @@
           <v-toolbar-title>Servicios</v-toolbar-title>
           <v-spacer></v-spacer>
           <v-toolbar-items>
-            <v-btn v-if="canFinalize && session.services.length > 0 && session.customer !== null"  flat @click.native="onFinalizeSession">
+            <v-btn v-if="canFinalize && session.services.length > 0 && !isCustomerNull"  flat @click.native="onFinalizeSession">
               <v-icon>move_to_inbox</v-icon>
             </v-btn>
             <v-btn  flat @click.native="onAddService">

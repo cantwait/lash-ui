@@ -30,7 +30,7 @@
                     <v-chip
                     >
                       <strong>{{ session.customer.name }}</strong>&nbsp;
-                      <span>( {{ session.customer.phone }} )</span>
+                      <span v-if="isAdmin">( {{ session.customer.phone }} )</span>
                     </v-chip>
                   </template>
                 </v-card-text>
@@ -285,6 +285,9 @@ export default {
     },
     caddAddCustomer() {
       return this.$store.getters.isCashier || this.$store.getters.isAdmin;
+    },
+    isAdmin() {
+      return this.$store.getters.user.role === 'admin';
     },
   },
   watch: {

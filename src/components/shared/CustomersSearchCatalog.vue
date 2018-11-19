@@ -24,7 +24,7 @@
               <v-list-tile-content>
                 <v-list-tile-title>{{ item.name }}</v-list-tile-title>
               </v-list-tile-content>
-              <v-list-tile-action>
+              <v-list-tile-action v-if="isAdmin">
                 <v-list-tile-action-text>{{ item.phone }}</v-list-tile-action-text>
               </v-list-tile-action>
               <v-list-tile-action>
@@ -60,6 +60,9 @@ export default {
   computed: {
     items() {
       return this.$store.getters.catalog;
+    },
+    isAdmin() {
+      return this.$store.getters.user.role === 'admin';
     },
   },
   created() {

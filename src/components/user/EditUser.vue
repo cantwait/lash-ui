@@ -19,7 +19,6 @@
                 required
                 :items="roles"
                 :rules="roleVal"
-
               >
               </v-select>
             </v-flex>
